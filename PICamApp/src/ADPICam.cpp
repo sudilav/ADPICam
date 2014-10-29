@@ -490,14 +490,23 @@ asynStatus ADPICam::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
 
 }
 
-PicamError PIL_CALL piCameraDiscovered(
+PicamError PIL_CALL ADPICam::piCameraDiscovered(
     const PicamCameraID *id,
     PicamHandle device,
     PicamDiscoveryAction action)
 {
+
     PicamError error = PicamError_None;
     const char* modelString;
+    if (device == NULL) {
+        Picam_GetEnumerationString(PicamEnumeratedType_Model, id->model, &modelString);
+    	printf("Found a new camera %s\n", modelString);
+		Picam_DestroyString(modelString);
+    	return PicamError_None;
+    }
+    else {
 
+    }
     printf ("^^^^^^^In piDiscoverCamera");
     switch (action){
     case PicamDiscoveryAction_Found:
@@ -584,6 +593,7 @@ asynStatus ADPICam::piSetSelectedCamera(asynUser *pasynUser, int selectedIndex)
             availableCameraIDs[ii].sensor_name,
             availableCameraIDs[ii].serial_number);
         Picam_DestroyString(modelString);
+        //PicamAdvanced_SetUserState(availableCameraIDs[ii].model, this);
     }
 
     selectedCameraIndex = selectedIndex;

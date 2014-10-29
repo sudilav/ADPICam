@@ -14,10 +14,6 @@
 #include <epicsString.h>
 
 static const char *driverName = "PICam";
-PicamError PIL_CALL piCameraDiscovered(
-    const PicamCameraID *id,
-    PicamHandle device,
-    PicamDiscoveryAction action);
 
 class ADPICam : public ADDriver
 {
@@ -35,6 +31,10 @@ public:
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
     void report(FILE *fp, int details);
+    static PicamError PIL_CALL piCameraDiscovered(
+        const PicamCameraID *id,
+        PicamHandle device,
+        PicamDiscoveryAction action);
 
     ~ADPICam();
 
