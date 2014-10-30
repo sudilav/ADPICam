@@ -17,6 +17,10 @@ extern "C" int PICamConfig(const char *portName,
 	return(asynSuccess);
 }
 
+ADPICam * ADPICam::ADPICam_Instance = NULL;
+const char *ADPICam::notAvailable = "N/A";
+const char *ADPICam::driverName = "PICam";
+
 ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
 	int priority, int stackSize)
 	: ADDriver(portName, 1, int(NUM_PICAM_PARAMS), maxBuffers, maxMemory, asynEnumMask, asynEnumMask, ASYN_CANBLOCK, 1, priority, stackSize)
@@ -30,6 +34,7 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
     selectedCameraIndex = -1;
     Picam_InitializeLibrary();
 	Picam_IsLibraryInitialized(&libInitialized);
+	ADPICam_Instance = this;
 	if (!libInitialized){
 		asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
 			"%s%s Trouble Initializing Picam Library",
@@ -319,10 +324,21 @@ asynStatus ADPICam::readEnum(asynUser *pasynUser,
                 "%s%s: Picam_GetAvailableCameraIDs error %s",
                 driverName, functionName, errorString);
             Picam_DestroyString(errorString);
+            return asynError;
         }
         for (int ii = 0; ii < availableCamerasCount; ii++) {
             Picam_GetEnumerationString(PicamEnumeratedType_Model, 
                 (piint)availableCameraIDs[ii].model, &modelString);
+            pibln camConnected = false;
+            Picam_IsCameraIDConnected(availableCameraIDs, &camConnected);
+            if (!camConnected)
+            {
+            	PicamHandle camHandle = NULL;
+            	error = Picam_OpenCamera(availableCameraIDs, &camHandle);
+            	PicamAdvanced_SetUserState(camHandle, this);
+            	Picam_CloseCamera(camHandle);
+
+            }
             sprintf(enumString, "%s", modelString);
             asynPrint(pasynUser, ASYN_TRACE_FLOW,
                 "\n%s:%s: \nCamera[%d]\n---%s\n---%d\n---%s\n---%s\n",
@@ -410,14 +426,15 @@ void ADPICam::report(FILE *fp, int details)
 		return;
 
 	}
-	//fprintf(fp,
-	//	"%s:%s Initialized PICam Version %d.%d.%d.%d\n",
-	//	driverName,
-	//	functionName,
-	//	versionMajor,
-	//	versionMinor,
-	//	versionDistribution,
-	//	versionReleased);
+
+//	fprintf(fp,
+//		"%s:%s Initialized PICam Version %d.%d.%d.%d\n",
+//		driverName,
+//		functionName,
+//		versionMajor,
+//		versionMinor,
+//		versionDistribution,
+//		versionReleased);
 
 }
 
@@ -439,6 +456,7 @@ asynStatus ADPICam::writeInt32(asynUser *pasynUser, epicsInt32 value)
 			status = ADDriver::writeInt32(pasynUser, value);
 		}
 	}
+
 
 	/* Do callbacks so higher layers see any changes */
 	callParamCallbacks();
@@ -495,41 +513,10 @@ PicamError PIL_CALL ADPICam::piCameraDiscovered(
     PicamHandle device,
     PicamDiscoveryAction action)
 {
+	int status;
+	status = ADPICam_Instance->piHandleCameraDiscovery(id, device, action);
 
-    PicamError error = PicamError_None;
-    const char* modelString;
-    if (device == NULL) {
-        Picam_GetEnumerationString(PicamEnumeratedType_Model, id->model, &modelString);
-    	printf("Found a new camera %s\n", modelString);
-		Picam_DestroyString(modelString);
-    	return PicamError_None;
-    }
-    else {
-
-    }
-    printf ("^^^^^^^In piDiscoverCamera");
-    switch (action){
-    case PicamDiscoveryAction_Found:
-        Picam_GetEnumerationString(PicamEnumeratedType_Model, id->model, &modelString);
-        printf("Camera Found: %s\n", modelString);
-        Picam_DestroyString(modelString);
-        break;
-    case PicamDiscoveryAction_Lost:
-        Picam_GetEnumerationString(PicamEnumeratedType_Model, id->model, &modelString);
-        printf("Camera Lost: %s\n", modelString);
-        Picam_DestroyString(modelString);
-        break;
-    default:
-        //asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-        //    "Unexpected discovery action%d",
-        //    action);
-        printf(
-        "Unexpected discovery action%d\n",
-            action);
-    }
-    
-
-    return error;
+	return PicamError_None;
 }
 
 /**
@@ -549,182 +536,108 @@ asynStatus ADPICam::piClearParameterRelevance(asynUser *pasynUser)
     return (asynStatus)status;
 }
 
-/**
-   Set values associated with selected detector
-*/
-asynStatus ADPICam::piSetSelectedCamera(asynUser *pasynUser, int selectedIndex)
+asynStatus ADPICam::piHandleCameraDiscovery(
+	const PicamCameraID *id,
+	PicamHandle device,
+	PicamDiscoveryAction action)
 {
-	int status = asynSuccess;
-	const PicamCameraID *availableCameraIDs;
-	const PicamFirmwareDetail *firmwareDetails;
-    PicamError error;
-    piint numFirmwareDetails = 0;
-    piint availableCamerasCount = 0;
-	const char *modelString;
-	const char *interfaceString;
-	static const char *functionName = "piSetSelectedCamera";
-	char enumString[64];
-	char firmwareString[64];
-
-	asynPrint(pasynUser, ASYN_TRACE_FLOW,
-		"%s:%s: Selected camera value=%d\n",
-		driverName, functionName, selectedIndex);
-    if (selectedCameraIndex >= 0)
-    {
-        error = Picam_CloseCamera(currentCameraHandle);
-        asynPrint(pasynUser, ASYN_TRACE_FLOW,
-            "Picam_CloseCameraError %d\n", error);
-    }
-    Picam_GetAvailableCameraIDs(&availableCameraIDs, &availableCamerasCount);
-    asynPrint(pasynUser, ASYN_TRACE_FLOW,
-        "%s:%s: Number of available cameras=%d\n",
-        driverName, functionName, availableCamerasCount);
-    for (int ii = 0; ii < availableCamerasCount; ii++) {
-        asynPrint(pasynUser, ASYN_TRACE_FLOW,
-            "Available Camera[%d]\n", ii);
-        Picam_GetEnumerationString(PicamEnumeratedType_Model, 
-            (piint)availableCameraIDs[ii].model, 
-            &modelString);
-        sprintf(enumString, "%s", modelString);
-        asynPrint(pasynUser, ASYN_TRACE_FLOW,
-            "\n---%s\n---%d\n---%s\n---%s\n",
-            modelString,
-            availableCameraIDs[ii].computer_interface,
-            availableCameraIDs[ii].sensor_name,
-            availableCameraIDs[ii].serial_number);
+    PicamError error = PicamError_None;
+    int status = asynSuccess;
+    const char* modelString;
+    asynPrint (pasynUserSelf, ASYN_TRACE_ERROR,
+    		"^^^^^^^In piDiscoverCamera\n");
+    switch (action){
+    case PicamDiscoveryAction_Found:
+        Picam_GetEnumerationString(PicamEnumeratedType_Model, id->model, &modelString);
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        		"Camera Found: %s\n", modelString);
         Picam_DestroyString(modelString);
-        //PicamAdvanced_SetUserState(availableCameraIDs[ii].model, this);
+        break;
+    case PicamDiscoveryAction_Lost:
+        Picam_GetEnumerationString(PicamEnumeratedType_Model, id->model, &modelString);
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        		"Camera Lost: %s\n", modelString);
+        Picam_DestroyString(modelString);
+
+        if (device != NULL){
+        	if (device == currentCameraHandle){
+        		setStringParam(PICAM_CameraInterface, notAvailable);
+        		setStringParam(PICAM_SensorName, notAvailable);
+        		setStringParam(PICAM_SerialNumber, notAvailable);
+        		setStringParam(PICAM_FirmwareRevision, notAvailable);
+        		callParamCallbacks();
+        	}
+
+        }
+        break;
+    default:
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "Unexpected discovery action%d",
+            action);
+    }
+    if (device == NULL) {
+        Picam_GetEnumerationString(PicamEnumeratedType_Model, id->model, &modelString);
+    	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+    			"No device found with camera\n");
+		Picam_DestroyString(modelString);
+    }
+    else {
+        Picam_GetEnumerationString(PicamEnumeratedType_Model, id->model, &modelString);
+    	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+    			"Device found with camera\n");
+
+		Picam_DestroyString(modelString);
+
     }
 
-    selectedCameraIndex = selectedIndex;
-    error = Picam_OpenCamera(&(availableCameraIDs[selectedIndex]), &currentCameraHandle);
-    asynPrint(pasynUser, ASYN_TRACE_FLOW,
-        "Picam OpenCameraError %d\n", error);
-    Picam_GetEnumerationString(PicamEnumeratedType_Model, (piint)availableCameraIDs[selectedIndex].model, &modelString);
-	sprintf(enumString, "%s", modelString);
-    asynPrint(pasynUser, ASYN_TRACE_ERROR,
-        "%s:%s: Selected camera value=%d, %s\n",
-        driverName, functionName, selectedIndex, modelString);
-    Picam_DestroyString(modelString);
+    return (asynStatus)status;
+}
 
-	Picam_GetEnumerationString(PicamEnumeratedType_ComputerInterface, 
-		(piint)availableCameraIDs[selectedIndex].computer_interface, 
-		&interfaceString);
-	sprintf(enumString, "%s", interfaceString);
-	status |= setStringParam(PICAM_CameraInterface, enumString);
-	Picam_DestroyString(interfaceString);
-    
-	status |= setIntegerParam(PICAM_AvailableCameras, selectedIndex);
-	status |= setStringParam(PICAM_SensorName, availableCameraIDs[selectedIndex].sensor_name);
-	status |= setStringParam(PICAM_SerialNumber, availableCameraIDs[selectedIndex].serial_number);
+asynStatus ADPICam::piHandleParameterRelevanceChanged(
+    	PicamHandle camera,
+		PicamParameter parameter,
+		pibln relevent )
+{
+	PicamError error = PicamError_None;
+	int status = asynSuccess;
+	printf ("parameter Relevance Changed");
 
-    Picam_GetFirmwareDetails(&(availableCameraIDs[selectedIndex]), &firmwareDetails, &numFirmwareDetails);
-    asynPrint(pasynUser, ASYN_TRACE_FLOW,
-        "----%d\n", numFirmwareDetails);
-    if (numFirmwareDetails > 0)
-    {
-        asynPrint(pasynUser, ASYN_TRACE_FLOW,
-            "%s\n", firmwareDetails[0].detail);
-    
-        sprintf(firmwareString, "%s", firmwareDetails[0].detail);
-    
-        Picam_DestroyFirmwareDetails(firmwareDetails);
-        status |= setStringParam(PICAM_FirmwareRevision, firmwareString);
-    }
-    else
-    {
-        status |= setStringParam(PICAM_FirmwareRevision, "N/A");
-    }
-
-
-    /* Do callbacks so higher layers see any changes */
-	callParamCallbacks();
-
-
-    status |= piClearParameterRelevance(pasynUser);
-    status |= piUpdateParameterRelevance(pasynUser);
-    Picam_DestroyCameraIDs(availableCameraIDs);
 	return (asynStatus)status;
 }
 
-asynStatus ADPICam::piSetSelectedUnavailableCamera(asynUser *pasynUser, int selectedIndex)
+PicamError PIL_CALL ADPICam::piParameterRelevanceChanged(
+    	PicamHandle camera,
+		PicamParameter parameter,
+		pibln relevent )
 {
-    int status = asynSuccess;
-    const PicamCameraID *unavailableCameraIDs;
-    const PicamFirmwareDetail *firmwareDetails;
-    piint numFirmwareDetails = 0;
-    piint unavailableCamerasCount = 0;
-    const char *modelString;
-    const char *interfaceString;
-    static const char *functionName = "piSetSelectedUnavailableCamera";
-    char enumString[64];
-    char firmwareString[64];
-    static const char *notAvailable = "N/A";
-    asynPrint(pasynUser, ASYN_TRACE_FLOW,
-        "%s:%s: Entry\n",
-        driverName, functionName);
-    asynPrint(pasynUser, ASYN_TRACE_FLOW,
-        "%s:%s: Selected camera value=%d\n",
-        driverName, functionName, selectedIndex);
-    Picam_GetUnavailableCameraIDs(&unavailableCameraIDs, &unavailableCamerasCount);
-    if (unavailableCamerasCount == 0) {
-        asynPrint(pasynUser, ASYN_TRACE_WARNING,
-            "%s:%s: There are no unavailable cameras\n",
-            driverName, functionName);
-        status |= setStringParam(PICAM_CameraInterfaceUnavailable, enumString);
-        status |= setStringParam(PICAM_SensorNameUnavailable, notAvailable);
-        status |= setStringParam(PICAM_SerialNumberUnavailable, notAvailable);
-        status |= setStringParam(PICAM_FirmwareRevisionUnavailable, notAvailable);
-        return asynSuccess;
-    }
-    asynPrint(pasynUser, ASYN_TRACE_FLOW,
-        "%s:%s: Number of available cameras=%d\n",
-        driverName, functionName, unavailableCamerasCount);
+	int status = asynSuccess;
+	PicamError error = PicamError_None;
 
-    Picam_GetEnumerationString(PicamEnumeratedType_Model, 
-        (piint)unavailableCameraIDs[selectedIndex].model, &modelString);
-    sprintf(enumString, "%s", modelString);
-    asynPrint(pasynUser, ASYN_TRACE_ERROR,
-        "%s:%s: Selected camera value=%d, %s\n",
-        driverName, functionName, selectedIndex, modelString);
-    Picam_DestroyString(modelString);
+	status = ADPICam_Instance->piHandleParameterRelevanceChanged(camera, parameter, relevent);
 
-    Picam_GetEnumerationString(PicamEnumeratedType_ComputerInterface,
-        (piint)unavailableCameraIDs[selectedIndex].computer_interface,
-        &interfaceString);
-    sprintf(enumString, "%s", interfaceString);
-    status |= setStringParam(PICAM_CameraInterfaceUnavailable, enumString);
-    Picam_DestroyString(interfaceString);
+	return error;
+}
 
-    status |= setIntegerParam(PICAM_AvailableCameras, selectedIndex);
-    status |= setStringParam(PICAM_SensorNameUnavailable, 
-        unavailableCameraIDs[selectedIndex].sensor_name);
-    status |= setStringParam(PICAM_SerialNumberUnavailable, 
-        unavailableCameraIDs[selectedIndex].serial_number);
+/**
+ *
+ */
+asynStatus ADPICam::piRegisterRelevantWatch(PicamHandle cameraHandle)
+{
+	int status = asynSuccess;
+    piint parameterCount;
+    const PicamParameter *parameterList;
+    PicamError error;
 
-    Picam_GetFirmwareDetails(&(unavailableCameraIDs[selectedIndex]), &firmwareDetails, &numFirmwareDetails);
-    asynPrint(pasynUser, ASYN_TRACE_FLOW,
-        "----%d\n", numFirmwareDetails);
-    if (numFirmwareDetails > 0)
+    error = Picam_GetParameters(currentCameraHandle, &parameterList, &parameterCount);
+	if (error != PicamError_None)
+	{
+	//TODO
+	}
+    for (int ii = 0; ii < parameterCount; ii++)
     {
-        asynPrint(pasynUser, ASYN_TRACE_FLOW,
-            "%s\n", firmwareDetails[0].detail);
-
-        sprintf(firmwareString, "%s", firmwareDetails[0].detail);
-
-        Picam_DestroyFirmwareDetails(firmwareDetails);
-        status |= setStringParam(PICAM_FirmwareRevisionUnavailable, firmwareString);
+    	error = PicamAdvanced_RegisterForIsRelevantChanged(cameraHandle, parameterList[ii], piParameterRelevanceChanged);
     }
-    else
-    {
-        status |= setStringParam(PICAM_FirmwareRevisionUnavailable, "N/A");
-    }
-
-    Picam_DestroyCameraIDs(unavailableCameraIDs);
-    asynPrint(pasynUser, ASYN_TRACE_FLOW,
-        "%s:%s: Entry\n",
-        driverName, functionName);
-    return (asynStatus)status;
+	return (asynStatus)status;
 }
 
 asynStatus ADPICam::piSetParameterRelevanceYes(asynUser *pasynUser, PicamParameter parameter)
@@ -1131,9 +1044,210 @@ asynStatus ADPICam::piSetParameterRelevanceYes(asynUser *pasynUser, PicamParamet
         break;
     }
     setIntegerParam(driverParameter, 1);
-    callParamCallbacks();
     return (asynStatus)status;
 }
+
+/**
+   Set values associated with selected detector
+*/
+asynStatus ADPICam::piSetSelectedCamera(asynUser *pasynUser, int selectedIndex)
+{
+	int status = asynSuccess;
+	const PicamCameraID *availableCameraIDs;
+	const PicamFirmwareDetail *firmwareDetails;
+    PicamError error;
+    piint numFirmwareDetails = 0;
+    piint availableCamerasCount = 0;
+	const char *modelString;
+	const char *interfaceString;
+	static const char *functionName = "piSetSelectedCamera";
+	char enumString[64];
+	char firmwareString[64];
+
+	asynPrint(pasynUser, ASYN_TRACE_FLOW,
+		"%s:%s: Selected camera value=%d\n",
+		driverName, functionName, selectedIndex);
+	piUnregisterRelevantWatch(currentCameraHandle);
+
+	if (selectedCameraIndex >= 0 )
+    {
+        error = Picam_CloseCamera(currentCameraHandle);
+        asynPrint(pasynUser, ASYN_TRACE_FLOW,
+            "Picam_CloseCameraError %d\n", error);
+    }
+    Picam_GetAvailableCameraIDs(&availableCameraIDs, &availableCamerasCount);
+    asynPrint(pasynUser, ASYN_TRACE_FLOW,
+        "%s:%s: Number of available cameras=%d\n",
+        driverName, functionName, availableCamerasCount);
+    for (int ii = 0; ii < availableCamerasCount; ii++) {
+        asynPrint(pasynUser, ASYN_TRACE_FLOW,
+            "Available Camera[%d]\n", ii);
+        Picam_GetEnumerationString(PicamEnumeratedType_Model,
+            (piint)availableCameraIDs[ii].model,
+            &modelString);
+        sprintf(enumString, "%s", modelString);
+        asynPrint(pasynUser, ASYN_TRACE_FLOW,
+            "\n---%s\n---%d\n---%s\n---%s\n",
+            modelString,
+            availableCameraIDs[ii].computer_interface,
+            availableCameraIDs[ii].sensor_name,
+            availableCameraIDs[ii].serial_number);
+        Picam_DestroyString(modelString);
+        //PicamAdvanced_SetUserState(availableCameraIDs[ii].model, this);
+    }
+
+    selectedCameraIndex = selectedIndex;
+    error = Picam_OpenCamera(&(availableCameraIDs[selectedIndex]), &currentCameraHandle);
+    asynPrint(pasynUser, ASYN_TRACE_FLOW,
+        "Picam OpenCameraError %d\n", error);
+    Picam_GetEnumerationString(PicamEnumeratedType_Model, (piint)availableCameraIDs[selectedIndex].model, &modelString);
+	sprintf(enumString, "%s", modelString);
+    asynPrint(pasynUser, ASYN_TRACE_ERROR,
+        "%s:%s: Selected camera value=%d, %s\n",
+        driverName, functionName, selectedIndex, modelString);
+    Picam_DestroyString(modelString);
+
+	Picam_GetEnumerationString(PicamEnumeratedType_ComputerInterface,
+		(piint)availableCameraIDs[selectedIndex].computer_interface,
+		&interfaceString);
+	sprintf(enumString, "%s", interfaceString);
+	status |= setStringParam(PICAM_CameraInterface, enumString);
+	Picam_DestroyString(interfaceString);
+
+	status |= setIntegerParam(PICAM_AvailableCameras, selectedIndex);
+	status |= setStringParam(PICAM_SensorName, availableCameraIDs[selectedIndex].sensor_name);
+	status |= setStringParam(PICAM_SerialNumber, availableCameraIDs[selectedIndex].serial_number);
+
+    Picam_GetFirmwareDetails(&(availableCameraIDs[selectedIndex]), &firmwareDetails, &numFirmwareDetails);
+    asynPrint(pasynUser, ASYN_TRACE_FLOW,
+        "----%d\n", numFirmwareDetails);
+    if (numFirmwareDetails > 0)
+    {
+        asynPrint(pasynUser, ASYN_TRACE_FLOW,
+            "%s\n", firmwareDetails[0].detail);
+
+        sprintf(firmwareString, "%s", firmwareDetails[0].detail);
+
+        Picam_DestroyFirmwareDetails(firmwareDetails);
+        status |= setStringParam(PICAM_FirmwareRevision, firmwareString);
+    }
+    else
+    {
+        status |= setStringParam(PICAM_FirmwareRevision, "N/A");
+    }
+
+
+    /* Do callbacks so higher layers see any changes */
+	callParamCallbacks();
+
+
+    status |= piClearParameterRelevance(pasynUser);
+    status |= piUpdateParameterRelevance(pasynUser);
+    Picam_DestroyCameraIDs(availableCameraIDs);
+	return (asynStatus)status;
+}
+
+asynStatus ADPICam::piSetSelectedUnavailableCamera(asynUser *pasynUser, int selectedIndex)
+{
+    int status = asynSuccess;
+    const PicamCameraID *unavailableCameraIDs;
+    const PicamFirmwareDetail *firmwareDetails;
+    piint numFirmwareDetails = 0;
+    piint unavailableCamerasCount = 0;
+    const char *modelString;
+    const char *interfaceString;
+    static const char *functionName = "piSetSelectedUnavailableCamera";
+    char enumString[64];
+    char firmwareString[64];
+    asynPrint(pasynUser, ASYN_TRACE_FLOW,
+        "%s:%s: Entry\n",
+        driverName, functionName);
+    asynPrint(pasynUser, ASYN_TRACE_FLOW,
+        "%s:%s: Selected camera value=%d\n",
+        driverName, functionName, selectedIndex);
+    Picam_GetUnavailableCameraIDs(&unavailableCameraIDs, &unavailableCamerasCount);
+    if (unavailableCamerasCount == 0) {
+        asynPrint(pasynUser, ASYN_TRACE_WARNING,
+            "%s:%s: There are no unavailable cameras\n",
+            driverName, functionName);
+        status |= setStringParam(PICAM_CameraInterfaceUnavailable, enumString);
+        status |= setStringParam(PICAM_SensorNameUnavailable, notAvailable);
+        status |= setStringParam(PICAM_SerialNumberUnavailable, notAvailable);
+        status |= setStringParam(PICAM_FirmwareRevisionUnavailable, notAvailable);
+        return asynSuccess;
+    }
+    asynPrint(pasynUser, ASYN_TRACE_FLOW,
+        "%s:%s: Number of available cameras=%d\n",
+        driverName, functionName, unavailableCamerasCount);
+
+    Picam_GetEnumerationString(PicamEnumeratedType_Model,
+        (piint)unavailableCameraIDs[selectedIndex].model, &modelString);
+    sprintf(enumString, "%s", modelString);
+    asynPrint(pasynUser, ASYN_TRACE_ERROR,
+        "%s:%s: Selected camera value=%d, %s\n",
+        driverName, functionName, selectedIndex, modelString);
+    Picam_DestroyString(modelString);
+
+    Picam_GetEnumerationString(PicamEnumeratedType_ComputerInterface,
+        (piint)unavailableCameraIDs[selectedIndex].computer_interface,
+        &interfaceString);
+    sprintf(enumString, "%s", interfaceString);
+    status |= setStringParam(PICAM_CameraInterfaceUnavailable, enumString);
+    Picam_DestroyString(interfaceString);
+
+    status |= setIntegerParam(PICAM_AvailableCameras, selectedIndex);
+    status |= setStringParam(PICAM_SensorNameUnavailable,
+        unavailableCameraIDs[selectedIndex].sensor_name);
+    status |= setStringParam(PICAM_SerialNumberUnavailable,
+        unavailableCameraIDs[selectedIndex].serial_number);
+
+    Picam_GetFirmwareDetails(&(unavailableCameraIDs[selectedIndex]), &firmwareDetails, &numFirmwareDetails);
+    asynPrint(pasynUser, ASYN_TRACE_FLOW,
+        "----%d\n", numFirmwareDetails);
+    if (numFirmwareDetails > 0)
+    {
+        asynPrint(pasynUser, ASYN_TRACE_FLOW,
+            "%s\n", firmwareDetails[0].detail);
+
+        sprintf(firmwareString, "%s", firmwareDetails[0].detail);
+
+        Picam_DestroyFirmwareDetails(firmwareDetails);
+        status |= setStringParam(PICAM_FirmwareRevisionUnavailable, firmwareString);
+    }
+    else
+    {
+        status |= setStringParam(PICAM_FirmwareRevisionUnavailable, "N/A");
+    }
+
+    Picam_DestroyCameraIDs(unavailableCameraIDs);
+    asynPrint(pasynUser, ASYN_TRACE_FLOW,
+        "%s:%s: Entry\n",
+        driverName, functionName);
+    return (asynStatus)status;
+}
+
+/**
+ *
+ */
+asynStatus ADPICam::piUnregisterRelevantWatch(PicamHandle cameraHandle)
+{
+	int status = asynSuccess;
+    piint parameterCount;
+    const PicamParameter *parameterList;
+    PicamError error;
+
+    error = Picam_GetParameters(currentCameraHandle, &parameterList, &parameterCount);
+	if (error != PicamError_None)
+	{
+	//TODO
+	}
+    for (int ii = 0; ii < parameterCount; ii++)
+    {
+    	error = PicamAdvanced_UnregisterForIsRelevantChanged(cameraHandle, parameterList[ii], piParameterRelevanceChanged);
+    }
+	return (asynStatus)status;
+}
+
 /**
    Update PICAM parameter relevance for the current detector
 */
@@ -1155,6 +1269,7 @@ asynStatus ADPICam::piUpdateParameterRelevance(asynUser *pasynUser){
         status |= piSetParameterRelevanceYes(pasynUser, parameterList[ii]);
     }
     Picam_DestroyParameters(parameterList);
+    callParamCallbacks();
     return (asynStatus)status;
 }
 

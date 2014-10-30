@@ -1,0 +1,2345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><html>
+<head>
+  <meta content="text/html" charset="ISO-8859-1" http-equiv="ContentType" />
+  <title>areaDetector PICAM driver</title>
+</head>
+<body>
+  <div style="text-align:center">
+    <h1>areaDetector PICam driver</h1>
+    <h2>John Hammonds</h2>
+    <h2>October 31, 2014</h2>
+    <h2>Software Services Group</h2>
+    <h2>Advanced Photon Source</h2>
+      <h2>Argonne National Laboratory</h2>
+  </div>
+  <h2>
+    Table of Contents</h2>
+  <ul>
+    <li><a href="#Introduction">Introduction</a></li>
+    <li><a href="#StandardNotes">Implementation of standard driver parameters</a></li>
+    <li><a href="#Driver_parameters">PICam specific parameters</a></li>
+    <li><a href="#Configuration">Configuration</a></li>
+    <li><a href="#MEDM_screens">MEDM screens</a></li>
+      <li><a href="#Restrictions">Restrictions</a> </li>
+  </ul>
+  <h2 id="Introduction" style="text-align: left">
+    Introduction</h2>
+  <p>
+  <h2 id="StandardNotes" style="text-align: left">
+    Implementation of standard driver parameters</h2>
+  <p>
+  <table border="1" cellpadding="2" cellspacing="2" style="text-align: left">
+    <tbody>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Implementation of Parameters in asynNDArrayDriver.h and ADDriver.h, and EPICS Record
+            Definitions in ADBase.template and NDFile.template</b> </td>
+      </tr>
+      <tr>
+        <th>
+          Parameter index variable </th>
+        <th>
+          EPICS record name </th>
+        <th>
+          Description </th>
+      </tr>
+    </tbody>
+  </table>
+  <h2 id="Driver_parameters" style="text-align: left">
+    PICam specific parameters</h2>
+  <table border="1" cellpadding="2" cellspacing="2" style="text-align: left">
+    <tbody>
+      <tr>
+        <td align="center" colspan="7">
+          <b>Parameter Definitions in LightField.cpp and EPICS Record Definitions in LightField.template</b>
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Parameter index variable </th>
+        <th>
+          asyn interface </th>
+        <th>
+          Access </th>
+        <th>
+          Description </th>
+        <th>
+          drvInfo string </th>
+        <th>
+          EPICS record name </th>
+        <th>
+          EPICS record type </th>
+      </tr>
+      <tr>
+        <td align="center" colspan="7">
+          <b>Driver Parameters</b> </td>
+      <tr>
+        <td>
+          PICAM_VersionNumber </td>
+        <td>
+          asynOctet </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_VERSION_NUMBER </td>
+        <td>
+          $(P)$(R)VersionNumber<br />
+        <td>
+          stringin </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_AvailableCameras </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/w </td>
+        <td>
+           </td>
+        <td>
+          PICAM_AVAILABLE_CAMERAS </td>
+        <td>
+          $(P)$(R)AvailableCameras<br />
+          $(P)$(R)AvailableCameras_RBV
+        <td>
+          mbbo<br/>
+          mbbi</td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_CameraInterface </td>
+        <td>
+          asynOctet </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_CAMERA_INTERFACE </td>
+        <td>
+          $(P)$(R)CameraInterface<br />
+        <td>
+          stringin </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorName </td>
+        <td>
+          asynOctet </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_NAME </td>
+        <td>
+          $(P)$(R)SensorName<br />
+        <td>
+          stringin </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SerialNumber </td>
+        <td>
+          asynOctet </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SERIAL_NUMBER </td>
+        <td>
+          $(P)$(R)CamSerialNumber<br />
+        <td>
+          stringin </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_FirmwareRevision </td>
+        <td>
+          asynOctet </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_FIRMWARE_REVISION </td>
+        <td>
+          $(P)$(R)FirmwareRevision<br />
+        <td>
+          stringin </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_UnavailableCameras </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/w </td>
+        <td>
+           </td>
+        <td>
+          PICAM_UNAVAILABLE_CAMERAS </td>
+        <td>
+          $(P)$(R)UnavailableCameras<br />
+          $(P)$(R)UnavailableCameras_RBV
+        <td>
+          mbbo<br/>
+          mbbi</td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_CameraInterfaceUnavailable </td>
+        <td>
+          asynOctet </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_CAMERA_INTERFACE_UNAVAILABLE </td>
+        <td>
+          $(P)$(R)CameraInterfaceUnavailable<br />
+        <td>
+          stringin </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorNameUnavailable </td>
+        <td>
+          asynOctet </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_NAME_UNAVAILABLE </td>
+        <td>
+          $(P)$(R)SensorNameUnavailable<br />
+        <td>
+          stringin </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SerialNumberUnavailable </td>
+        <td>
+          asynOctet </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SERIAL_NUMBER_UNAVAILABLE </td>
+        <td>
+          $(P)$(R)CamSerialNumUnavailable<br />
+        <td>
+          stringin </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_PICAM_FirmwareRevisionUnavailable </td>
+        <td>
+          asynOctet </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_FIRMWARE_REVISION_UNAVAILABLE </td>
+        <td>
+          $(P)$(R)FirmwareRevisionUnavailable<br />
+        <td>
+         stringin </td>
+      </tr>
+      <tr>
+        <td align="center" colspan="7">
+          <b>Camera Parameters</b> </td>
+      </tr>
+      <tr>
+        <td align="center" colspan="7">
+          <b>Parameter Relevance</b> </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ExposureTimeRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_EXPOSURE_TIME_PR </td>
+        <td>
+          $(P)$(R)ExposureTime_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ShutterClosingDelayRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SHUTTER_CLOSING_DELAY_PR </td>
+        <td>
+          $(P)$(R)ShutterClosingDelay_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ShutterDelayResolutionRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SHUTTER_DELAY_RESOLUTION_PR </td>
+        <td>
+          $(P)$(R)ShutterDelayResolution_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ShutterOpeningDelayRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SHUTTER_OPEN_DELAY_PR </td>
+        <td>
+          $(P)$(R)ShutterOpenDelay_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ShutterTimingModeRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SHUTTER_TIMING_MODE_PR </td>
+        <td>
+          $(P)$(R)ShutterTimingMode_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_BracketGatingRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_BRACKET_GATING_PR </td>
+        <td>
+          $(P)$(R)BracketGating_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_CustomModulationSequenceRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_CUSTOM_MODULATION_SEQUENCE_PR </td>
+        <td>
+          $(P)$(R)CustomModSeq_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_DifEndingGateRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_DIF_END_GATE_PR </td>
+        <td>
+          $(P)$(R)DifEndGate_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_DifStartingGateRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_DIF_START_GATE_PR </td>
+        <td>
+          $(P)$(R)DifStartGate_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_EMIccdGainRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_EMI_CCD_GAIN_PR </td>
+        <td>
+          $(P)$(R)EMIccdGain_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_EMIccdGainControlModeRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_EMI_CCD_GAIN_CTL_MODE_PR </td>
+        <td>
+          $(P)$(R)EMIccdGainMode_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_EnableIntensifierRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ENABLE_INTENSIFIER_PR </td>
+        <td>
+          $(P)$(R)EnableIntensifier_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_EnableModulationRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ENABLE_MODULATION_PR </td>
+        <td>
+          $(P)$(R)EnableModulation_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_GatingModeRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_GATING_MODE_PR </td>
+        <td>
+          $(P)$(R)GatingMode_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_GatingSpeedRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_GATING_SPEED_PR </td>
+        <td>
+          $(P)$(R)GatingSpeed_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_IntensifierDiameterRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_INTENSIFIER_DIAM_PR </td>
+        <td>
+          $(P)$(R)IntensifierDiameter_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_IntensifierGainRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_INTENSIFIER_GAIN_PR </td>
+        <td>
+          $(P)$(R)IntensifierGain_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_IntensifierOptionsRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_INTENSIFIER_OPTIONS_PR </td>
+        <td>
+          $(P)$(R)IntensifierOptions_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_IntensifierStatusRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_INTENSIFIER_STATUS_PR </td>
+        <td>
+          $(P)$(R)IntensifierStatus_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ModulationDurationRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_MODULATION_DURATION_PR </td>
+        <td>
+          $(P)$(R)ModulationDuration_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ModulationFrequencyRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_MODULATION_FREQUENCY_PR </td>
+        <td>
+          $(P)$(R)ModulationFrequency_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_PhosphorDecayDelayRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_PHOSFOR_DECAY_DELAY_PR </td>
+        <td>
+          $(P)$(R)PhosphorDecayDelay_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_PhosphorDecayDelayResolutionRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_PHOSFOR_DELAY_DECAY_RES_PR </td>
+        <td>
+          $(P)$(R)PhosphorDecayDelayResolution_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_PhosphorTypeRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_PHOSFOR_TYPE_PR </td>
+        <td>
+          $(P)$(R)PhosphorType_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_PhotocathodeSensitivityRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_PHOTOCATHODE_SENSITIVITY_PR </td>
+        <td>
+          $(P)$(R)PhotocathodeSensitivity_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_RepetitiveGateRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_REPETITIVE_GATE_PR </td>
+        <td>
+          $(P)$(R)RepetitiveGate_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_RepetitiveModulationPhaseRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_REPETITIVE_MODULATION_PR </td>
+        <td>
+          $(P)$(R)RepetitiveModulation_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SequentialStartingModulationPhaseRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SEQ_STARTING_MODULATION_PHASE_PR </td>
+        <td>
+          $(P)$(R)SeqStartModPhase_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SequentialEndingModulationPhaseRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SEQ_END_MODULATION_PHASE_PR </td>
+        <td>
+          $(P)$(R)SeqEndModPhase_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SequentialEndingGateRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SEQ_END_GATE_PR </td>
+        <td>
+          $(P)$(R)SeqEndGate_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SequentialGateStepCountRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SEQ_GATE_STEP_COUNT_PR </td>
+        <td>
+          $(P)$(R)SeqGateStepCount_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SequentialGateStepIterationsRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SEQ_GATE_STEP_ITERATIONS_PR </td>
+        <td>
+          $(P)$(R)SeqGateStepIters_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SequentialStartingGateRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SEQ_START_GATE_PR </td>
+        <td>
+          $(P)$(R)SeqStartGate_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_AdcAnalogGainRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ADC_ANALOG_GAIN_PR </td>
+        <td>
+          $(P)$(R)AdcAnalogGain_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_AdcBitDepthRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ADC_BIT_DEPTH_PR </td>
+        <td>
+          $(P)$(R)AdcBitDepth_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_AdcEMGainRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ADC_EM_GAIN_PR </td>
+        <td>
+          $(P)$(R)AdcEMGain_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_AdcQualityRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ADC_QUALITY_PR </td>
+        <td>
+          $(P)$(R)AdcQuality_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_AdcSpeedRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ADC_SPEED_PR </td>
+        <td>
+          $(P)$(R)AdcSpeed_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_CorrectPixelBiasRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_CORRECT_PIXEL_BIAS_PR </td>
+        <td>
+          $(P)$(R)CorrectPixelBias_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_AuxOutputRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_AUX_OUTPUT_PR </td>
+        <td>
+          $(P)$(R)AuxOutput_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_EnableModulationOutputSignalRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ENABLE_MODULATION_OUT_SIGNAL_PR </td>
+        <td>
+          $(P)$(R)EnableModOutSig_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_EnableModulationOutputSignalFrequencyRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ENABLE_MODULATION_OUT_SIGNAL_FREQ_PR </td>
+        <td>
+          $(P)$(R)EnableModOutSigFreq_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_EnableModulationOutputSignalAmplitudeRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ENABLE_MODULATION_OUT_SIGNAL_AMPL_PR </td>
+        <td>
+          $(P)$(R)EnableModOutSigAmpl_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_EnableSyncMasterRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SYNC_MASTER_PR </td>
+        <td>
+          $(P)$(R)EnableSyncMaster_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_InvertOutputSignalRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_INVERT_OUTPUT_SIGNAL_PR </td>
+        <td>
+          $(P)$(R)InvertOutSig_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_OutputSignalRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_OUTPUT_SIGNAL_PR </td>
+        <td>
+          $(P)$(R)OutputSignal_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SyncMaster2DelayRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SYNC_MASTER2_DELAY_PR </td>
+        <td>
+          $(P)$(R)SyncMaster2Delay_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_TriggerCouplingRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_TRIGGER_COUPLING_PR </td>
+        <td>
+          $(P)$(R)TriggerCoupling_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_TriggerDeterminationRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_TRIGGER_DETERMINATION_PR </td>
+        <td>
+          $(P)$(R)TriggerDetermination_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_TriggerFrequencyRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_TRIGGER_FREQUENCY_PR </td>
+        <td>
+          $(P)$(R)TriggerFrequency_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_TriggerResponseRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_TRIGGER_RESPONSE_PR </td>
+        <td>
+          $(P)$(RTriggerResponse_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_TriggerSourceRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_TRIGGER_SOURCE_PR </td>
+        <td>
+          $(P)$(R)TriggerSource_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_TriggerTerminationRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_TRIGGER_TERMINATION_PR </td>
+        <td>
+          $(P)$(R)TriggerTermination_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_TriggerThresholdRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_TRIGGER_THRESHOLD_PR </td>
+        <td>
+          $(P)$(R)TriggerThreshold_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_AccumulationsRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ACCUMULATIONS_PR </td>
+        <td>
+          $(P)$(R)PICAM_ACCUMULATIONS_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_EnableNondestructiveReadoutRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ENABLE_NONDESTRUCT_READOUT_PR </td>
+        <td>
+          $(P)$(R)EnableNDReadout_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_KineticsWindowHeightRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_KINETICS_WINDOW_HEIGHT_PR </td>
+        <td>
+          $(P)$(R)KineticsWindowHeight_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_NondestructiveReadoutPeriodRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_NONDESTRUCT_READOUT_PERIOD_PR </td>
+        <td>
+          $(P)$(R)NDReadoutPeriod_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ReadoutControlModeRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_READOUT_CONTROL_MODE_PR </td>
+        <td>
+          $(P)$(R)ReadoutCtlMode_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ReadoutOrientationRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_READOUNT_ORIENTATION_PR </td>
+        <td>
+          $(P)$(R)ReadoutOrientation_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ReadoutPortCountRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_READOUT_PORT_COUNT_PR </td>
+        <td>
+          $(P)$(R)ReadoutPortCount_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ReadoutTimeCalculationRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_READOUT_TIME_CALC_PR </td>
+        <td>
+          $(P)$(R)ReadoutTimeCalculation_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_VerticalShiftRateRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_VERTICAL_SHIFT_RATE_PR </td>
+        <td>
+          $(P)$(R)VerticalShiftRate_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_DisableDataFormattingRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_DISABLE_DATA_FORMATTING_PR </td>
+        <td>
+          $(P)$(R)DisableDataFormat_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ExactReadoutCountMaximumRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_EXACT_READOUT_COUNT_MAX_PR </td>
+        <td>
+          $(P)$(R)ExactRdoutCountMax_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_FrameRateCalculationRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_FRAME_RATE_CALC_PR </td>
+        <td>
+          $(P)$(R)FrameRateCalc_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_FrameSizeRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_FRAME_SIZE_PR </td>
+        <td>
+          $(P)$(R)FrameSize_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_FramesPerReadoutRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_FRAMES_PER_READOUT_PR </td>
+        <td>
+          $(P)$(R)FramesPerReadout_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_FrameStrideRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_FRAME_STRIDE_PR </td>
+        <td>
+          $(P)$(R)FrameStride_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_FrameTrackingBitDepthRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_FRAME_TRK_BIT_DEPTH_PR </td>
+        <td>
+          $(P)$(R)FrameTrkBitDepth_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_GateTrackingRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_GATE_TRACKING_PR </td>
+        <td>
+          $(P)$(R)GateTracking_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_GateTrackingBitDepthRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_FRAME_TRACKING_BIT_DEPTH_PR </td>
+        <td>
+          $(P)$(R)GateTrkBitDepth_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ModulationTrackingRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_MODULATION_TRACKING_PR </td>
+        <td>
+          $(P)$(R)ModTracking_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ModulationTrackingBitDepthRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_MODULATION_TRACKING_BIT_DEPTH_PR </td>
+        <td>
+          $(P)$(R)ModTrkBitDepth_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_NormalizeOrientationRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_NORMALIZE_ORIENTATION_PR </td>
+        <td>
+          $(P)$(R)NormalizeOrientation_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_OnlineReadoutRateCalculationRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ONLINE_READOUT_RATE_CALC_PR </td>
+        <td>
+          $(P)$(R)OnlineReadoutCalc_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_OrientationRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ORIENTATION_PR </td>
+        <td>
+          $(P)$(R)Orientation_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_PhotonDetectionModeRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_PHOTON_DETECTION_MODE_PR </td>
+        <td>
+          $(P)$(R)PhotonDetectionMode_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_PhotonDetectionThresholdRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_PHOTON_DETECT_THRESHOLD_PR </td>
+        <td>
+          $(P)$(R)PhotonDetectionThreshold_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_PixelBitDepthRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_PIXEL_BIT_DEPTH_PR </td>
+        <td>
+          $(P)$(R)PixelBitDepth_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_PixelFormatRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_PIXEL_FORMAT_PR </td>
+        <td>
+          $(P)$(R)PixelFormat_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ReadoutCountRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_READOUT_COUNT_PR </td>
+        <td>
+          $(P)$(R)ReadoutCount_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ReadoutRateCalculationRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_READOUT_RATE_CALC_PR </td>
+        <td>
+          $(P)$(R)ReadoutRateCalc_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ReadoutStrideRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_READOUT_STRIDE_PR </td>
+        <td>
+          $(P)$(R)ReadoutStride_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_RoisRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ROIS_PR </td>
+        <td>
+          $(P)$(R)Rois_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_TimeStampBitDepthRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_TIME_STAMP_BIT_DEPTH_PR </td>
+        <td>
+          $(P)$(R)TimeStampBitDepth_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_TimeStampResolutionRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_TIME_STAMP_RESOLUTION_PR </td>
+        <td>
+          $(P)$(R)TimeStampRes_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_TimeStampsRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_TIME_STAMPS_PR </td>
+        <td>
+          $(P)$(R)TimeStamps_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_TrackFramesRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_TRACK_FRAMES_PR </td>
+        <td>
+          $(P)$(R)TrackFrames_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_CcdCharacteristicsRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_CCD_CHARACTERISTICS_PR </td>
+        <td>
+          $(P)$(R)CcdCharacteristics_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_PixelGapHeightRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_PIXEL_GAP_HEIGHT_PR </td>
+        <td>
+          $(P)$(R)PixelGapHeight_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_PixelGapWidthRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_PIXEL_GAP_WIDTH_PR </td>
+        <td>
+          $(P)$(R)PixelGapWidth_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_PixelHeightRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_PIXEL_HEIGHT_PR </td>
+        <td>
+          $(P)$(R)PixelHeight_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_PixelWidthRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_PIXEL_WIDTH_PR </td>
+        <td>
+          $(P)$(R)PixelWidth_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorActiveBottomMarginRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_ACTIVE_BOTTOM_MARGIN_PR </td>
+        <td>
+          $(P)$(R)SensActBottomMargin_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorActiveHeightRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_ACTIVE_HEIGHT_PR </td>
+        <td>
+          $(P)$(R)SensActHeight_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorActiveLeftMarginRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_ACTIVE_LEFT_MARGIN_PR </td>
+        <td>
+          $(P)$(R)SensActLeftMargin_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorActiveRightMarginRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_ACTIVE_RIGHT_MARGIN_PR </td>
+        <td>
+          $(P)$(R)SensActRightMargin_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorActiveTopMarginRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_ACTIVE_TOP_MARGIN_PR </td>
+        <td>
+          $(P)$(R)SensActTopMargin_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorActiveWidthRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_ACTIVE_WIDTH_PR </td>
+        <td>
+          $(P)$(R)SensActWidth_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorMaskedBottomMarginRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_MASK_BOTTOM_MARGIN_PR </td>
+        <td>
+          $(P)$(R)SensMaskBottomMargin_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorMaskedHeightRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_MASK_HEIGHT_PR </td>
+        <td>
+          $(P)$(R)SensMaskHeight_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorMaskedTopMarginRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_MASK_TOP_MARGIN_PR </td>
+        <td>
+          $(P)$(R)SensMaskTopMargin_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorSecondaryActiveHeightRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_SECONDARY_ACTIVE_HEIGHT_PR </td>
+        <td>
+          $(P)$(R)SensorActiveHeight2_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorSecondaryMaskedHeightRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_SECONDARY_MASK_HEIGHT_PR </td>
+        <td>
+          $(P)$(R)SensorMaskHeight2_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorTypeRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_TYPE_PR </td>
+        <td>
+          $(P)$(R)SensorType_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ActiveBottomMarginRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ACTIVE_BOTTOM_MARGIN_PR </td>
+        <td>
+          $(P)$(R)ActiveBottomMargin_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ActiveHeightRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ACTIVE_HEIGHT_PR </td>
+        <td>
+          $(P)$(R)ActiveHeight_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ActiveLeftMarginRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ACTIVE_LEFT_MARGIN_PR </td>
+        <td>
+          $(P)$(R)ActiveLeftMargin_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ActiveRightMarginRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ACTIVE_RIGHT_MARGIN_PR </td>
+        <td>
+          $(P)$(R)ActiveRightMargin_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ActiveTopMarginRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ACTIVE_TOP_MARGIN_PR </td>
+        <td>
+          $(P)$(R)ActiveTopMargin_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_ActiveWidthRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ACTIVE_WIDTH_PR </td>
+        <td>
+          $(P)$(R)ActiveWidth_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_MaskedBottomMarginRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_MASK_BOTTOM_MARGIN_PR </td>
+        <td>
+          $(P)$(R)MaskBottomMargin_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_MaskedHeightRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_MASK_HEIGHT_PR </td>
+        <td>
+          $(P)$(R)MaskHeight_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_MaskedTopMarginRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_MASK_TOP_MARGIN_PR </td>
+        <td>
+          $(P)$(R)MaskTopMargin_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SecondaryActiveHeightRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SECONDARY_ACTIVE_HEIGHT_PR </td>
+        <td>
+          $(P)$(R)ActiveHeight2_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SecondaryMaskedHeightRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SECONDARY_MASK_HEIGHT_PR </td>
+        <td>
+          $(P)$(R)MaskedHeight2_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_CleanBeforeExposureRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_CLEAN_BEFORE_EXPOSURE_PR </td>
+        <td>
+          $(P)$(R)CleanBeforeExp_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_CleanCycleCountRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_CLEAN_CYCLE_COUNT_PR </td>
+        <td>
+          $(P)$(R)CleanCycleCount_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_CleanCycleHeightRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_CLEAN_CYCLE_HEIGHT_PR </td>
+        <td>
+          $(P)$(R)CleanCycleHeight_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_CleanSectionFinalHeightRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_CLEAN_SECTION_FINAL_HEIGHT_PR </td>
+        <td>
+          $(P)$(R)CleanSectionFinalHeight_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_CleanSectionFinalHeightCountRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_CLEAN_SECTION_FINAL_COUNT_PR </td>
+        <td>
+          $(P)$(R)CleanSectionFinalHeightCount_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_CleanSerialRegisterRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_CLEAN_SERIAL_REGISTER_PR </td>
+        <td>
+          $(P)$(R)CleanSerialRegister_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_CleanUntilTriggerRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_CLEAN_UNTIL_TRIG_PR </td>
+        <td>
+          $(P)$(R)CleanUntilTrigger_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_DisableCoolingFanRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_DISABLE_COOLING_FAN_PR </td>
+        <td>
+          $(P)$(R)DisableCoolingFan_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_EnableSensorWindowHeaterRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_ENABLE_WINDOW_SENSOR_HEATER_PR </td>
+        <td>
+          $(P)$(R)EnableWindowHtr_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorTemperatureReadingRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_TEMPERATURE_READING_PR </td>
+        <td>
+          $(P)$(R)SensTempReading_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorTemperatureSetPointRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_TEMPERATURE_SETPOINT_PR </td>
+        <td>
+          $(P)$(R)SensTempSetpt_PR
+        <td>
+          bi </td>
+      </tr>
+      <tr>
+        <td>
+          PICAM_SensorTemperatureStatusRelevant </td>
+        <td>
+          asynInt32 </td>
+        <td>
+          r/o </td>
+        <td>
+           </td>
+        <td>
+          PICAM_SENSOR_TEMPERATURE_STATUS_PR </td>
+        <td>
+          $(P)$(R)SensTempStatus_PR </td>
+        <td>
+          bi </td>
+      </tr>
+      
+    </tbody>
+  </table>
+  <p>
+  <h2 id="Configuration">
+    Configuration</h2>
+  <p>
+  <h2 id="MEDM_screens" style="text-align: left">
+    MEDM screens</h2>
+  <p>
+  <h2 id="Restrictions">
+    Restrictions</h2>
+  <p>
+
+</body>
+</html>

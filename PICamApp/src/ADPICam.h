@@ -13,14 +13,17 @@
 #include <epicsExport.h>
 #include <epicsString.h>
 
-static const char *driverName = "PICam";
 
 class ADPICam : public ADDriver
 {
 public:
-    ADPICam(const char *portName,
+    static const char *notAvailable;
+    static const char *driverName;
+
+	ADPICam(const char *portName,
         int maxBuffers, size_t maxMemory,
         int priority, int stackSize);
+    ~ADPICam();
     /* These are the methods that we override from ADDriver */
     virtual asynStatus 	readEnum(asynUser *pasynUser,
         char *strings[],
@@ -28,15 +31,23 @@ public:
         int severities[],
         size_t nElements,
         size_t *nIn);
-    virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
-    virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
-    void report(FILE *fp, int details);
     static PicamError PIL_CALL piCameraDiscovered(
         const PicamCameraID *id,
         PicamHandle device,
         PicamDiscoveryAction action);
+    asynStatus piHandleCameraDiscovery(const PicamCameraID *id, PicamHandle device, PicamDiscoveryAction);
+    asynStatus piHandleParameterRelevanceChanged(
+    	PicamHandle camera,
+		PicamParameter parameter,
+		pibln relevent );
+    static PicamError PIL_CALL piParameterRelevanceChanged(
+    	PicamHandle camera,
+		PicamParameter parameter,
+		pibln relevent );
+    void report(FILE *fp, int details);
+    virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
+    virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
 
-    ~ADPICam();
 
 protected:
     int PICAM_VersionNumber;
@@ -189,12 +200,15 @@ private:
     int selectedCameraIndex;
     asynStatus initializeDetector();
     asynStatus piClearParameterRelevance(asynUser *pasynUser);
-    asynStatus piSetParameterRelevanceYes(asynUser *pasynUser, 
+    asynStatus piRegisterRelevantWatch(PicamHandle cameraHandle);
+	asynStatus piSetParameterRelevanceYes(asynUser *pasynUser,
         PicamParameter parameter);
     asynStatus piSetSelectedCamera(asynUser *pasynUser, int selectedIndex);
     asynStatus piSetSelectedUnavailableCamera(asynUser *pasynUser, 
         int selectedIndex);
+    asynStatus piUnregisterRelevantWatch(PicamHandle cameraHandle);
     asynStatus piUpdateParameterRelevance(asynUser *pasynUser);
+    static ADPICam *ADPICam_Instance;
 };
 
 //_____________________________________________________________________________
@@ -231,7 +245,7 @@ private:
 #define PICAM_IntensifierGainRelString               "PICAM_INTENSIFIER_GAIN_PR"
 #define PICAM_IntensifierOptionsRelString            "PICAM_INTENSIFIER_OPTIONS_PR"
 #define PICAM_IntensifierStatusRelString             "PICAM_INTENSIFIER_STATUS_PR"
-#define PICAM_ModulationDurationRelString            "PICAM_ModulationDuration_PR"
+#define PICAM_ModulationDurationRelString            "PICAM_MODULATION_DURATION_PR"
 #define PICAM_ModulationFrequencyRelString           "PICAM_MODULATION_FREQUENCY_PR"
 #define PICAM_PhosphorDecayDelayRelString            "PICAM_PHOSFOR_DECAY_DELAY_PR"
 #define PICAM_PhosphorDecayDelayResolutionRelString  "PICAM_PHOSFOR_DELAY_DECAY_RES_PR"  
