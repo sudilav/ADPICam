@@ -233,7 +233,7 @@ record(bi, "$(P)$(R)IntensifierStatus_PR")
 
 record(bi, "$(P)$(R)ModulationDuration_PR")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ModulationDuration_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MODULATION_DURATION_PR")
     field(DTYP, "asynInt32")
 	field(SCAN, "I/O Intr")
 }
