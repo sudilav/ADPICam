@@ -550,3 +550,72 @@ composite {
 		}
 	}
 }
+text {
+	object {
+		x=21
+		y=539
+		width=350
+		height=25
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Sensor Temperature Set Point"
+}
+"text entry" {
+	object {
+		x=376
+		y=536
+		width=303
+		height=29
+	}
+	control {
+		chan="$(P)$(R)Temperature"
+		clr=14
+		bclr=4
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=381
+		y=570
+		width=297
+		height=23
+	}
+	monitor {
+		chan="$(P)$(R)Temperature_RBV"
+		clr=14
+		bclr=4
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=19
+		y=604
+		width=350
+		height=25
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Sensor Temperature Actual"
+}
+"text update" {
+	object {
+		x=369
+		y=607
+		width=297
+		height=23
+	}
+	monitor {
+		chan="$(P)$(R)TemperatureActual"
+		clr=14
+		bclr=4
+	}
+	limits {
+	}
+}
