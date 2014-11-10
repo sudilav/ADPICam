@@ -1105,3 +1105,109 @@ record(bi, "$(P)$(R)SensTempStatus_PR")
 	field(SCAN, "I/O Intr")
 }
 
+record(mbbo, "$(P)$(R)AdcAnalogGain")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ADC_ANALOG_GAIN")
+}
+
+record(mbbi, "$(P)$(R)AdcAnalogGain_RBV")
+{
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ADC_ANALOG_GAIN")
+    field(DTYP, "asynInt32")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)$(R)AdcBitDepth")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ADC_BIT_DEPTH")
+}
+
+record(mbbi, "$(P)$(R)AdcBitDepth_RBV")
+{
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ADC_BIT_DEPTH")
+    field(DTYP, "asynInt32")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)$(R)AdcQuality")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ADC_QUALITY")
+}
+
+record(mbbi, "$(P)$(R)AdcQuality_RBV")
+{
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ADC_QUALITY")
+    field(DTYP, "asynInt32")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)$(R)AdcSpeed")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ADC_SPEED")
+}
+
+record(mbbi, "$(P)$(R)AdcSpeed_RBV")
+{
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ADC_SPEED")
+    field(DTYP, "asynInt32")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)$(R)CorrectPixelBias")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_CORRECT_PIXEL_BIAS")
+}
+
+record(mbbi, "$(P)$(R)CorrectPixelBias_RBV")
+{
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_CORRECT_PIXEL_BIAS")
+    field(DTYP, "asynInt32")
+    field(SCAN, "I/O Intr")
+}
+
+record(stringin, "$(P)$(R)FirmwareRevision")
+{
+   field(DTYP, "asynOctetRead")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_FIRMWARE_REVISION")
+   field(VAL,  "Unknown")
+   field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)ReadoutTimeCalc")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_READOUT_TIME_CALC")
+   field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)ReadoutRateCalc")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_READOUT_RATE_CALC")
+   field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)OnlineReadoutRateCalc")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ONLINE_READOUT_RATE_CALC")
+   field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)FrameRateCalc")
+{
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_FRAME_RATE_CALC")
+   field(SCAN, "I/O Intr")
+}
+
