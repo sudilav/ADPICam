@@ -17,6 +17,7 @@ epicsEnvSet("NCHANS", "2048")
 
 # This is for a 
 PICamConfig("$(PORT)", 0, 0, 0, 0)
+#PICamAddDemoCamera("Quad-RO: 4320")
 
 asynSetTraceIOMask($(PORT), 0, 2)
 #asynSetTraceMask($(PORT),0,0xff)
