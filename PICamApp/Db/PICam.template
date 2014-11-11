@@ -1187,6 +1187,7 @@ record(ai, "$(P)$(R)ReadoutTimeCalc")
 {
    field(DTYP, "asynFloat64")
    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_READOUT_TIME_CALC")
+   field(PREC, "4")
    field(SCAN, "I/O Intr")
 }
 
@@ -1194,6 +1195,7 @@ record(ai, "$(P)$(R)ReadoutRateCalc")
 {
    field(DTYP, "asynFloat64")
    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_READOUT_RATE_CALC")
+   field(PREC, "4")
    field(SCAN, "I/O Intr")
 }
 
@@ -1201,6 +1203,7 @@ record(ai, "$(P)$(R)OnlineReadoutRateCalc")
 {
    field(DTYP, "asynFloat64")
    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ONLINE_READOUT_RATE_CALC")
+   field(PREC, "4")
    field(SCAN, "I/O Intr")
 }
 
@@ -1208,6 +1211,7 @@ record(ai, "$(P)$(R)FrameRateCalc")
 {
    field(DTYP, "asynFloat64")
    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_FRAME_RATE_CALC")
+   field(PREC, "4")
    field(SCAN, "I/O Intr")
 }
 
