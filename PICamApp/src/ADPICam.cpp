@@ -19,6 +19,14 @@ extern "C" int PICamConfig(const char *portName, int maxBuffers,
 	return (asynSuccess);
 }
 
+/** Configuration command for PICAM driver; creates a new PICam object.
+ * \param[in]  demoCameraName String identifying demoCameraName
+ */
+extern "C" int PICamAddDemoCamera(const char *demoCameraName) {
+	ADPICam::piAddDemoCamera(demoCameraName);
+	return (asynSuccess);
+}
+
 ADPICam * ADPICam::ADPICam_Instance = NULL;
 const char *ADPICam::notAvailable = "N/A";
 const char *ADPICam::driverName = "PICam";
@@ -697,6 +705,24 @@ void ADPICam::report(FILE *fp, int details) {
 			roisConstraints->rules);
 //			roisConstraints->x_.minimum,
 //			roisConstraints->x_constraint.minimum);
+
+	if (details > 20){
+		piint demoModelCount;
+		PicamCameraID demoID;
+		const PicamModel * demoModels;
+
+		error = Picam_GetAvailableDemoCameraModels(&demoModels, &demoModelCount);
+		for (int ii=0; ii<demoModelCount; ii++){
+			const char* modelString;
+			error = Picam_GetEnumerationString(PicamEnumeratedType_Model,
+					demoModels[ii],
+					&modelString);
+			fprintf(fp, "demoModel[%d]: %s\n", ii, modelString);
+			Picam_DestroyString(modelString);
+		}
+		Picam_DestroyModels(demoModels);
+
+	}
 }
 
 asynStatus ADPICam::writeInt32(asynUser *pasynUser, epicsInt32 value) {
@@ -863,6 +889,60 @@ asynStatus ADPICam::writeFloat64(asynUser *pasynUser, epicsFloat64 value) {
 	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: exit\n", driverName,
 			functionName);
 
+}
+
+asynStatus ADPICam::piAddDemoCamera(const char *demoCameraName){
+	const char * functionName = "piAddDemoCamera";
+	int status = asynSuccess;
+	const PicamModel *demoModels;
+	piint demoModelCount;
+	bool modelFoundInList = false;
+	PicamCameraID demoID;
+	PicamError error = PicamError_None;
+	const char *errorString;
+
+	pibln libInitialized = true;
+	Picam_IsLibraryInitialized(&libInitialized);
+
+	if (libInitialized){
+		error = Picam_GetAvailableDemoCameraModels(&demoModels, &demoModelCount);
+		for (int ii=0; ii<demoModelCount; ii++){
+			const char* modelString;
+			error = Picam_GetEnumerationString(PicamEnumeratedType_Model,
+					demoModels[ii],
+					&modelString);
+			if (strcmp(demoCameraName, modelString) == 0 ){
+				modelFoundInList = true;
+				error = Picam_ConnectDemoCamera(demoModels[ii], "ADDemo", &demoID);
+				if (error == PicamError_None) {
+					printf("%s:%s Adding camera demoCamera[%d] %s\n",
+							driverName,
+							functionName,
+							demoModels[ii],
+							demoCameraName);
+					//ADPICam_Instance->piUpdateAvailableCamerasList();
+				}
+				else {
+					Picam_GetEnumerationString(PicamEnumeratedType_Error, error, &errorString);
+					printf("%s:%s Error Adding camera demoCamera[%d] %s, %s\n",
+							driverName,
+							functionName,
+							ii,
+							demoCameraName,
+							errorString);
+				}
+				ii = demoModelCount;
+			}
+			Picam_DestroyString(modelString);
+		}
+		Picam_DestroyModels(demoModels);
+	}
+	else {
+		status = asynError;
+	}
+
+
+	return (asynStatus)status;
 }
 
 PicamError PIL_CALL ADPICam::piCameraDiscovered(const PicamCameraID *id,
@@ -1047,11 +1127,13 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
 		driverParameter = ADAcquireTime;
 		break;
 	case PicamParameter_FrameRateCalculation:
+		driverParameter = PICAM_FrameRateCalc;
 		break;
 	case PicamParameter_FrameSize:
 		driverParameter = NDArraySize;
 		break;
 	case PicamParameter_FramesPerReadout:
+		driverParameter = ADNumExposures;
 		break;
 	case PicamParameter_FrameStride:
 		break;
@@ -1100,6 +1182,7 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
 	case PicamParameter_NormalizeOrientation:
 		break;
 	case PicamParameter_OnlineReadoutRateCalculation:
+		driverParameter = PICAM_OnlineReadoutRateCalc;
 		break;
 	case PicamParameter_Orientation:
 		break;
@@ -1132,16 +1215,19 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
 	case PicamParameter_ReadoutControlMode:
 		break;
 	case PicamParameter_ReadoutCount:
+		driverParameter = ADNumImages;
 		break;
 	case PicamParameter_ReadoutOrientation:
 		break;
 	case PicamParameter_ReadoutPortCount:
 		break;
 	case PicamParameter_ReadoutRateCalculation:
+		driverParameter = PICAM_ReadoutRateCalc;
 		break;
 	case PicamParameter_ReadoutStride:
 		break;
 	case PicamParameter_ReadoutTimeCalculation:
+		driverParameter = PICAM_ReadoutTimeCalc;
 		break;
 	case PicamParameter_RepetitiveGate:
 		break;
@@ -1256,7 +1342,7 @@ asynStatus ADPICam::piHandleCameraDiscovery(const PicamCameraID *id,
 	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "^^^^^^^In piDiscoverCamera\n");
 	piLoadAvailableCameraIDs();
 	// Take out for now.  This is making the iocCrash.  Still need to figure this out but need to start with parameters.
-	//    piUpdateAvailableCamerasList();
+	piUpdateAvailableCamerasList();
 	switch (action) {
 	case PicamDiscoveryAction_Found:
 		Picam_GetEnumerationString(PicamEnumeratedType_Model, id->model,
@@ -2135,7 +2221,9 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
 			functionName);
 
 	Picam_GetParameters(currentCameraHandle, &parameterList, &parameterCount);
-	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "%d parameters found\n",
+	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s %d parameters found\n",
+			driverName,
+			functionName,
 			parameterCount);
 
 	for (int ii = 0; ii < parameterCount; ii++) {
@@ -2313,7 +2401,8 @@ asynStatus ADPICam::piSetSelectedCamera(asynUser *pasynUser,
 	char enumString[64];
 	char firmwareString[64];
 
-	asynPrint(pasynUser, ASYN_TRACE_FLOW, "%s:%s: Selected camera value=%d\n",
+	asynPrint(pasynUser, ASYN_TRACE_FLOW,
+			"%s:%s: Selected camera value=%d\n",
 			driverName, functionName, selectedIndex);
 	piUnregisterRelevantWatch(currentCameraHandle);
 	piUnregisterConstraintChangeWatch(currentCameraHandle);
@@ -2351,7 +2440,7 @@ asynStatus ADPICam::piSetSelectedCamera(asynUser *pasynUser,
 		Picam_GetEnumerationString(PicamEnumeratedType_Model,
 				(piint) availableCameraIDs[selectedIndex].model, &modelString);
 		sprintf(enumString, "%s", modelString);
-		asynPrint(pasynUser, ASYN_TRACE_ERROR,
+		asynPrint(pasynUser, ASYN_TRACE_FLOW,
 				"%s:%s: Selected camera value=%d, %s\n", driverName,
 				functionName, selectedIndex, modelString);
 		Picam_DestroyString(modelString);
@@ -2665,14 +2754,26 @@ static const iocshArg PICamConfigArg3 = { "priority", iocshArgInt };
 static const iocshArg PICamConfigArg4 = { "stackSize", iocshArgInt };
 static const iocshArg * const PICamConfigArgs[] = { &PICamConfigArg0,
 		&PICamConfigArg1, &PICamConfigArg2, &PICamConfigArg3, &PICamConfigArg4 };
+
 static const iocshFuncDef configPICam = { "PICamConfig", 5, PICamConfigArgs };
+
+static const iocshArg PICamAddDemoCamArg0 = { "Demo Camera name", iocshArgString };
+static const iocshArg * const PICamAddDemoCamArgs[] = { &PICamAddDemoCamArg0 };
+
+static const iocshFuncDef addDemoCamPICam = { "PICamAddDemoCamera", 1, PICamAddDemoCamArgs };
+
 static void configPICamCallFunc(const iocshArgBuf *args) {
 	PICamConfig(args[0].sval, args[1].ival, args[2].ival, args[3].ival,
 			args[4].ival);
 }
 
+static void addDemoCamPICamCallFunc(const iocshArgBuf *args) {
+	PICamAddDemoCamera(args[0].sval);
+}
+
 static void PICamRegister(void) {
 	iocshRegister(&configPICam, configPICamCallFunc);
+	iocshRegister(&addDemoCamPICam, addDemoCamPICamCallFunc);
 }
 
 extern "C" {

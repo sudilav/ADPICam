@@ -31,6 +31,7 @@ public:
         int severities[],
         size_t nElements,
         size_t *nIn);
+    static asynStatus piAddDemoCamera(const char *demoCameraName);
     static PicamError PIL_CALL piCameraDiscovered(
         const PicamCameraID *id,
         PicamHandle device,
