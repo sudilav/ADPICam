@@ -1215,3 +1215,24 @@ record(ai, "$(P)$(R)FrameRateCalc")
    field(SCAN, "I/O Intr")
 }
 
+#Readout Control
+record(mbbo, "$(P)$(R)ReadoutControlMode")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_READOUT_CONTROL_MODE")
+}
+
+record(mbbi, "$(P)$(R)ReadoutControlMode_RBV")
+{
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_READOUT_CONTROL_MODE")
+    field(DTYP, "asynInt32")
+    field(SCAN, "I/O Intr")
+}
+
+record(bo, "$(P)$(R)AvailableCamerasVisible")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_AVAILABLE_CAMERAS_VISIBLE")
+}
