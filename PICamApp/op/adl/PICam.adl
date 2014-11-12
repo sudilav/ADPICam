@@ -89,8 +89,8 @@ display {
 }
 "related display" {
 	object {
-		x=632
-		y=700
+		x=637
+		y=750
 		width=33
 		height=27
 	}
@@ -101,68 +101,6 @@ display {
 	}
 	clr=14
 	bclr=4
-}
-composite {
-	object {
-		x=10
-		y=70
-		width=650
-		height=59
-	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=187
-				y=70
-				width=2
-				height=2
-			}
-			"basic attribute" {
-				clr=14
-			}
-		}
-		text {
-			object {
-				x=10
-				y=70
-				width=200
-				height=25
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Available Cameras"
-		}
-		menu {
-			object {
-				x=260
-				y=70
-				width=400
-				height=23
-			}
-			control {
-				chan="$(P)$(R)AvailableCameras"
-				clr=14
-				bclr=4
-			}
-		}
-		"text update" {
-			object {
-				x=260
-				y=104
-				width=400
-				height=25
-			}
-			monitor {
-				chan="$(P)$(R)AvailableCameras_RBV"
-				clr=14
-				bclr=4
-			}
-			limits {
-			}
-		}
-	}
 }
 composite {
 	object {
@@ -617,5 +555,95 @@ text {
 		bclr=4
 	}
 	limits {
+	}
+}
+composite {
+	object {
+		x=28
+		y=646
+		width=650
+		height=59
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=205
+				y=646
+				width=2
+				height=2
+			}
+			"basic attribute" {
+				clr=14
+			}
+		}
+		text {
+			object {
+				x=28
+				y=646
+				width=200
+				height=25
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Readout Control Mode"
+		}
+		menu {
+			object {
+				x=278
+				y=646
+				width=400
+				height=23
+			}
+			control {
+				chan="$(P)$(R)ReadoutControlMode"
+				clr=14
+				bclr=4
+			}
+		}
+		"text update" {
+			object {
+				x=278
+				y=680
+				width=400
+				height=25
+			}
+			monitor {
+				chan="$(P)$(R)ReadoutControlMode_RBV"
+				clr=14
+				bclr=4
+			}
+			limits {
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=14
+		y=72
+		width=650
+		height=60
+	}
+	"composite name"=""
+	"composite file"="PICAM_AvailableCamerasList.adl"
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)AvailableCamerasVisible"
+	}
+}
+"choice button" {
+	object {
+		x=554
+		y=26
+		width=89
+		height=28
+	}
+	control {
+		chan="$(P)$(R)AvailableCamerasVisible"
+		clr=14
+		bclr=4
 	}
 }
