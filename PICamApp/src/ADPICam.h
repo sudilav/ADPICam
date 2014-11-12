@@ -13,92 +13,63 @@
 #include <epicsExport.h>
 #include <epicsString.h>
 
-
-class ADPICam : public ADDriver
-{
+class ADPICam: public ADDriver {
 public:
     static const char *notAvailable;
     static const char *driverName;
 
-	ADPICam(const char *portName,
-        int maxBuffers, size_t maxMemory,
-        int priority, int stackSize);
+    ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
+            int priority, int stackSize);
     ~ADPICam();
     /* These are the methods that we override from ADDriver */
-    virtual asynStatus 	readEnum(asynUser *pasynUser,
-        char *strings[],
-        int values[],
-        int severities[],
-        size_t nElements,
-        size_t *nIn);
-    static asynStatus piAddDemoCamera(const char *demoCameraName);
-    static PicamError PIL_CALL piCameraDiscovered(
-        const PicamCameraID *id,
-        PicamHandle device,
-        PicamDiscoveryAction action);
-    asynStatus piHandleCameraDiscovery(const PicamCameraID *id, PicamHandle device, PicamDiscoveryAction);
-    asynStatus piHandleParameterRelevanceChanged(
-    	PicamHandle camera,
-		PicamParameter parameter,
-		pibln relevent );
-    asynStatus piHandleParameterIntegerValueChanged(
-    	PicamHandle camera,
-		PicamParameter parameter,
-		piint value );
-    asynStatus piHandleParameterLargeIntegerValueChanged(
-    	PicamHandle camera,
-		PicamParameter parameter,
-		pi64s value );
-    asynStatus piHandleParameterFloatingPointValueChanged(
-    	PicamHandle camera,
-		PicamParameter parameter,
-		piflt value );
-    asynStatus piHandleParameterRoisValueChanged(
-    	PicamHandle camera,
-		PicamParameter parameter,
-		const PicamRois *value );
-    asynStatus piHandleParameterPulseValueChanged(
-    	PicamHandle camera,
-		PicamParameter parameter,
-		const PicamPulse *value );
-    asynStatus piHandleParameterModulationsValueChanged(
-    	PicamHandle camera,
-		PicamParameter parameter,
-		const PicamModulations *value );
+    virtual asynStatus readEnum(asynUser *pasynUser, char *strings[],
+            int values[], int severities[], size_t nElements, size_t *nIn);
+    static asynStatus piAddDemoCamera(const char *demoCameraName);static PicamError PIL_CALL piCameraDiscovered(
+            const PicamCameraID *id,
+            PicamHandle device,
+            PicamDiscoveryAction action);
+    asynStatus piHandleCameraDiscovery(const PicamCameraID *id,
+            PicamHandle device, PicamDiscoveryAction);
+    asynStatus piHandleParameterRelevanceChanged(PicamHandle camera,
+            PicamParameter parameter, pibln relevent);
+    asynStatus piHandleParameterIntegerValueChanged(PicamHandle camera,
+            PicamParameter parameter, piint value);
+    asynStatus piHandleParameterLargeIntegerValueChanged(PicamHandle camera,
+            PicamParameter parameter, pi64s value);
+    asynStatus piHandleParameterFloatingPointValueChanged(PicamHandle camera,
+            PicamParameter parameter, piflt value);
+    asynStatus piHandleParameterRoisValueChanged(PicamHandle camera,
+            PicamParameter parameter, const PicamRois *value);
+    asynStatus piHandleParameterPulseValueChanged(PicamHandle camera,
+            PicamParameter parameter, const PicamPulse *value);
+    asynStatus piHandleParameterModulationsValueChanged(PicamHandle camera,
+            PicamParameter parameter, const PicamModulations *value);
     asynStatus piLoadAvailableCameraIDs();
-    asynStatus piPrintRoisConstraints();
-    static PicamError PIL_CALL piParameterRelevanceChanged(
-    	PicamHandle camera,
-		PicamParameter parameter,
-		pibln relevent );
-    static PicamError PIL_CALL piParameterFloatingPointValueChanged(
-    	PicamHandle camera,
-		PicamParameter parameter,
-		piflt value );
-    static PicamError PIL_CALL piParameterIntegerValueChanged(
-    	PicamHandle camera,
-		PicamParameter parameter,
-		piint value );
-    static PicamError PIL_CALL piParameterLargeIntegerValueChanged(
-    	PicamHandle camera,
-		PicamParameter parameter,
-		pi64s value );
-    static PicamError PIL_CALL piParameterRoisValueChanged(
-    	PicamHandle camera,
-		PicamParameter parameter,
-		const PicamRois *value );
-    static PicamError PIL_CALL piParameterPulseValueChanged(
-    	PicamHandle camera,
-		PicamParameter parameter,
-		const PicamPulse *value );
-    static PicamError PIL_CALL piParameterModulationsValueChanged(
-    	PicamHandle camera,
-		PicamParameter parameter,
-		const PicamModulations *value );
+    asynStatus piPrintRoisConstraints();static PicamError PIL_CALL piParameterRelevanceChanged(
+            PicamHandle camera,
+            PicamParameter parameter,
+            pibln relevent );static PicamError PIL_CALL piParameterFloatingPointValueChanged(
+            PicamHandle camera,
+            PicamParameter parameter,
+            piflt value );static PicamError PIL_CALL piParameterIntegerValueChanged(
+            PicamHandle camera,
+            PicamParameter parameter,
+            piint value );static PicamError PIL_CALL piParameterLargeIntegerValueChanged(
+            PicamHandle camera,
+            PicamParameter parameter,
+            pi64s value );static PicamError PIL_CALL piParameterRoisValueChanged(
+            PicamHandle camera,
+            PicamParameter parameter,
+            const PicamRois *value );static PicamError PIL_CALL piParameterPulseValueChanged(
+            PicamHandle camera,
+            PicamParameter parameter,
+            const PicamPulse *value );static PicamError PIL_CALL piParameterModulationsValueChanged(
+            PicamHandle camera,
+            PicamParameter parameter,
+            const PicamModulations *value );
     void report(FILE *fp, int details);
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
-
 
 protected:
     int PICAM_VersionNumber;
@@ -126,6 +97,10 @@ protected:
     int PICAM_ReadoutRateCalc;
     int PICAM_FrameRateCalc;
     int PICAM_OnlineReadoutRateCalc;
+
+    int PICAM_ReadoutControlMode;
+
+    int PICAM_AvailableCamerasVisible;
 
     int PICAM_ExposureTimeRelevant;
     int PICAM_ShutterClosingDelayRelevant;
@@ -261,8 +236,8 @@ protected:
 private:
     PicamHandle currentCameraHandle;
     int selectedCameraIndex;
-	const PicamCameraID *availableCameraIDs;
-	const PicamCameraID *unavailableCameraIDs;
+    const PicamCameraID *availableCameraIDs;
+    const PicamCameraID *unavailableCameraIDs;
     piint availableCamerasCount;
     piint unavailableCamerasCount;
     asynStatus initializeDetector();
@@ -272,16 +247,14 @@ private:
     asynStatus piRegisterConstraintChangeWatch(PicamHandle cameraHandle);
     asynStatus piRegisterRelevantWatch(PicamHandle cameraHandle);
     asynStatus piRegisterValueChangeWatch(PicamHandle cameraHandle);
-	asynStatus piSetParameterRelevance(asynUser *pasynUser,
-        PicamParameter parameter,
-		int relevence);
-	asynStatus piSetParameterValuesFromSelectedCamera();
-	asynStatus piSetRois(int minX, int minY,
-			int width, int height,
-			int binX, int binY);
-	asynStatus piSetSelectedCamera(asynUser *pasynUser, int selectedIndex);
-    asynStatus piSetSelectedUnavailableCamera(asynUser *pasynUser, 
-        int selectedIndex);
+    asynStatus piSetParameterRelevance(asynUser *pasynUser,
+            PicamParameter parameter, int relevence);
+    asynStatus piSetParameterValuesFromSelectedCamera();
+    asynStatus piSetRois(int minX, int minY, int width, int height, int binX,
+            int binY);
+    asynStatus piSetSelectedCamera(asynUser *pasynUser, int selectedIndex);
+    asynStatus piSetSelectedUnavailableCamera(asynUser *pasynUser,
+            int selectedIndex);
     asynStatus piUnregisterConstraintChangeWatch(PicamHandle cameraHandle);
     asynStatus piUnregisterRelevantWatch(PicamHandle cameraHandle);
     asynStatus piUnregisterValueChangeWatch(PicamHandle cameraHandle);
@@ -318,7 +291,11 @@ private:
 #define PICAM_ReadoutRateCalcString                    "PICAM_READOUT_RATE_CALC"
 #define PICAM_FrameRateCalcString                       "PICAM_FRAME_RATE_CALC"
 #define PICAM_OnlineReadoutRateCalcString          "PICAM_ONLINE_READOUT_RATE_CALC"
+//ReadoutControl
+#define PICAM_ReadoutControlModeString        "PICAM_READOUT_CONTROL_MODE"
 
+// Enumeration Visibility
+#define PICAM_AvailableCamerasVisibleString   "PICAM_AVAILABLE_CAMERAS_VISIBLE"
 // Camera Parameter Relevance
 #define PICAM_ExposureTimeRelString           "PICAM_EXPOSURE_TIME_PR"
 #define PICAM_ShutterClosingDelayRelString    "PICAM_SHUTTER_CLOSING_DELAY_PR"       
