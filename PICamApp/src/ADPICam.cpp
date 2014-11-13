@@ -491,6 +491,7 @@ asynStatus ADPICam::readEnum(asynUser *pasynUser, char *strings[], int values[],
     char enumString[64];
     const char *modelString;
     const char *errorString;
+    PicamParameter picamParameter;
     int function = pasynUser->reason;
 
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "*******%s:%s: entry\n",
@@ -545,150 +546,97 @@ asynStatus ADPICam::readEnum(asynUser *pasynUser, char *strings[], int values[],
             severities[*nIn] = 0;
             (*nIn)++;
         }
-    } else if (function == ADTriggerMode) {
-        const char *triggerResponseString;
+    } else if (piLookupPICamParameter(function, picamParameter) ==
+            PicamError_None) {
         const PicamCollectionConstraint *constraints;
-        if (currentCameraHandle != NULL) {
-            Picam_GetParameterCollectionConstraint(currentCameraHandle,
-                    PicamParameter_TriggerResponse,
-                    PicamConstraintCategory_Capable, &constraints);
-            for (int ii = 0; ii < constraints->values_count; ii++) {
-                Picam_GetEnumerationString(PicamEnumeratedType_TriggerResponse,
-                        (int) constraints->values_array[ii],
-                        &triggerResponseString);
-                if (strings[*nIn])
-                    free(strings[*nIn]);
-                strings[*nIn] = epicsStrDup(triggerResponseString);
-                values[*nIn] = (int) constraints->values_array[ii];
-                severities[*nIn] = 0;
-                (*nIn)++;
-                Picam_DestroyString(triggerResponseString);
-            }
-        }
-    } else if (function == PICAM_AdcAnalogGain) {
-        const PicamCollectionConstraint *constraints;
-        const char *adcAnalogGainString;
-        if (currentCameraHandle != NULL) {
+        const char *paramConstraintString;
+        if (currentCameraHandle != NULL){
             pibln isRelevant;
-            Picam_IsParameterRelevant(currentCameraHandle,
-                    PicamParameter_AdcAnalogGain, &isRelevant);
+            error = Picam_IsParameterRelevant(currentCameraHandle,
+                    picamParameter,
+                    &isRelevant);
+            if (error != PicamError_None) {
+                Picam_GetEnumerationString(PicamEnumeratedType_Error,
+                        error,
+                        &errorString);
+                asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                        "%s:%s Trouble getting parameter assocoated with driver"
+                        " param %d, picam param:%d: %s\n",
+                        driverName,
+                        functionName,
+                        function,
+                        errorString);
+                Picam_DestroyString(errorString);
+                return asynError;
+            }
             if (isRelevant) {
                 Picam_GetParameterCollectionConstraint(currentCameraHandle,
-                        PicamParameter_AdcAnalogGain,
+                        picamParameter,
                         PicamConstraintCategory_Capable, &constraints);
                 for (int ii = 0; ii < constraints->values_count; ii++) {
-                    Picam_GetEnumerationString(
-                            PicamEnumeratedType_AdcAnalogGain,
-                            (int) constraints->values_array[ii],
-                            &adcAnalogGainString);
+                    PicamEnumeratedType picamParameterET;
+                    Picam_GetParameterEnumeratedType(currentCameraHandle, picamParameter, &picamParameterET);
+                    PicamValueType valType;
+                    Picam_GetParameterValueType(currentCameraHandle,
+                            picamParameter, &valType);
                     if (strings[*nIn])
                         free(strings[*nIn]);
-                    strings[*nIn] = epicsStrDup(adcAnalogGainString);
-                    values[*nIn] = (int) constraints->values_array[ii];
-                    severities[*nIn] = 0;
-                    (*nIn)++;
-                    Picam_DestroyString(adcAnalogGainString);
-                }
-            }
-        }
-    } else if (function == PICAM_AdcQuality) {
-        const PicamCollectionConstraint *constraints;
-        const char *adcQualityString;
-        if (currentCameraHandle != NULL) {
-            pibln isRelevant;
-            Picam_IsParameterRelevant(currentCameraHandle,
-                    PicamParameter_AdcQuality, &isRelevant);
-            if (isRelevant) {
-                error = Picam_GetParameterCollectionConstraint(
-                        currentCameraHandle, PicamParameter_AdcQuality,
-                        PicamConstraintCategory_Capable, &constraints);
-                for (int ii = 0; ii < constraints->values_count; ii++) {
-                    Picam_GetEnumerationString(PicamEnumeratedType_AdcQuality,
-                            (int) constraints->values_array[ii],
-                            &adcQualityString);
-                    if (strings[*nIn])
-                        free(strings[*nIn]);
-                    strings[*nIn] = epicsStrDup(adcQualityString);
-                    values[*nIn] = (int) constraints->values_array[ii];
-                    severities[*nIn] = 0;
-                    (*nIn)++;
-                    Picam_DestroyString(adcQualityString);
-                }
-            }
-        }
-    } else if (function == PICAM_AdcBitDepth) {
-        const PicamCollectionConstraint *constraints;
-        char adcBitDepthString[12];
-        if (currentCameraHandle != NULL) {
-            pibln isRelevant;
-            Picam_IsParameterRelevant(currentCameraHandle,
-                    PicamParameter_AdcBitDepth, &isRelevant);
-            if (isRelevant) {
-                Picam_GetParameterCollectionConstraint(currentCameraHandle,
-                        PicamParameter_AdcBitDepth,
-                        PicamConstraintCategory_Capable, &constraints);
-                for (int ii = 0; ii < constraints->values_count; ii++) {
-                    sprintf(adcBitDepthString, "%d",
-                            (int) constraints->values_array[ii]);
-                    if (strings[*nIn])
-                        free(strings[*nIn]);
-                    strings[*nIn] = epicsStrDup(adcBitDepthString);
-                    values[*nIn] = (int) constraints->values_array[ii];
-                    severities[*nIn] = 0;
-                    (*nIn)++;
-                }
-            }
-        }
-    } else if (function == PICAM_AdcSpeed) {
-        const PicamCollectionConstraint *constraints;
-        char adcSpeedString[12];
-        if (currentCameraHandle != NULL) {
-            pibln isRelevant;
-            Picam_IsParameterRelevant(currentCameraHandle,
-                    PicamParameter_AdcSpeed, &isRelevant);
-            if (isRelevant) {
-                Picam_GetParameterCollectionConstraint(currentCameraHandle,
-                        PicamParameter_AdcSpeed,
-                        PicamConstraintCategory_Capable, &constraints);
-                for (int ii = 0; ii < constraints->values_count; ii++) {
-                    sprintf(adcSpeedString, "%f",
-                            constraints->values_array[ii]);
-                    if (strings[*nIn])
-                        free(strings[*nIn]);
-                    strings[*nIn] = epicsStrDup(adcSpeedString);
-                    values[*nIn] = ii;
-                    severities[*nIn] = 0;
-                    (*nIn)++;
-                }
-            }
-        } else {
-            return asynError;
-        }
-    } else if (function == PICAM_ReadoutControlMode) {
-        const PicamCollectionConstraint *constraints;
-        const char *readoutControlModeString;
-        if (currentCameraHandle != NULL) {
-            pibln isRelevant;
-            Picam_IsParameterRelevant(currentCameraHandle,
-                    PicamParameter_ReadoutControlMode, &isRelevant);
-            if (isRelevant) {
-                Picam_GetParameterCollectionConstraint(currentCameraHandle,
-                        PicamParameter_ReadoutControlMode,
-                        PicamConstraintCategory_Capable, &constraints);
-                printf("ReadoutControlMode # constraints %d\n",
-                        constraints->values_count);
-                for (int ii = 0; ii < constraints->values_count; ii++) {
-                    Picam_GetEnumerationString(
-                            PicamEnumeratedType_ReadoutControlMode,
-                            (int) constraints->values_array[ii],
-                            &readoutControlModeString);
-                    if (strings[*nIn])
-                        free(strings[*nIn]);
-                    strings[*nIn] = epicsStrDup(readoutControlModeString);
-                    values[*nIn] = (int) constraints->values_array[ii];
-                    severities[*nIn] = 0;
-                    (*nIn)++;
-                    Picam_DestroyString(readoutControlModeString);
+                    switch (valType)
+                    {
+                    case PicamValueType_Enumeration:
+                        Picam_GetEnumerationString(
+                            picamParameterET,
+                            (int)constraints->values_array[ii],
+                            &paramConstraintString);
+                        strings[*nIn] = epicsStrDup(paramConstraintString);
+                        values[*nIn] = (int)constraints->values_array[ii];
+                        Picam_DestroyString(paramConstraintString);
+                        severities[*nIn] = 0;
+                        (*nIn)++;
+                        break;
+                    case PicamValueType_FloatingPoint:
+                        char floatString[12];
+                        sprintf(floatString, "%f",
+                                constraints->values_array[ii]);
+                        strings[*nIn] = epicsStrDup(floatString);
+                        values[*nIn] = ii;
+                        severities[*nIn] = 0;
+                        (*nIn)++;
+                        break;
+                    case PicamValueType_Integer:
+                        char intString[12];
+                        sprintf(intString, "%d",
+                                (int)constraints->values_array[ii]);
+                        strings[*nIn] = epicsStrDup(intString);
+                        values[*nIn] = (int)constraints->values_array[ii];
+                        severities[*nIn] = 0;
+                        (*nIn)++;
+                        break;
+                    case PicamValueType_LargeInteger:
+                        char largeIntString[12];
+                        sprintf(largeIntString, "%d",
+                                constraints->values_array[ii]);
+                        strings[*nIn] = epicsStrDup(largeIntString);
+                        values[*nIn] = ii;
+                        severities[*nIn] = 0;
+                        (*nIn)++;
+                        break;
+                    case PicamValueType_Boolean:
+                        strings[*nIn] = epicsStrDup(
+                                constraints->values_array[ii] ? "Yes":"No");
+                        values[*nIn] = ii;
+                        severities[*nIn] = 0;
+                        (*nIn)++;
+                        break;
+                    default:
+                        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                                "%s:%s Unhandled CollectionType for "
+                                "driverParam %d",
+                                driverName,
+                                functionName,
+                                function);
+                        return asynError;
+                    }
                 }
             }
         }
@@ -893,6 +841,7 @@ void ADPICam::report(FILE *fp, int details) {
                 break;
             }
         }
+        ADDriver::report(fp, details);
     }
 
     if (details > 20) {
@@ -1187,7 +1136,7 @@ asynStatus ADPICam::piClearParameterRelevance(asynUser *pasynUser) {
 asynStatus ADPICam::piLoadAvailableCameraIDs() {
     const char *functionName = "piLoadAvailableCameraIDs";
     int status = asynSuccess;
-    PicamError error PicamError_None;
+    PicamError error = PicamError_None;
     const char *errorString;
 
     if (availableCamerasCount != 0) {
@@ -1251,7 +1200,8 @@ asynStatus ADPICam::piLoadUnavailableCameraIDs() {
 }
 
 /**
- *
+ * Given a PICAM library Parameter, return the associated areaDetector Driver
+ * Parameter.
  */
 int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
     const char *functionName = "piLookupDriverParameter";
@@ -1548,6 +1498,51 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
 
 }
 
+/**
+ *
+ */
+PicamError ADPICam::piLookupPICamParameter(int driverParameter,
+        PicamParameter &parameter){
+    const char *functionName = "piLookupPICamParameter";
+
+    if (driverParameter == PICAM_AdcAnalogGain){
+        parameter = PicamParameter_AdcAnalogGain;
+    }
+    else if (driverParameter == PICAM_AdcBitDepth) {
+        parameter = PicamParameter_AdcBitDepth;
+    }
+    else if (driverParameter == PICAM_AdcQuality) {
+        parameter = PicamParameter_AdcQuality;
+    }
+    else if (driverParameter == PICAM_AdcSpeed) {
+        parameter = PicamParameter_AdcSpeed;
+    }
+    else if (driverParameter == PICAM_AdcQuality) {
+        parameter = PicamParameter_AdcQuality;
+    }
+    else if (driverParameter ==PICAM_ReadoutControlMode) {
+        parameter = PicamParameter_ReadoutControlMode;
+    }
+    else if (driverParameter ==ADTriggerMode) {
+        parameter = PicamParameter_TriggerResponse;
+    }
+    else if (driverParameter ==ADShutterMode) {
+        parameter = PicamParameter_ShutterTimingMode;
+    }
+    else {
+        return PicamError_ParameterDoesNotExist;
+    }
+    printf ("%s:%s: driverParameter: %d, picamParam: %d\n",
+            driverName,
+            functionName,
+            driverParameter,
+            parameter);
+    return PicamError_None;
+}
+
+/**
+ *
+ */
 asynStatus ADPICam::piHandleCameraDiscovery(const PicamCameraID *id,
         PicamHandle device, PicamDiscoveryAction action) {
     const char *functionName = "piHandleCameraDiscovery";
@@ -2565,6 +2560,7 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
             case PicamValueType_Integer:
             case PicamValueType_Enumeration:
                 piint intVal;
+                piUpdateParameterListValues(parameterList[ii], driverParam);
                 error = Picam_GetParameterIntegerValue(currentCameraHandle,
                         parameterList[ii], &intVal);
                 setIntegerParam(driverParam, intVal);
@@ -3081,6 +3077,16 @@ asynStatus ADPICam::piUpdateAvailableCamerasList() {
     return (asynStatus) status;
 }
 
+/**
+ *
+ */
+asynStatus ADPICam::piUpdateParameterListValues(
+        PicamParameter parameter, int driverParameter){
+    int status = asynSuccess;
+
+
+    return asynStatus;
+}
 /**
  * Update the list of unavailable Camera list.  This is called as detectors go
  * online/offline

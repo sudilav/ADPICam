@@ -244,6 +244,8 @@ private:
     asynStatus piClearParameterRelevance(asynUser *pasynUser);
     asynStatus piLoadUnavailableCameraIDs();
     int piLookupDriverParameter(PicamParameter picamParameter);
+    PicamError piLookupPICamParameter(int driverParameter,
+            PicamParameter &parameter);
     asynStatus piRegisterConstraintChangeWatch(PicamHandle cameraHandle);
     asynStatus piRegisterRelevantWatch(PicamHandle cameraHandle);
     asynStatus piRegisterValueChangeWatch(PicamHandle cameraHandle);
@@ -260,6 +262,8 @@ private:
     asynStatus piUnregisterValueChangeWatch(PicamHandle cameraHandle);
     asynStatus piUpdateParameterRelevance(asynUser *pasynUser);
     asynStatus piUpdateAvailableCamerasList();
+    asynStatus piUpdateParameterListValues(PicamParameter parameter,
+            int driverParameter);
     asynStatus piUpdateUnavailableCamerasList();
 
     static ADPICam *ADPICam_Instance;
