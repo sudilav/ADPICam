@@ -1,6 +1,6 @@
 
 file {
-	name="C:\EPICS\synApps_5_7\support\areaDetector-2_x_svn\areaDetector\ADPICam\PICamApp\op\adl\PICAM_Readout.adl"
+	name="C:\jhSrc\synApps_5_7\support\areaDetector_2_git\ADPICam\PICamApp\op\adl\PICAM_Readout.adl"
 	version=030109
 }
 display {
@@ -790,7 +790,7 @@ menu {
 	object {
 		x=248
 		y=342
-		width=78
+		width=95
 		height=18
 	}
 	monitor {
@@ -806,7 +806,7 @@ menu {
 	object {
 		x=248
 		y=361
-		width=78
+		width=95
 		height=18
 	}
 	monitor {
@@ -822,7 +822,7 @@ menu {
 	object {
 		x=248
 		y=383
-		width=78
+		width=95
 		height=18
 	}
 	monitor {
@@ -864,7 +864,7 @@ menu {
 	object {
 		x=246
 		y=406
-		width=78
+		width=95
 		height=18
 	}
 	monitor {
@@ -876,119 +876,130 @@ menu {
 	limits {
 	}
 }
-text {
+composite {
 	object {
-		x=64
+		x=154
 		y=442
-		width=70
-		height=20
+		width=168
+		height=90
 	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Readout Time"
-	align="horiz. right"
-}
-text {
-	object {
-		x=66
-		y=464
-		width=70
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Readout Rate"
-	align="horiz. right"
-}
-text {
-	object {
-		x=65
-		y=484
-		width=70
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Frame Rate"
-	align="horiz. right"
-}
-text {
-	object {
-		x=65
-		y=512
-		width=70
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Readout Rate"
-	align="horiz. right"
-}
-"text update" {
-	object {
-		x=154
-		y=443
-		width=78
-		height=18
-	}
-	monitor {
-		chan="$(P)$(R)ReadoutTimeCalc"
-		clr=54
-		bclr=4
-	}
-	align="horiz. right"
-	limits {
-	}
-}
-"text update" {
-	object {
-		x=154
-		y=466
-		width=78
-		height=18
-	}
-	monitor {
-		chan="$(P)$(R)ReadoutRateCalc"
-		clr=54
-		bclr=4
-	}
-	align="horiz. right"
-	limits {
-	}
-}
-"text update" {
-	object {
-		x=154
-		y=487
-		width=78
-		height=18
-	}
-	monitor {
-		chan="$(P)$(R)FrameRateCalc"
-		clr=54
-		bclr=4
-	}
-	align="horiz. right"
-	limits {
-	}
-}
-"text update" {
-	object {
-		x=154
-		y=512
-		width=78
-		height=18
-	}
-	monitor {
-		chan="$(P)$(R)OnlineReadoutRateCalc"
-		clr=54
-		bclr=4
-	}
-	align="horiz. right"
-	limits {
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=154
+				y=442
+				width=70
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Readout Time"
+			align="horiz. right"
+		}
+		text {
+			object {
+				x=156
+				y=464
+				width=70
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Readout Rate"
+			align="horiz. right"
+		}
+		text {
+			object {
+				x=155
+				y=484
+				width=70
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Frame Rate"
+			align="horiz. right"
+		}
+		text {
+			object {
+				x=155
+				y=512
+				width=70
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Online Readout Rate"
+			align="horiz. right"
+		}
+		"text update" {
+			object {
+				x=244
+				y=443
+				width=78
+				height=18
+			}
+			monitor {
+				chan="$(P)$(R)ReadoutTimeCalc"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=244
+				y=466
+				width=78
+				height=18
+			}
+			monitor {
+				chan="$(P)$(R)ReadoutRateCalc"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=244
+				y=487
+				width=78
+				height=18
+			}
+			monitor {
+				chan="$(P)$(R)FrameRateCalc"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=244
+				y=512
+				width=78
+				height=18
+			}
+			monitor {
+				chan="$(P)$(R)OnlineReadoutRateCalc"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
 	}
 }

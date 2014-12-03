@@ -99,6 +99,11 @@ display {
 		name="PICAM_ParameterRelevance.adl"
 		args="P=$(P),R=$(R)"
 	}
+	display[1] {
+		label="Data Acquisition"
+		name="Picam_AcquisitionParams.adl"
+		args="P=$(P),R=$(R)"
+	}
 	clr=14
 	bclr=4
 }
@@ -624,7 +629,7 @@ composite {
 		x=14
 		y=72
 		width=650
-		height=60
+		height=59
 	}
 	"composite name"=""
 	"composite file"="PICAM_AvailableCamerasList.adl"
