@@ -427,7 +427,7 @@ typedef enum PicamModel
     PicamModel_PIMax41024EM             =  715,
     PicamModel_PIMax41024BEM            =  714,
     /*------------------------------------------------------------------------*/
-    /* PyLoN Series (438) ----------------------------------------------------*/
+    /* PyLoN Series (439) ----------------------------------------------------*/
     /*------------------------------------------------------------------------*/
     PicamModel_PylonSeries              =  400,
     /* PyLoN 100 Series ------------------------------------------------------*/
@@ -458,6 +458,7 @@ typedef enum PicamModel
     PicamModel_Pylon1300Series          =  422,
     PicamModel_Pylon1300F               =  406,
     PicamModel_Pylon1300B               =  403,
+    PicamModel_Pylon1300R               =  438,
     PicamModel_Pylon1300BR              =  432,
     PicamModel_Pylon1300BExcelon        =  430,
     PicamModel_Pylon1300BRExcelon       =  433,
