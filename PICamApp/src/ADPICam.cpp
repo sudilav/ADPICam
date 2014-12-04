@@ -563,6 +563,11 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
 }
 
 ADPICam::~ADPICam() {
+    Picam_StopAcquisition(currentCameraHandle);
+    PicamAdvanced_UnregisterForAcquisitionUpdated(currentDeviceHandle,
+                    piAcquistionUpdated);
+    piUnregisterRelevantWatch(currentCameraHandle);
+    piUnregisterValueChangeWatch(currentCameraHandle);
     Picam_UninitializeLibrary();
 }
 
@@ -2055,11 +2060,9 @@ asynStatus ADPICam::piHandleAcquisitionUpdated(
             Picam_GetParameterIntegerDefaultValue(currentCameraHandle,
                     PicamParameter_PixelFormat,
                     &pixelFormat);
-            printf("pixelFormat %d\n ", pixelFormat);
             switch(pixelFormat){
             case PicamPixelFormat_Monochrome16Bit:
                 dataType = NDUInt16;
-                printf("Setting Type to NDUInt16");
                 break;
             default:
                 dataType = NDUInt16;
@@ -2098,13 +2101,12 @@ asynStatus ADPICam::piHandleAcquisitionUpdated(
             /* Get attributes that have been defined for this driver */
             getAttributes(pImage->pAttributeList);
 
-            unlock();
             asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
                     "%s:%s: calling imageDataCallback\n",
                     driverName,
                     functionName);
+            unlock();
             doCallbacksGenericPointer(pImage, NDArrayData, 0);
-
             lock();
         }
         callParamCallbacks();
