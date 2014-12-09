@@ -12,8 +12,11 @@
 #include <iocsh.h>
 #include <epicsExport.h>
 #include <epicsString.h>
+#include <epicsEvent.h>
+#include <epicsThread.h>
 #include <vector>
 #include <stdlib.h>
+
 
 class ADPICam: public ADDriver {
 public:
@@ -37,8 +40,8 @@ public:
             PicamDiscoveryAction action);
     asynStatus piHandleAcquisitionUpdated(
             PicamHandle device,
-            const PicamAvailableData* available,
-            const PicamAcquisitionStatus *status);
+            const PicamAvailableData *available,
+            const PicamAcquisitionStatus *acqStatus);
     asynStatus piHandleCameraDiscovery(const PicamCameraID *id,
             PicamHandle device, PicamDiscoveryAction);
     asynStatus piHandleParameterRelevanceChanged(PicamHandle camera,
@@ -85,11 +88,15 @@ public:
             PicamHandle camera,
             PicamParameter parameter,
             const PicamModulations *value );
+//    void piTriggerCallbacksGenericPointerTask(void);
+//    void piTriggerParamCallbacksTask(void);
+    void piHandleNewImageTask(void);
     void report(FILE *fp, int details);
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
 
 protected:
+
     int PICAM_VersionNumber;
 #define PICAM_FIRST_PARAM PICAM_VersionNumber
     int PICAM_AvailableCameras;
@@ -349,6 +356,18 @@ private:
     const PicamCameraID *unavailableCameraIDs;
     piint availableCamerasCount;
     piint unavailableCamerasCount;
+    NDArray *pImage;
+//    epicsEventId  piTriggerCallbacksGenericPointerEvent;
+//    epicsEventId  piTriggerParamCallbacksEvent;
+    epicsEventId  piHandleNewImageEvent;
+    size_t imageDims[2];
+    NDDataType_t  imageDataType;
+    pibln acqStatusRunning;
+    PicamAcquisitionErrorsMask acqStatusErrors;
+    piflt acqStatusReadoutRate;
+    void *acqAvailableInitialReadout;
+    pi64s acqAvailableReadoutCount;
+
     asynStatus initializeDetector();
     asynStatus piClearParameterRelevance(asynUser *pasynUser);
     asynStatus piAcquireStart();

@@ -8,6 +8,10 @@
 
 #define MAX_ENUM_STATES 16
 
+//static void piTriggerCallbacksGenericPointerC(void *drvPvt);
+//static void piTriggerParamCallbacksC(void *drvPvt);
+static void piHandleNewImageTaskC(void *drvPvt);
+
 /** Configuration command for PICAM driver; creates a new PICam object.
  * \param[in] portName The name of the asyn port driver to be created.
  * \param[in] maxBuffers The maximum number of NDArray buffers that the NDArrayPool for this driver is
@@ -541,6 +545,7 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
     status |= setStringParam(PICAM_FirmwareRevisionUnavailable,
             "NOT DETERMINED5");
     status |= setIntegerParam(PICAM_AvailableCamerasVisible, 1);
+    status |= setIntegerParam(ADNumImagesCounter, 1);
     callParamCallbacks();
     unlock();
 
@@ -557,18 +562,49 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
                 functionName);
         return;
     }
+//    piTriggerCallbacksGenericPointerEvent = epicsEventCreate(epicsEventEmpty);
+//    /* Create the thread that updates the images */
+//    status = (epicsThreadCreate("piTriggerCallbacksGenericPointerC",
+//                                epicsThreadPriorityMedium,
+//                                epicsThreadGetStackSize(epicsThreadStackMedium),
+//                                (EPICSTHREADFUNC)piTriggerCallbacksGenericPointerC,
+//                                this) == NULL);
+//    piTriggerParamCallbacksEvent = epicsEventCreate(epicsEventEmpty);
+//    /* Create the thread that updates the images */
+//    status = (epicsThreadCreate("piTriggerParamCallbacksC",
+//                                epicsThreadPriorityMedium,
+//                                epicsThreadGetStackSize(epicsThreadStackMedium),
+//                                (EPICSTHREADFUNC)piTriggerParamCallbacksC,
+//                                this) == NULL);
+    piHandleNewImageEvent = epicsEventCreate(epicsEventEmpty);
+    /* Create the thread that updates the images */
+    status = (epicsThreadCreate("piHandleNewImageTaskC",
+                                epicsThreadPriorityMedium,
+                                epicsThreadGetStackSize(epicsThreadStackMedium),
+                                (EPICSTHREADFUNC)piHandleNewImageTaskC,
+                                this) == NULL);
     initializeDetector();
 
     epicsAtExit(exitCallbackC, this);
 }
 
 ADPICam::~ADPICam() {
+    const char * functionName = "~ADPICam";
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s:%s Enter\n",
+            driverName,
+            functionName);
+
     Picam_StopAcquisition(currentCameraHandle);
     PicamAdvanced_UnregisterForAcquisitionUpdated(currentDeviceHandle,
                     piAcquistionUpdated);
     piUnregisterRelevantWatch(currentCameraHandle);
     piUnregisterValueChangeWatch(currentCameraHandle);
     Picam_UninitializeLibrary();
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s:%s Exit\n",
+            driverName,
+            functionName);
 }
 
 /**
@@ -1276,17 +1312,47 @@ asynStatus ADPICam::piAcquireStart(){
     int status = asynSuccess;
     PicamError error = PicamError_None;
     int imageMode;
+    int presetImages;
+    int numX;
+    int numY;
+
     // Reset the number of Images Collected
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
             "%s:%s Enter\n");
+    lock();
     setIntegerParam(ADStatus, ADStatusInitializing);
     // reset Image counter
     setIntegerParam(ADNumImagesCounter, 0);
     callParamCallbacks();
-
+    unlock();
     getIntegerParam(ADImageMode, &imageMode);
 
-    int presetImages;
+    /* Get Image size for use by acquisition handling*/
+    getIntegerParam(ADSizeX, &numX);
+    getIntegerParam(ADSizeY, &numY);
+    imageDims[0] = numX;
+    imageDims[1] = numY;
+
+    /* get data type for acquistion processing */
+    piint pixelFormat;
+    Picam_GetParameterIntegerDefaultValue(currentCameraHandle,
+            PicamParameter_PixelFormat,
+            &pixelFormat);
+    switch(pixelFormat){
+    case PicamPixelFormat_Monochrome16Bit:
+        imageDataType = NDUInt16;
+        break;
+    default:
+        imageDataType = NDUInt16;
+        const char *pixelFormatString;
+        Picam_GetEnumerationString(PicamEnumeratedType_PixelFormat,
+                pixelFormat, &pixelFormatString);
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s:%s Unknown data type setting to NDUInt16: %s\n",
+                driverName, functionName, pixelFormatString);
+        Picam_DestroyString(pixelFormatString);
+    }
+
 
     switch(imageMode) {
     case ADImageSingle:
@@ -1333,9 +1399,10 @@ asynStatus ADPICam::piAcquireStart(){
 
     }
 
+    lock();
     setIntegerParam(ADStatus, ADStatusAcquire);
     callParamCallbacks();
-
+    unlock();
     const PicamParameter *failedParameterArray;
     piint failedParameterCount;
     Picam_CommitParameters(currentCameraHandle,
@@ -1392,7 +1459,7 @@ PicamError PIL_CALL ADPICam::piAcquistionUpdated(
     int status = asynSuccess;
     PicamError error = PicamError_None;
     const char *functionName = "piParameterIntegerValueChanged";
-
+    //ADPICam_Instance->piSetAcquisitionData(device, available, acqStatus );
     status = ADPICam_Instance->piHandleAcquisitionUpdated(device,
             available, acqStatus);
 
@@ -1980,147 +2047,27 @@ PicamError ADPICam::piLookupPICamParameter(int driverParameter,
 
 asynStatus ADPICam::piHandleAcquisitionUpdated(
         PicamHandle device,
-        const PicamAvailableData* available,
+        const PicamAvailableData *available,
         const PicamAcquisitionStatus *acqStatus)
 {
     const char * functionName = "piHandleAcquisitionUpdated";
     int status = asynSuccess;
-    int arrayCounter;
-    int imageMode;
-    int imagesCounter;
-    int numImages;
-    int arrayCallbacks;
 
-    int numX;
-    int numY;
-    size_t dims[2];
-    char          *pInput;
-    NDArray *pImage;
-    NDArrayInfo arrayInfo;
-    NDDataType_t  dataType;
-    epicsTimeStamp currentTime;
-
-    if (!(acqStatus->running) && available == NULL) {
-        const char *errorMaskString;
-        Picam_GetEnumerationString(PicamEnumeratedType_AcquisitionErrorsMask,
-                acqStatus->errors, &errorMaskString);
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "Acquire, Running %s, errors %d, rate %f\n",
-                acqStatus->running ? "True":"false",
-                        errorMaskString,
-                        acqStatus->readout_rate
-                        );
-        Picam_DestroyString(errorMaskString);
-        piAcquireStop();
-    }
-    else if (!(acqStatus->running) ) {
-        const char *errorMaskString;
-        Picam_GetEnumerationString(PicamEnumeratedType_AcquisitionErrorsMask,
-                acqStatus->errors, &errorMaskString);
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "Acquire, Running %s, errors %d, rate %f\n",
-                acqStatus->running ? "True":"false",
-                        errorMaskString,
-                        acqStatus->readout_rate
-                        );
-        Picam_DestroyString(errorMaskString);
-        piAcquireStop();
-    }
-    else if (acqStatus->running && acqStatus->errors == PicamAcquisitionErrorsMask_None) {
-        getIntegerParam(ADImageMode, &imageMode);
-        getIntegerParam(ADNumImages, &numImages);
-        getIntegerParam(ADNumImagesCounter, &imagesCounter);
-        imagesCounter++;
-        lock();
-        setIntegerParam(ADNumImagesCounter, imagesCounter);
-        if ((imageMode == ADImageMultiple) && (imagesCounter >= numImages)) {
-            piAcquireStop();
-
-        }
-
-        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                "Acquire, Running %s, errors %d, rate %f, availableDataCount %d\n",
-                acqStatus->running ? "True":"false",
-                        acqStatus->errors,
-                        acqStatus->readout_rate,
-                        available->readout_count
-                        );
-        /* Update the image */
-        /* First release the copy that we held onto last time */
-        if (this->pArrays[0]) this->pArrays[0]->release();
-        /* Allocate a new array */
-        getIntegerParam(ADSizeX, &numX);
-        getIntegerParam(ADSizeY, &numY);
-        dims[0] = numX;
-        dims[1] = numY;
-
-        getIntegerParam(NDArrayCallbacks, &arrayCallbacks);
-        if (arrayCallbacks){
-            piint pixelFormat;
-            Picam_GetParameterIntegerDefaultValue(currentCameraHandle,
-                    PicamParameter_PixelFormat,
-                    &pixelFormat);
-            switch(pixelFormat){
-            case PicamPixelFormat_Monochrome16Bit:
-                dataType = NDUInt16;
-                break;
-            default:
-                dataType = NDUInt16;
-                const char *pixelFormatString;
-                Picam_GetEnumerationString(PicamEnumeratedType_PixelFormat,
-                        pixelFormat, &pixelFormatString);
-                asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                        "%s:%s Unknown data type setting to NDUInt16: %s\n",
-                        driverName, functionName, pixelFormatString);
-                Picam_DestroyString(pixelFormatString);
-
-
-            }
-            this->pArrays[0] = pNDArrayPool->alloc(2, dims, dataType, 0, NULL);
-            if (this->pArrays[0] == NULL) {
-                asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                        "%s:%s error allocating buffer\n",
-                        driverName, functionName);
-                unlock();
-                return asynError;
-            }
-            pImage = this->pArrays[0];
-            pImage->getInfo(&arrayInfo);
-            // Copy data from the input to the output
-            memcpy(pImage->pData, available->initial_readout , arrayInfo.totalBytes);
-
-            getIntegerParam(NDArrayCounter, &arrayCounter);
-            arrayCounter++;
-            setIntegerParam(NDArrayCounter, arrayCounter);
-            pImage->uniqueId = arrayCounter;
-            //TODO work on time stamp from driver
-            epicsTimeGetCurrent(&currentTime);
-            pImage->timeStamp = currentTime.secPastEpoch + currentTime.nsec /1.e9;
-            updateTimeStamp(&pImage->epicsTS);
-
-            /* Get attributes that have been defined for this driver */
-            getAttributes(pImage->pAttributeList);
-
-            asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                    "%s:%s: calling imageDataCallback\n",
-                    driverName,
-                    functionName);
-            unlock();
-            doCallbacksGenericPointer(pImage, NDArrayData, 0);
-            lock();
-        }
-        callParamCallbacks();
-        unlock();
+    acqStatusRunning = acqStatus->running;
+    acqStatusErrors = acqStatus->errors;
+    acqStatusReadoutRate = acqStatus->readout_rate;
+    if ( (acqStatusErrors == PicamAcquisitionErrorsMask_None) && acqStatusRunning){
+        acqAvailableInitialReadout = available->initial_readout;
+        acqAvailableReadoutCount = available->readout_count;
     }
     else {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s:%s: Error in calling imageDataCallback Errors: %d\n",
-                driverName,
-                functionName,
-                acqStatus->errors);
-
+        acqAvailableInitialReadout = NULL;
+        acqAvailableReadoutCount = 0;
     }
-    return (asynStatus)status;
+
+    epicsEventSignal(piHandleNewImageEvent);
+
+    return asynSuccess;
 }
 
 /**
@@ -2284,7 +2231,9 @@ asynStatus ADPICam::piHandleParameterIntegerValueChanged(PicamHandle camera,
  * Readback value for many parameters.
  */
 asynStatus ADPICam::piHandleParameterLargeIntegerValueChanged(
-        PicamHandle camera, PicamParameter parameter, pi64s value) {
+        PicamHandle camera,
+        PicamParameter parameter,
+        pi64s value) {
     const char *functionName = "piHandleParameterLargeIntegerValueChanged";
     PicamError error = PicamError_None;
     int status = asynSuccess;
@@ -2695,6 +2644,14 @@ asynStatus ADPICam::piRegisterValueChangeWatch(PicamHandle cameraHandle) {
     }
     return (asynStatus) status;
 }
+
+//void ADPICam::piSetAcquisitionData(PicamHandle device,
+//        const PicamAvailableData* available,
+//        const PicamAcquisitionStatus *status) {
+//    dataDevice = device;
+//    availableData = available;
+//    acqStatus = status;
+//}
 
 /**
  * Set the value stored in a parameter relevance PV
@@ -4018,6 +3975,172 @@ asynStatus ADPICam::piWriteInt32CollectionType(asynUser *pasynUser,
         }
     }
     return (asynStatus)status;
+}
+
+//static void piTriggerCallbacksGenericPointerC(void *drvPvt)
+//{
+//    ADPICam *pPvt = (ADPICam *)drvPvt;
+//
+//    pPvt->piTriggerCallbacksGenericPointerTask();
+//}
+//
+//void ADPICam::piTriggerCallbacksGenericPointerTask(void)
+//{
+//  while (1) {
+//    epicsEventWait(piTriggerCallbacksGenericPointerEvent);
+//    doCallbacksGenericPointer(pImage, NDArrayData, 0);
+//  }
+//}
+//
+//static void piTriggerParamCallbacksC(void *drvPvt)
+//{
+//    ADPICam *pPvt = (ADPICam *)drvPvt;
+//
+//    pPvt->piTriggerParamCallbacksTask();
+//}
+//
+//void ADPICam::piTriggerParamCallbacksTask(void)
+//{
+//  while (1) {
+//    epicsEventWait(piTriggerParamCallbacksEvent);
+//    callParamCallbacks();
+//  }
+//}
+
+static void piHandleNewImageTaskC(void *drvPvt)
+{
+    ADPICam *pPvt = (ADPICam *)drvPvt;
+
+    pPvt->piHandleNewImageTask();
+}
+
+void ADPICam::piHandleNewImageTask(void)
+{
+    const char * functionName = "piHandleNewImageTask";
+    int imageMode;
+    int imagesCounter;
+    int numImages;
+    int arrayCounter;
+    int arrayCallbacks;
+    NDArrayInfo arrayInfo;
+    epicsTimeStamp currentTime;
+    PicamError error;
+  while (1) {
+    epicsEventWait(piHandleNewImageEvent);
+        if (acqStatusErrors == PicamAcquisitionErrorsMask_None) {
+            if (acqStatusRunning ||
+                    (!acqStatusRunning && (acqAvailableReadoutCount != 0) )) {
+                getIntegerParam(ADImageMode, &imageMode);
+                getIntegerParam(ADNumImages, &numImages);
+                getIntegerParam(ADNumImagesCounter, &imagesCounter);
+                imagesCounter++;
+                lock();
+                setIntegerParam(ADNumImagesCounter, imagesCounter);
+                if ((imageMode == ADImageMultiple)
+                        && (imagesCounter >= numImages)) {
+                    piAcquireStop();
+                }
+                asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                        "Acquire, Running %s, errors %d, rate %f, availableDataCount %d\n",
+                        acqStatusRunning ? "True" : "false", acqStatusErrors,
+                        acqStatusReadoutRate, acqAvailableReadoutCount);
+                /* Update the image */
+                /* First release the copy that we held onto last time */
+                if (this->pArrays[0])
+                    this->pArrays[0]->release();
+
+                getIntegerParam(NDArrayCallbacks, &arrayCallbacks);
+                if (arrayCallbacks) {
+                    /* Allocate a new array */
+                    this->pArrays[0] = pNDArrayPool->alloc(2, imageDims,
+                            imageDataType, 0,
+                            NULL);
+                    if (this->pArrays[0] == NULL) {
+                        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                                "%s:%s error allocating buffer\n", driverName,
+                                functionName);
+                        unlock();
+                        return;
+                    }
+                    if (acqStatusErrors != PicamAcquisitionErrorsMask_None) {
+                        const char *acqStatusErrorString;
+                        Picam_GetEnumerationString(
+                                PicamEnumeratedType_AcquisitionErrorsMask,
+                                acqStatusErrors, &acqStatusErrorString);
+                        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                                "%s:%s Error found during acquisition: %s",
+                                driverName, functionName, acqStatusErrorString);
+                        Picam_DestroyString(acqStatusErrorString);
+                    }
+                    pibln overran;
+                    error = PicamAdvanced_HasAcquisitionBufferOverrun(
+                            currentDeviceHandle, &overran);
+                    if (overran) {
+                        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                                "%s:%s Overrun in acquisition buffer",
+                                driverName, functionName);
+                    }
+                    pImage = this->pArrays[0];
+                    pImage->getInfo(&arrayInfo);
+                    // Copy data from the input to the output
+                    memcpy(pImage->pData, acqAvailableInitialReadout,
+                            arrayInfo.totalBytes);
+
+                    getIntegerParam(NDArrayCounter, &arrayCounter);
+                    arrayCounter++;
+                    setIntegerParam(NDArrayCounter, arrayCounter);
+                    pImage->uniqueId = arrayCounter;
+                    //TODO work on time stamp from driver
+                    epicsTimeGetCurrent(&currentTime);
+                    pImage->timeStamp = currentTime.secPastEpoch
+                            + currentTime.nsec / 1.e9;
+                    updateTimeStamp(&pImage->epicsTS);
+
+                    /* Get attributes that have been defined for this driver */
+                    getAttributes(pImage->pAttributeList);
+
+                    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                            "%s:%s: calling imageDataCallback\n", driverName,
+                            functionName);
+                    //epicsEventSignal(piTriggerCallbacksGenericPointerEvent);
+
+                    unlock();
+                    doCallbacksGenericPointer(pImage, NDArrayData, 0);
+                    lock();
+                }
+
+            }
+
+            else if (!(acqStatusRunning) && acqAvailableReadoutCount == 0) {
+                const char *errorMaskString;
+                Picam_GetEnumerationString(PicamEnumeratedType_AcquisitionErrorsMask,
+                        acqStatusErrors, &errorMaskString);
+                asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                        "Acquire, Running %s, errors %d, rate %f\n",
+                        acqStatusRunning ? "True":"false",
+                                errorMaskString,
+                                acqStatusReadoutRate
+                                );
+                Picam_DestroyString(errorMaskString);
+                piAcquireStop();
+            }
+    }
+    else if (acqStatusErrors != PicamAcquisitionErrorsMask_None) {
+        const char *errorMaskString;
+        Picam_GetEnumerationString(PicamEnumeratedType_AcquisitionErrorsMask,
+                acqStatusErrors, &errorMaskString);
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "Acquire, Running %s, errors %d, rate %f\n",
+                acqStatusRunning ? "True":"false",
+                        errorMaskString,
+                        acqStatusReadoutRate
+                        );
+        Picam_DestroyString(errorMaskString);
+        piAcquireStop();
+    }
+    unlock();
+    callParamCallbacks();
+  }
 }
 
 /* Code for iocsh registration */
