@@ -111,6 +111,13 @@ protected:
     int PICAM_SerialNumberUnavailable;
     int PICAM_FirmwareRevisionUnavailable;
 
+    //Shutter Timing
+    int PICAM_ShutterClosingDelay;
+    int PICAM_ShutterDelayResolution;
+    int PICAM_ShutterOpeningDelay;
+    int PICAM_ShutterTimingMode;
+
+    //ADC
     int PICAM_AdcAnalogGain;
     int PICAM_AdcBitDepth;
     int PICAM_AdcEMGain;
@@ -121,8 +128,8 @@ protected:
     //Hardware I/O
     int PICAM_AuxOutput;
     int PICAM_EnableModulationOutputSignal;
-    int PICAM_EnableModulationOutputSignalFrequency;
-    int PICAM_EnableModulationOutputSignalAmplitude;
+    int PICAM_ModulationOutputSignalFrequency;
+    int PICAM_ModulationOutputSignalAmplitude;
     int PICAM_EnableSyncMaster;
     int PICAM_InvertOutputSignal;
     int PICAM_OutputSignal;
@@ -201,7 +208,7 @@ protected:
     int PICAM_MaskedHeight;
     int PICAM_MaskedTopMargin;
     int PICAM_SecondaryActiveHeight;
-    int PICAM_SecondarMaskedHeight;
+    int PICAM_SecondaryMaskedHeight;
 
     //Sensor Cleaning
     int PICAM_CleanBeforeExposure;
@@ -212,6 +219,10 @@ protected:
     int PICAM_CleanSerialRegister;
     int PICAM_CleanUntilTrigger;
 
+    //Sensor Temperature
+    int PICAM_DisableCoolingFan;
+    int PICAM_EnableSensorWindowHeater;
+    int PICAM_SensorTemperatureStatus;
 
     int PICAM_AvailableCamerasVisible;
 
@@ -429,20 +440,20 @@ private:
 #define PICAM_AdcSpeedString                    "PICAM_ADC_SPEED"
 #define PICAM_CorrectPixelBiasString            "PICAM_CORRECT_PIXEL_BIAS"
 //Hardware I/O
-#define PICAM_AuxOutputString                                "PICAM_AUX_OUTPUT_STRING"
-#define PICAM_EnableModulationOutputSignalString             "PICAM_ENABLE_MODULATION_OUTPUT_SIGNAL"
-#define PICAM_EnableModulationOutputSignalFrequencyString    "PICAM_ENABLE_MODULATION_OUTPUT_SIGNAL_FREQUENCY"
-#define PICAM_EnableModulationOutputSignalAmplitudeString    "PICAM_ENABLE_MODULATION_OUTPUT_SIGNAL_AMPLITUDE"
-#define PICAM_EnableSyncMasterString                         "PICAM_ENABLE_SYNC_MASTER"
-#define PICAM_InvertOutputSignalString                       "PICAM_INVERT_OUTPUT_SIGNAL"
-#define PICAM_OutputSignalString                             "PICAM_OUTPUT_SIGNAL"
-#define PICAM_SyncMaster2DelayString                         "PICAM_SYNC_MASTER2_DELAY"
-#define PICAM_TriggerCouplingString                          "PICAM_TRIGGER_COUPLING"
-#define PICAM_TriggerDeterminationString                     "PICAM_TRIGGER_DETERMINATION"
-#define PICAM_TriggerFrequencyString                         "PICAM_TRIGGER_FREQUENCY"
-#define PICAM_TriggerSourceString                            "PICAM_TRIGGER_SOURCE"
-#define PICAM_TriggerTerminationString                       "PICAM_TRIGGER_TERMINATION"
-#define PICAM_TriggerThresholdString                         "PICAM_TRIGGER_THRESHOLD"
+#define PICAM_AuxOutputString                          "PICAM_AUX_OUTPUT_STRING"
+#define PICAM_EnableModulationOutputSignalString       "PICAM_ENABLE_MODULATION_OUTPUT_SIGNAL"
+#define PICAM_ModulationOutputSignalFrequencyString    "PICAM_MODULATION_OUTPUT_SIGNAL_FREQUENCY"
+#define PICAM_ModulationOutputSignalAmplitudeString    "PICAM_MODULATION_OUTPUT_SIGNAL_AMPLITUDE"
+#define PICAM_EnableSyncMasterString                   "PICAM_ENABLE_SYNC_MASTER"
+#define PICAM_InvertOutputSignalString                 "PICAM_INVERT_OUTPUT_SIGNAL"
+#define PICAM_OutputSignalString                       "PICAM_OUTPUT_SIGNAL"
+#define PICAM_SyncMaster2DelayString                   "PICAM_SYNC_MASTER2_DELAY"
+#define PICAM_TriggerCouplingString                    "PICAM_TRIGGER_COUPLING"
+#define PICAM_TriggerDeterminationString               "PICAM_TRIGGER_DETERMINATION"
+#define PICAM_TriggerFrequencyString                   "PICAM_TRIGGER_FREQUENCY"
+#define PICAM_TriggerSourceString                      "PICAM_TRIGGER_SOURCE"
+#define PICAM_TriggerTerminationString                 "PICAM_TRIGGER_TERMINATION"
+#define PICAM_TriggerThresholdString                   "PICAM_TRIGGER_THRESHOLD"
 
 //ReadoutControl
 #define PICAM_AccumulationsString                  "PICAM_ACCUMULATIONS"
@@ -482,45 +493,49 @@ private:
 #define PICAM_TrackFramesString                  "PICAM_TRACK_FRAMES"
 
 //Sensor Information
-#define PICAM_CcdCharacteristics           "PICAM_CCD_CHARACTERISTICS"
-#define PICAM_PixelGapHeight               "PICAM_PIXEL_GAP_HEIGHT"
-#define PICAM_PixelGapWidth                "PICAM_PIXEL_GAP_WIDTH"
-#define PICAM_PixelHeight                  "PICAM_PIXEL_HEIGHT"
-#define PICAM_PixelWidth                   "PICAM_PIXEL_WIDTH"
-#define PICAM_SensorActiveBottomMargin     "PICAM_SENSOR_ACTIVE_BOTTOM_MARGIN"
-#define PICAM_SensorActiveHeight           "PICAM_SEMSOR_ACTIVE_HEIGHT"
-#define PICAM_SensorActiveLeftMargin       "PICAM_SENSOR_ACTIVE_LEFT_MARGIN"
-#define PICAM_SensorActiveRightMargin      "PICAM_SENSOR_ACTIVE_RIGHT_MARGIN"
-#define PICAM_SensorActiveTopMargin        "PICAM_SENSOR_ACTIVE_TOP_MARGIN"
-#define PICAM_SensorActiveWidth            "PICAM_SENSOE_ACTIVE_WIDTH"
-#define PICAM_SensorMaskedBottomMargin     "PICAM_SENSOR_MASKED_BOTTOM_"
-#define PICAM_SensorMaskedHeight           "PICAM_SENSOR_MASKED_HEIGHT"
-#define PICAM_SensorMaskedTopMargin        "PICAM_SENSOR_MASKED_TOP_MARGIN"
-#define PICAM_SensorSecondaryActiveHeight  "PICAM_SENSOR_SECONDARY_ACTIVE_HEIGHT"
-#define PICAM_SensorSecondaryMaskedHeight  "PICAM_SENSOR_SECONDARY_MASKED_HEIGHT"
-#define PICAM_SensorType                   "PICAM_SENSOR_TYPE"
+#define PICAM_CcdCharacteristicsString           "PICAM_CCD_CHARACTERISTICS"
+#define PICAM_PixelGapHeightString               "PICAM_PIXEL_GAP_HEIGHT"
+#define PICAM_PixelGapWidthString                "PICAM_PIXEL_GAP_WIDTH"
+#define PICAM_PixelHeightString                  "PICAM_PIXEL_HEIGHT"
+#define PICAM_PixelWidthString                   "PICAM_PIXEL_WIDTH"
+#define PICAM_SensorActiveBottomMarginString     "PICAM_SENSOR_ACTIVE_BOTTOM_MARGIN"
+#define PICAM_SensorActiveHeightString           "PICAM_SEMSOR_ACTIVE_HEIGHT"
+#define PICAM_SensorActiveLeftMarginString       "PICAM_SENSOR_ACTIVE_LEFT_MARGIN"
+#define PICAM_SensorActiveRightMarginString      "PICAM_SENSOR_ACTIVE_RIGHT_MARGIN"
+#define PICAM_SensorActiveTopMarginString        "PICAM_SENSOR_ACTIVE_TOP_MARGIN"
+#define PICAM_SensorActiveWidthString            "PICAM_SENSOE_ACTIVE_WIDTH"
+#define PICAM_SensorMaskedBottomMarginString     "PICAM_SENSOR_MASKED_BOTTOM_"
+#define PICAM_SensorMaskedHeightString           "PICAM_SENSOR_MASKED_HEIGHT"
+#define PICAM_SensorMaskedTopMarginString        "PICAM_SENSOR_MASKED_TOP_MARGIN"
+#define PICAM_SensorSecondaryActiveHeightString  "PICAM_SENSOR_SECONDARY_ACTIVE_HEIGHT"
+#define PICAM_SensorSecondaryMaskedHeightString  "PICAM_SENSOR_SECONDARY_MASKED_HEIGHT"
+#define PICAM_SensorTypeString                   "PICAM_SENSOR_TYPE"
 
 //SensorLayout
-#define PICAM_ActiveBottomMargin           "PICAM_ACTIVE_BOTTOM_MARGIN"
-#define PICAM_ActiveHeight                 "PICAM_ACTIVE_HEIGHT"
-#define PICAM_ActiveLeftMargin             "PICAM_ACTIVE_LEFT_MARGIN"
-#define PICAM_ActiveRightMargin            "PICAM_ACTIVE_RIGHT_MARGIN"
-#define PICAM_ActiveTopMargin              "PICAM_ACTIVE_TOP_MARGIN"
-#define PICAM_ActiveWidth                  "PICAM_ACTIVE_WIDTH"
-#define PICAM_MaskedBottomMargin           "PICAM_MASKED_BOTTOM_MARGIN"
-#define PICAM_MaskedHeight                 "PICAM_MASKED_HEIGHT"
-#define PICAM_MaskedTopMargin              "PICAM_MASKED_TOP_MARGIN"
-#define PICAM_SecondaryActiveHeight        "PICAM_SECONDARY_ACTIVE_HEIGHT"
-#define PICAM_SecondarYMaskedHeight         "PICAM_SECONDARY_MASKED_HEIGHT"
-
+#define PICAM_ActiveBottomMarginString           "PICAM_ACTIVE_BOTTOM_MARGIN"
+#define PICAM_ActiveHeightString                 "PICAM_ACTIVE_HEIGHT"
+#define PICAM_ActiveLeftMarginString             "PICAM_ACTIVE_LEFT_MARGIN"
+#define PICAM_ActiveRightMarginString            "PICAM_ACTIVE_RIGHT_MARGIN"
+#define PICAM_ActiveTopMarginString              "PICAM_ACTIVE_TOP_MARGIN"
+#define PICAM_ActiveWidthString                  "PICAM_ACTIVE_WIDTH"
+#define PICAM_MaskedBottomMarginString           "PICAM_MASKED_BOTTOM_MARGIN"
+#define PICAM_MaskedHeightString                 "PICAM_MASKED_HEIGHT"
+#define PICAM_MaskedTopMarginString             "PICAM_MASKED_TOP_MARGIN"
+#define PICAM_SecondaryActiveHeightString        "PICAM_SECONDARY_ACTIVE_HEIGHT"
+#define PICAM_SecondaryMaskedHeightString         "PICAM_SECONDARY_MASKED_HEIGHT"
 //Sensor Cleaning
-#define PICAM_CleanBeforeExposure          "PICAM_CLEAN_BEFORE_EXPOSURE"
-#define PICAM_CleanCycleCount              "PICAM_CLEAN_CYCLE_COUNT"
-#define PICAM_CleanCycleHeight             "PICAM_CLEAN_CYCLE_HEIGHT"
-#define PICAM_CleanSectionFinalHeight      "PICAM_CLEAN_SECTION_FINAL_HEIGHT"
-#define PICAM_CleanSectionFinalHeightCount "PICAM_CLEAN_SECTION_FINAL_HEIGHT_COUNT"
-#define PICAM_CleanSerialRegister          "PICAM_CLEAN_SERIAL_REGISTER"
-#define PICAM_CleanUntilTrigger            "PICAM_CLEAN_UNTIL_TRIGGER"
+#define PICAM_CleanBeforeExposureString          "PICAM_CLEAN_BEFORE_EXPOSURE"
+#define PICAM_CleanCycleCountString              "PICAM_CLEAN_CYCLE_COUNT"
+#define PICAM_CleanCycleHeightString             "PICAM_CLEAN_CYCLE_HEIGHT"
+#define PICAM_CleanSectionFinalHeightString      "PICAM_CLEAN_SECTION_FINAL_HEIGHT"
+#define PICAM_CleanSectionFinalHeightCountString "PICAM_CLEAN_SECTION_FINAL_HEIGHT_COUNT"
+#define PICAM_CleanSerialRegisterString          "PICAM_CLEAN_SERIAL_REGISTER"
+#define PICAM_CleanUntilTriggerString            "PICAM_CLEAN_UNTIL_TRIGGER"
+
+//Sensor Temperature
+#define PICAM_DisableCoolingFanString          "PICAM_DISABLE_COOLING_FAN"
+#define PICAM_EnableSensorWindowHeaterString     "PICAM_ENABLE_SENSOR_WINDOW_HEATER"
+#define PICAM_SensorTemperatureStatusString      "PICAM_SENSOR_TEMPERATURE_STATUS"
 
 // Enumeration Visibility
 #define PICAM_AvailableCamerasVisibleString   "PICAM_AVAILABLE_CAMERAS_VISIBLE"
@@ -566,8 +581,8 @@ private:
 #define PICAM_CorrectPixelBiasRelString              "PICAM_CORRECT_PIXEL_BIAS_PR" 
 #define PICAM_AuxOutputRelString                     "PICAM_AUX_OUTPUT_PR"
 #define PICAM_EnableModulationOutputSignalRelString          "PICAM_ENABLE_MODULATION_OUT_SIGNAL_PR"
-#define PICAM_EnableModulationOutputSignalFrequencyRelString "PICAM_ENABLE_MODULATION_OUT_SIGNAL_FREQ_PR"
-#define PICAM_EnableModulationOutputSignalAmplitudeRelString "PICAM_ENABLE_MODULATION_OUT_SIGNAL_AMPL_PR"
+#define PICAM_ModulationOutputSignalFrequencyRelString "PICAM_MODULATION_OUT_SIGNAL_FREQ_PR"
+#define PICAM_ModulationOutputSignalAmplitudeRelString "PICAM_MODULATION_OUT_SIGNAL_AMPL_PR"
 #define PICAM_EnableSyncMasterRelString              "PICAM_SYNC_MASTER_PR"
 #define PICAM_InvertOutputSignalRelString            "PICAM_INVERT_OUTPUT_SIGNAL_PR" 
 #define PICAM_OutputSignalRelString                  "PICAM_OUTPUT_SIGNAL_PR"

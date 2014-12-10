@@ -262,6 +262,82 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
     createParam(PICAM_TrackFramesString, asynParamInt32,
             &PICAM_TrackFrames);
 
+    createParam(PICAM_CcdCharacteristicsString, asynParamInt32,
+    		&PICAM_CcdCharacteristics);
+    createParam(PICAM_PixelGapHeightString, asynParamFloat64,
+    		&PICAM_PixelGapHeight);
+    createParam(PICAM_PixelGapWidthString, asynParamFloat64,
+    		&PICAM_PixelGapWidth);
+    createParam(PICAM_PixelHeightString, asynParamFloat64,
+    		&PICAM_PixelHeight);
+    createParam(PICAM_PixelWidthString, asynParamFloat64,
+    		&PICAM_PixelWidth);
+    createParam(PICAM_SensorActiveBottomMarginString, asynParamInt32,
+    		&PICAM_SensorActiveBottomMargin);
+    createParam(PICAM_SensorActiveHeightString, asynParamInt32,
+    		&PICAM_SensorActiveHeight);
+    createParam(PICAM_SensorActiveLeftMarginString, asynParamInt32,
+    		&PICAM_SensorActiveLeftMargin);
+    createParam(PICAM_SensorActiveRightMarginString, asynParamInt32,
+    		&PICAM_SensorActiveRightMargin);
+    createParam(PICAM_SensorActiveTopMarginString, asynParamInt32,
+    		&PICAM_SensorActiveTopMargin);
+    createParam(PICAM_SensorActiveWidthString, asynParamInt32,
+    		&PICAM_SensorActiveWidth);
+    createParam(PICAM_SensorMaskedBottomMarginString, asynParamInt32,
+    		&PICAM_SensorMaskedBottomMargin);
+    createParam(PICAM_SensorMaskedHeightString, asynParamInt32,
+    		&PICAM_SensorMaskedHeight);
+    createParam(PICAM_SensorMaskedTopMarginString, asynParamInt32,
+    		&PICAM_SensorMaskedTopMargin);
+    createParam(PICAM_SensorMaskedBottomMarginString, asynParamInt32,
+    		&PICAM_SensorMaskedBottomMargin);
+    createParam(PICAM_SensorSecondaryActiveHeightString, asynParamInt32,
+    		&PICAM_SensorSecondaryActiveHeight);
+    createParam(PICAM_SensorSecondaryMaskedHeightString, asynParamInt32,
+    		&PICAM_SensorSecondaryMaskedHeight);
+    createParam(PICAM_SensorTypeString, asynParamInt32,
+    		&PICAM_SensorType);
+    //Sensor Layout
+    createParam(PICAM_ActiveBottomMarginString, asynParamInt32,
+    		&PICAM_ActiveBottomMargin);
+    createParam(PICAM_ActiveHeightString, asynParamInt32,
+    		&PICAM_ActiveHeight);
+    createParam(PICAM_ActiveLeftMarginString, asynParamInt32,
+    		&PICAM_ActiveLeftMargin);
+    createParam(PICAM_ActiveRightMarginString, asynParamInt32,
+    		&PICAM_ActiveRightMargin);
+    createParam(PICAM_ActiveTopMarginString, asynParamInt32,
+    		&PICAM_ActiveTopMargin);
+    createParam(PICAM_ActiveWidthString, asynParamInt32,
+    		&PICAM_ActiveWidth);
+    createParam(PICAM_MaskedBottomMarginString, asynParamInt32,
+    		&PICAM_MaskedBottomMargin);
+    createParam(PICAM_MaskedHeightString, asynParamInt32,
+    		&PICAM_MaskedHeight);
+    createParam(PICAM_MaskedTopMarginString, asynParamInt32,
+    		&PICAM_MaskedTopMargin);
+    createParam(PICAM_SecondaryActiveHeightString, asynParamInt32,
+    		&PICAM_SecondaryActiveHeight);
+    createParam(PICAM_SecondaryMaskedHeightString, asynParamInt32,
+    		&PICAM_SecondaryMaskedHeight);
+    //Sensor Cleaning
+    createParam(PICAM_CleanBeforeExposureString, asynParamInt32,
+    		&PICAM_CleanBeforeExposure);
+    createParam(PICAM_CleanCycleCountString, asynParamInt32,
+    		&PICAM_CleanCycleCount);
+    createParam(PICAM_CleanCycleHeightString, asynParamInt32,
+    		&PICAM_CleanCycleHeight);
+    createParam(PICAM_CleanSectionFinalHeightString, asynParamInt32,
+    		&PICAM_CleanSectionFinalHeight);
+    createParam(PICAM_CleanSectionFinalHeightCountString, asynParamInt32,
+    		&PICAM_CleanSectionFinalHeightCount);
+    createParam(PICAM_CleanSerialRegisterString, asynParamInt32,
+    		&PICAM_CleanSerialRegister);
+    createParam(PICAM_CleanUntilTriggerString, asynParamInt32,
+    		&PICAM_CleanUntilTrigger);
+
+
     // List visibility
     createParam(PICAM_AvailableCamerasVisibleString, asynParamInt32,
             &PICAM_AvailableCamerasVisible);
@@ -1620,16 +1696,22 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
         driverParameter = ADNumExposures;
         break;
     case PicamParameter_ActiveBottomMargin:
+    	driverParameter = PICAM_ActiveBottomMargin;
         break;
     case PicamParameter_ActiveHeight:
+    	driverParameter = PICAM_ActiveHeight;
         break;
     case PicamParameter_ActiveLeftMargin:
+    	driverParameter = PICAM_ActiveLeftMargin;
         break;
     case PicamParameter_ActiveRightMargin:
+    	driverParameter = PICAM_ActiveRightMargin;
         break;
     case PicamParameter_ActiveTopMargin:
+    	driverParameter = PICAM_ActiveTopMargin;
         break;
     case PicamParameter_ActiveWidth:
+    	driverParameter = PICAM_ActiveWidth;
         break;
     case PicamParameter_AdcAnalogGain:
         driverParameter = PICAM_AdcAnalogGain;
@@ -1638,6 +1720,7 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
         driverParameter = PICAM_AdcBitDepth;
         break;
     case PicamParameter_AdcEMGain:
+    	driverParam = PICAM_AdcEMGain;
         break;
     case PicamParameter_AdcQuality:
         driverParameter = PICAM_AdcQuality;
@@ -1646,24 +1729,33 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
         driverParameter = PICAM_AdcSpeed;
         break;
     case PicamParameter_AuxOutput:
+    	driverParameter = PICAM_AuxOutput;
         break;
     case PicamParameter_BracketGating:
         break;
     case PicamParameter_CcdCharacteristics:
+    	driverParameter = PICAM_CcdCharacteristics;
         break;
     case PicamParameter_CleanBeforeExposure:
+    	driverParameter = PICAM_CleanBeforeExposure;
         break;
     case PicamParameter_CleanCycleCount:
-        break;
+        driverParameter = PICAM_CleanCycleCount;
+    	break;
     case PicamParameter_CleanCycleHeight:
-        break;
+        driverParameter = PICAM_CleanCycleCount;
+    	break;
     case PicamParameter_CleanSectionFinalHeight:
-        break;
+        driverParameter = PICAM_CleanSectionFinalHeight;
+    	break;
     case PicamParameter_CleanSectionFinalHeightCount:
-        break;
+        driverParameter = PICAM_CleanSectionFinalHeightCount;
+    	break;
     case PicamParameter_CleanSerialRegister:
+    	driverParameter = PICAM_CleanSerialRegister;
         break;
     case PicamParameter_CleanUntilTrigger:
+    	driverParameter = PICAM_CleanUntilTrigger;
         break;
     case PicamParameter_CorrectPixelBias:
         break;
@@ -1674,7 +1766,8 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
     case PicamParameter_DifStartingGate:
         break;
     case PicamParameter_DisableCoolingFan:
-        break;
+    	driverParameter = PICAM_DisableCoolingFan;
+    	break;
     case PicamParameter_DisableDataFormatting:
         driverParameter = PICAM_DisableDataFormatting;
         break;
@@ -1687,13 +1780,23 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
     case PicamParameter_EnableModulation:
         break;
     case PicamParameter_EnableModulationOutputSignal:
+    	driverParameter = PICAM_EnableModulationOutputSignal;
+        break;
+    case PicamParameter_ModulationOutputSignalFrequency:
+    	driverParameter = PICAM_ModulationOutputSignalFrequency;
+        break;
+    case PicamParameter_ModulationOutputSignalAmplitude:
+    	driverParameter = PICAM_ModulationOutputSignalAmplitude`;
         break;
     case PicamParameter_EnableNondestructiveReadout:
+    	driverParameter = PICAM_EnableNondestructiveReadout;
         break;
     case PicamParameter_EnableSensorWindowHeater:
+    	driverParameter = PICAM_EnableWindowHeater;
         break;
     case PicamParameter_EnableSyncMaster:
-        break;
+    	driverParameter = PICAM_EnableSyncMaster;
+    	break;
     case PicamParameter_ExactReadoutCountMaximum:
         driverParameter = PICAM_ExactReadoutCountMax;
         break;
@@ -1736,15 +1839,19 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
     case PicamParameter_InvertOutputSignal:
         break;
     case PicamParameter_KineticsWindowHeight:
+    	driverParameter = PICAM_KineticsWindowHeight;
         break;
     case PicamParameter_MaskedBottomMargin:
+    	driverParameter = PICAM_MaskedBottomMargin;
         break;
     case PicamParameter_MaskedHeight:
+    	driverParameter = PICAM_MaskedHeight;
         break;
     case PicamParameter_MaskedTopMargin:
-        break;
+        driverParameter = PICAM_MaskedTopMargin;
+    	break;
     case PicamParameter_ModulationDuration:
-        break;
+    	break;
     case PicamParameter_ModulationFrequency:
         break;
     case PicamParameter_ModulationOutputSignalAmplitude:
@@ -1758,7 +1865,8 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
         driverParameter = PICAM_ModulationTrackingBitDepth;
         break;
     case PicamParameter_NondestructiveReadoutPeriod:
-        break;
+    	driverParameter = PICAM_NondestructiveReadoutPeriod;
+    	break;
     case PicamParameter_NormalizeOrientation:
         driverParameter = PICAM_NormalizeOrientation;
         break;
@@ -1769,7 +1877,8 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
         driverParameter = PICAM_Orientation;
         break;
     case PicamParameter_OutputSignal:
-        break;
+        driverParameter = PICAM_OutputSignal;
+    	break;
     case PicamParameter_PhosphorDecayDelay:
         break;
     case PicamParameter_PhosphorDecayDelayResolution:
@@ -1791,13 +1900,17 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
         driverParameter = PICAM_PixelFormat;
         break;
     case PicamParameter_PixelGapHeight:
+    	driverParameter = PICAM_PixelGapHeight;
         break;
     case PicamParameter_PixelGapWidth:
+    	driverParameter = PICAM_PixelGapWidth;
         break;
     case PicamParameter_PixelHeight:
+    	driverParameter = PICAM_PixelHeight;
         break;
     case PicamParameter_PixelWidth:
-        break;
+        driverParameter = PICAM_PixelWidth;
+    	break;
     case PicamParameter_ReadoutControlMode:
         driverParameter = PICAM_ReadoutControlMode;
         break;
@@ -1805,9 +1918,11 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
         driverParameter = PICAM_ReadoutCount;
         break;
     case PicamParameter_ReadoutOrientation:
+    	driverParameter = PICAM_ReadoutOrientation;
         break;
     case PicamParameter_ReadoutPortCount:
-        break;
+        driverParameter = PICAM_ReadoutPortCount;
+    	break;
     case PicamParameter_ReadoutRateCalculation:
         driverParameter = PICAM_ReadoutRateCalc;
         break;
@@ -1824,32 +1939,43 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
     case PicamParameter_Rois:
         break;
     case PicamParameter_SecondaryActiveHeight:
-        break;
+        driverParameter = PICAM_SecondaryActiveHeight;
+    	break;
     case PicamParameter_SecondaryMaskedHeight:
+    	driverParameter = PICAM_SecondaryMaskedHeight;
         break;
     case PicamParameter_SensorActiveBottomMargin:
-        break;
+        driverParameter = PICAM_SensorActiveBottomMargin;
+    	break;
     case PicamParameter_SensorActiveHeight:
         driverParameter = ADMaxSizeY;
         break;
     case PicamParameter_SensorActiveLeftMargin:
+    	driverParameter = PICAM_SensorActiveLeftMargin;
         break;
     case PicamParameter_SensorActiveRightMargin:
+    	driverParameter = PICAM_SensorActiveRightMargin;
         break;
     case PicamParameter_SensorActiveTopMargin:
+    	driverParameter = PICAM_SensorActiveTopMargin;
         break;
     case PicamParameter_SensorActiveWidth:
         driverParameter = ADMaxSizeX;
         break;
     case PicamParameter_SensorMaskedBottomMargin:
+    	driverParameter = PICAM_SensorMaskedBottomMargin;
         break;
     case PicamParameter_SensorMaskedHeight:
+    	driverParameter = PICAM_SensorMaskedHeight;
         break;
     case PicamParameter_SensorMaskedTopMargin:
+    	driverParameter = PICAM_SensorMaskedTopMargin;
         break;
     case PicamParameter_SensorSecondaryActiveHeight:
-        break;
+        driverParameter = PICAM_SensorSecondaryActiveHeight;
+    	break;
     case PicamParameter_SensorSecondaryMaskedHeight:
+        driverParameter = PICAM_SensorSecondaryMaskedHeight;
         break;
     case PicamParameter_SensorTemperatureReading:
         driverParameter = ADTemperatureActual;
@@ -1858,8 +1984,10 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
         driverParameter = ADTemperature;
         break;
     case PicamParameter_SensorTemperatureStatus:
-        break;
+        driverParameter = PICAM_SensorTemperatureStatus;
+    	break;
     case PicamParameter_SensorType:
+    	driverParameter = PICAM_SensorType;
         break;
     case PicamParameter_SequentialEndingGate:
         break;
@@ -1898,21 +2026,28 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
         driverParameter = PICAM_TrackFrames;
         break;
     case PicamParameter_TriggerCoupling:
+    	driverParameter = PICAM_TriggerCoupling;
         break;
     case PicamParameter_TriggerDetermination:
+    	driverParameter = PICAM_TriggerDetermination;
         break;
     case PicamParameter_TriggerFrequency:
+    	driverParameter = PICAM_TriggerFrequency
         break;
     case PicamParameter_TriggerResponse:
         driverParameter = ADTriggerMode;
         break;
     case PicamParameter_TriggerSource:
+    	driverParameter = PICAM_TriggerSource;
         break;
     case PicamParameter_TriggerTermination:
-        break;
+        driverParameter = PICAM_TriggerTermination;
+    	break;
     case PicamParameter_TriggerThreshold:
+    	driverParameter = PICAM_TriggerThreshold;
         break;
     case PicamParameter_VerticalShiftRate:
+    	driverParameter = PICAM_VerticalShiftRate;
         break;
     default:
         Picam_GetEnumerationString(PicamEnumeratedType_Parameter, parameter,
@@ -1934,7 +2069,28 @@ PicamError ADPICam::piLookupPICamParameter(int driverParameter,
         PicamParameter &parameter){
     const char *functionName = "piLookupPICamParameter";
 
-    if (driverParameter == PICAM_AdcAnalogGain){
+    if (driverParameter ==ADNumExposures) {
+        parameter = PicamParameter_Accumulations;
+    }
+    else if (driverParameter == PICAM_ActiveBottomMargin){
+        parameter = PicamParameter_ActiveBottomMargin;
+    }
+    else if (driverParameter == PICAM_ActiveHeight){
+        parameter = PicamParameter_ActiveHeight;
+    }
+    else if (driverParameter == PICAM_ActiveLeftMargin){
+        parameter = PicamParameter_ActiveLeftMargin;
+    }
+    else if (driverParameter == PICAM_ActiveRightMargin){
+        parameter = PicamParameter_ActiveRightMargin;
+    }
+    else if (driverParameter == PICAM_ActiveTopMargin){
+        parameter = PicamParameter_ActiveTopMargin;
+    }
+    else if (driverParameter == PICAM_ActiveWidth){
+        parameter = PicamParameter_ActiveWidth;
+    }
+    else if (driverParameter == PICAM_AdcAnalogGain){
         parameter = PicamParameter_AdcAnalogGain;
     }
     else if (driverParameter == PICAM_AdcBitDepth) {
@@ -1946,9 +2102,52 @@ PicamError ADPICam::piLookupPICamParameter(int driverParameter,
     else if (driverParameter == PICAM_AdcSpeed) {
         parameter = PicamParameter_AdcSpeed;
     }
+    else if (driverParameter == PICAM_AuxOutput) {
+        parameter = PicamParameter_AuxOutput;
+    }
+    else if (driverParameter == PICAM_CleanBeforeExposure) {
+        parameter = PicamParameter_CleanBeforeExposure;
+    }
+    else if (driverParameter == PICAM_CleanCycleCount) {
+        parameter = PicamParameter_CleanCycleCount;
+    }
+    else if (driverParameter == PICAM_CleanCycleHeight) {
+        parameter = PicamParameter_CleanCycleHeight;
+    }
+    else if (driverParameter == PICAM_CleanSectionFinalHeight) {
+        parameter = PicamParameter_CleanSectionFinalHeight;
+    }
+    else if (driverParameter == PICAM_CleanSectionFinalHeightCount) {
+        parameter = PicamParameter_CleanSectionFinalHeightCount;
+    }
+    else if (driverParameter == PICAM_CleanSerialRegister) {
+        parameter = PicamParameter_CleanSerialRegister;
+    }
+    else if (driverParameter == PICAM_CleanUntilTrigger) {
+        parameter = PicamParameter_CleanUntilTrigger;
+    }
+    else if (driverParameter == PICAM_CcdCharacteristics){
+        parameter = PicamParameter_CcdCharacteristics;
+    }
+    else if (driverParameter == PICAM_DisableCoolingFan) {
+        parameter = PicamParameter_DisableCoolingFan;
+    }
     else if (driverParameter == PICAM_DisableDataFormatting) {
         parameter = PicamParameter_DisableDataFormatting;
     }
+    else if (driverParameter == PICAM_EnableModulationOutputSignal) {
+        parameter = PicamParameter_EnableModulationOutputSignal;
+    }
+    else if (driverParameter == PICAM_EnableNondestructiveReadout) {
+        parameter = PicamParameter_EnableNondestructiveReadout;
+    }
+    else if (driverParameter == PICAM_EnableSensorWindowHeater) {
+        parameter = PicamParameter_EnableSensorWindowHeater;
+    }
+    else if (driverParameter == PICAM_EnableSyncMaster) {
+        parameter = PicamParameter_EnableSyncMaster;
+    }
+
     else if (driverParameter == PICAM_ExactReadoutCountMax) {
         parameter = PicamParameter_ExactReadoutCountMaximum;
     }
@@ -1973,14 +2172,38 @@ PicamError ADPICam::piLookupPICamParameter(int driverParameter,
     else if (driverParameter == PICAM_GateTrackingBitDepth) {
         parameter = PicamParameter_GateTrackingBitDepth;
     }
+    else if (driverParameter == PICAM_InvertOutputSignal) {
+        parameter = PicamParameter_InvertOutputSignal;
+    }
+    else if (driverParameter == PICAM_KineticsWindowHeight) {
+        parameter = PicamParameter_KineticsWindowHeight;
+    }
+    else if (driverParameter == PICAM_MaskedBottomMargin){
+        parameter = PicamParameter_MaskedBottomMargin;
+    }
+    else if (driverParameter == PICAM_MaskedHeight){
+        parameter = PicamParameter_MaskedHeight;
+    }
+    else if (driverParameter == PICAM_MaskedTopMargin){
+        parameter = PicamParameter_MaskedTopMargin;
+    }
     else if (driverParameter == PICAM_ModulationTracking) {
         parameter = PicamParameter_ModulationTracking;
     }
     else if (driverParameter == PICAM_ModulationTrackingBitDepth) {
         parameter = PicamParameter_ModulationTrackingBitDepth;
     }
+    else if (driverParameter == PICAM_ModulationOutputSignalAmplitude) {
+        parameter = PicamParameter_ModulationOutputSignalAmplitude;
+    }
+    else if (driverParameter == PICAM_ModulationOutputSignalFrequency) {
+        parameter = PicamParameter_ModulationOutputSignalFrequency;
+    }
     else if (driverParameter == PICAM_NormalizeOrientation) {
         parameter = PicamParameter_NormalizeOrientation;
+    }
+    else if (driverParameter == PICAM_NondestructiveReadoutPeriod) {
+        parameter = PicamParameter_NondestructiveReadoutPeriod;
     }
     else if (driverParameter == PICAM_OnlineReadoutRateCalc) {
         parameter = PicamParameter_OnlineReadoutRateCalculation;
@@ -2000,14 +2223,74 @@ PicamError ADPICam::piLookupPICamParameter(int driverParameter,
     else if (driverParameter == PICAM_PixelFormat) {
         parameter = PicamParameter_PixelFormat;
     }
+    else if (driverParameter == PICAM_PixelGapHeight) {
+        parameter = PicamParameter_PixelGapHeight;
+    }
+    else if (driverParameter == PICAM_PixelGapWidth) {
+        parameter = PicamParameter_PixelGapWidth;
+    }
+    else if (driverParameter == PICAM_PixelHeight) {
+        parameter = PicamParameter_PixelHeight;
+    }
+    else if (driverParameter == PICAM_PixelWidth) {
+        parameter = PicamParameter_PixelWidth;
+    }
     else if (driverParameter == PICAM_ReadoutCount) {
         parameter = PicamParameter_ReadoutCount;
+    }
+    else if (driverParameter == PICAM_ReadoutOrientation) {
+        parameter = PicamParameter_ReadoutOrientation;
     }
     else if (driverParameter == PICAM_ReadoutRateCalc) {
         parameter = PicamParameter_ReadoutRateCalculation;
     }
     else if (driverParameter == PICAM_ReadoutStride) {
         parameter = PicamParameter_ReadoutStride;
+    }
+    else if (driverParameter == PICAM_SecondaryActiveHeight){
+        parameter = PicamParameter_SecondaryActiveHeight;
+    }
+    else if (driverParameter == PICAM_SecondaryMaskedHeight){
+        parameter = PicamParameter_SecondaryMaskedHeight;
+    }
+    else if (driverParameter == PICAM_SensorActiveBottomMargin){
+        parameter = PicamParameter_SensorActiveBottomMargin;
+    }
+    else if (driverParameter == PICAM_SensorActiveHeight){
+        parameter = PicamParameter_SensorActiveHeight;
+    }
+    else if (driverParameter == PICAM_SensorActiveLeftMargin){
+        parameter = PicamParameter_SensorActiveLeftMargin;
+    }
+    else if (driverParameter == PICAM_SensorActiveRightMargin){
+        parameter = PicamParameter_SensorActiveRightMargin;
+    }
+    else if (driverParameter == PICAM_SensorActiveTopMargin){
+        parameter = PicamParameter_SensorActiveTopMargin;
+    }
+    else if (driverParameter == PICAM_SensorActiveWidth){
+        parameter = PicamParameter_SensorActiveWidth;
+    }
+    else if (driverParameter == PICAM_SensorMaskedBottomMargin){
+        parameter = PicamParameter_SensorMaskedBottomMargin;
+    }
+    else if (driverParameter == PICAM_SensorMaskedHeight){
+        parameter = PicamParameter_SensorMaskedHeight;
+    }
+    else if (driverParameter == PICAM_SensorMaskedTopMargin){
+        parameter = PicamParameter_SensorMaskedTopMargin;
+    }
+    else if (driverParameter == PICAM_SensorSecondaryActiveHeight){
+        parameter = PicamParameter_SensorSecondaryActiveHeight;
+    }
+    else if (driverParameter == PICAM_SensorSecondaryMaskedHeight){
+        parameter = PicamParameter_SensorSecondaryMaskedHeight;
+    }
+    else if (driverParameter == PICAM_SensorTemperatureStatus){
+        parameter = PicamParameter_SensorTemperatureStatus;
+    }
+    else if (driverParameter == PICAM_SensorType){
+        parameter = PicamParameter_SensorType;
     }
     else if (driverParameter == PICAM_TimeStampBitDepth) {
         parameter = PicamParameter_TimeStampBitDepth;
@@ -2024,15 +2307,34 @@ PicamError ADPICam::piLookupPICamParameter(int driverParameter,
     else if (driverParameter ==PICAM_ReadoutControlMode) {
         parameter = PicamParameter_ReadoutControlMode;
     }
-    else if (driverParameter ==ADTriggerMode) {
-        parameter = PicamParameter_TriggerResponse;
-    }
     else if (driverParameter == ADShutterMode) {
         parameter = PicamParameter_ShutterTimingMode;
     }
-    else if (driverParameter ==ADNumExposures) {
-        parameter = PicamParameter_Accumulations;
+    else if (driverParameter == PICAM_SyncMaster2Delay) {
+        parameter = PicamParameter_SyncMaster2Delay;
     }
+    else if (driverParameter == PICAM_TriggerCoupling) {
+        parameter = PicamParameter_TriggerCoupling;
+    }
+    else if (driverParameter == PICAM_TriggerDetermination) {
+        parameter = PicamParameter_TriggerDetermination;
+    }
+    else if (driverParameter ==PICAM_TriggerFrequency) {
+        parameter = PicamParameter_TriggerFrequency;
+    }
+    else if (driverParameter ==ADTriggerMode) {
+        parameter = PicamParameter_TriggerResponse;
+    }
+    else if (driverParameter ==PICAM_TriggerSource) {
+        parameter = PicamParameter_TriggerSource;
+    }
+    else if (driverParameter ==PICAM_TriggerTermination) {
+        parameter = PicamParameter_TriggerTermination;
+    }
+    else if (driverParameter ==PICAM_TriggerThreshold) {
+        parameter = PicamParameter_TriggerThreshold;
+    }
+
     else {
         return PicamError_ParameterDoesNotExist;
     }
