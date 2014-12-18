@@ -45,7 +45,7 @@ public:
     asynStatus piHandleCameraDiscovery(const PicamCameraID *id,
             PicamHandle device, PicamDiscoveryAction);
     asynStatus piHandleParameterRelevanceChanged(PicamHandle camera,
-            PicamParameter parameter, pibln relevent);
+            PicamParameter parameter, pibln relevant);
     asynStatus piHandleParameterIntegerValueChanged(PicamHandle camera,
             PicamParameter parameter, piint value);
     asynStatus piHandleParameterLargeIntegerValueChanged(PicamHandle camera,
@@ -116,6 +116,35 @@ protected:
     int PICAM_ShutterDelayResolution;
     int PICAM_ShutterOpeningDelay;
     int PICAM_ShutterTimingMode;
+
+    // Intensifier
+    int PICAM_BracketGating;
+    int PICAM_CustomModulationSequence;
+    int PICAM_DifEndingGate;
+    int PICAM_EMIccdGain;
+    int PICAM_EMIccdGainControlMode;
+    int PICAM_EnableIntensifier;
+    int PICAM_EnableModulation;
+    int PICAM_GatingMode;
+    int PICAM_GatingSpeed;
+    int PICAM_IntensifierDiameter;
+    int PICAM_IntensifierGain;
+    int PICAM_IntensifierOptions;
+    int PICAM_IntensifierStatus;
+    int PICAM_ModulationDuration;
+    int PICAM_ModulationFrequency;
+    int PICAM_PhosphorDecayDelay;
+    int PICAM_PhosphorDecayDelayResolution;
+    int PICAM_PhosphorType;
+    int PICAM_PhotocathodeSensitivity;
+    int PICAM_RepetitiveGate;
+    int PICAM_RepetitiveModulation;
+    int PICAM_SequentialStartingModulationPhase;
+    int PICAM_SequentialEndingModulationPhase;
+    int PICAM_SequentialEndingGate;
+    int PICAM_SequentialGateStepCount;
+    int PICAM_SequentialGateStepIterations;
+    int PICAM_SequentialStartingGate;
 
     //ADC
     int PICAM_AdcAnalogGain;
@@ -224,8 +253,136 @@ protected:
     int PICAM_EnableSensorWindowHeater;
     int PICAM_SensorTemperatureStatus;
 
-    int PICAM_AvailableCamerasVisible;
-
+    // Camera Parameter exists for this detector
+    int PICAM_ExposureTimeExists;
+    int PICAM_ShutterClosingDelayExists;
+    int PICAM_ShutterDelayResolutionExists;
+    int PICAM_ShutterOpeningDelayExists;
+    int PICAM_ShutterTimingModeExists;
+    int PICAM_BracketGatingExists;
+    int PICAM_CustomModulationSequenceExists;
+    int PICAM_DifEndingGateExists;
+    int PICAM_DifStartingGateExists;
+    int PICAM_EMIccdGainExists;
+    int PICAM_EMIccdGainControlModeExists;
+    int PICAM_EnableIntensifierExists;
+    int PICAM_EnableModulationExists;
+    int PICAM_GatingModeExists;
+    int PICAM_GatingSpeedExists;
+    int PICAM_IntensifierDiameterExists;
+    int PICAM_IntensifierGainExists;
+    int PICAM_IntensifierOptionsExists;
+    int PICAM_IntensifierStatusExists;
+    int PICAM_ModulationDurationExists;
+    int PICAM_ModulationFrequencyExists;
+    int PICAM_PhosphorDecayDelayExists;
+    int PICAM_PhosphorDecayDelayResolutionExists;
+    int PICAM_PhosphorTypeExists;
+    int PICAM_PhotocathodeSensitivityExists;
+    int PICAM_RepetitiveGateExists;
+    int PICAM_RepetitiveModulationPhaseExists;
+    int PICAM_SequentialStartingModulationPhaseExists;
+    int PICAM_SequentialEndingModulationPhaseExists;
+    int PICAM_SequentialEndingGateExists;
+    int PICAM_SequentialGateStepCountExists;
+    int PICAM_SequentialGateStepIterationsExists;
+    int PICAM_SequentialStartingGateExists;
+    int PICAM_AdcAnalogGainExists;
+    int PICAM_AdcBitDepthExists;
+    int PICAM_AdcEMGainExists;
+    int PICAM_AdcQualityExists;
+    int PICAM_AdcSpeedExists;
+    int PICAM_CorrectPixelBiasExists;
+    int PICAM_AuxOutputExists;
+    int PICAM_EnableModulationOutputSignalExists;
+    int PICAM_EnableModulationOutputSignalFrequencyExists;
+    int PICAM_EnableModulationOutputSignalAmplitudeExists;
+    int PICAM_EnableSyncMasterExists;
+    int PICAM_InvertOutputSignalExists;
+    int PICAM_OutputSignalExists;
+    int PICAM_SyncMaster2DelayExists;
+    int PICAM_TriggerCouplingExists;
+    int PICAM_TriggerDeterminationExists;
+    int PICAM_TriggerFrequencyExists;
+    int PICAM_TriggerResponseExists;
+    int PICAM_TriggerSourceExists;
+    int PICAM_TriggerTerminationExists;
+    int PICAM_TriggerThresholdExists;
+    int PICAM_AccumulationsExists;
+    int PICAM_EnableNondestructiveReadoutExists;
+    int PICAM_KineticsWindowHeightExists;
+    int PICAM_NondestructiveReadoutPeriodExists;
+    int PICAM_ReadoutControlModeExists;
+    int PICAM_ReadoutOrientationExists;
+    int PICAM_ReadoutPortCountExists;
+    int PICAM_ReadoutTimeCalculationExists;
+    int PICAM_VerticalShiftRateExists;
+    int PICAM_DisableDataFormattingExists;
+    int PICAM_ExactReadoutCountMaximumExists;
+    int PICAM_FrameRateCalculationExists;
+    int PICAM_FrameSizeExists;
+    int PICAM_FramesPerReadoutExists;
+    int PICAM_FrameStrideExists;
+    int PICAM_FrameTrackingBitDepthExists;
+    int PICAM_GateTrackingExists;
+    int PICAM_GateTrackingBitDepthExists;
+    int PICAM_ModulationTrackingExists;
+    int PICAM_ModulationTrackingBitDepthExists;
+    int PICAM_NormalizeOrientationExists;
+    int PICAM_OnlineReadoutRateCalculationExists;
+    int PICAM_OrientationExists;
+    int PICAM_PhotonDetectionModeExists;
+    int PICAM_PhotonDetectionThresholdExists;
+    int PICAM_PixelBitDepthExists;
+    int PICAM_PixelFormatExists;
+    int PICAM_ReadoutCountExists;
+    int PICAM_ReadoutRateCalculationExists;
+    int PICAM_ReadoutStrideExists;
+    int PICAM_RoisExists;
+    int PICAM_TimeStampBitDepthExists;
+    int PICAM_TimeStampResolutionExists;
+    int PICAM_TimeStampsExists;
+    int PICAM_TrackFramesExists;
+    int PICAM_CcdCharacteristicsExists;
+    int PICAM_PixelGapHeightExists;
+    int PICAM_PixelGapWidthExists;
+    int PICAM_PixelHeightExists;
+    int PICAM_PixelWidthExists;
+    int PICAM_SensorActiveBottomMarginExists;
+    int PICAM_SensorActiveHeightExists;
+    int PICAM_SensorActiveLeftMarginExists;
+    int PICAM_SensorActiveRightMarginExists;
+    int PICAM_SensorActiveTopMarginExists;
+    int PICAM_SensorActiveWidthExists;
+    int PICAM_SensorMaskedBottomMarginExists;
+    int PICAM_SensorMaskedHeightExists;
+    int PICAM_SensorMaskedTopMarginExists;
+    int PICAM_SensorSecondaryActiveHeightExists;
+    int PICAM_SensorSecondaryMaskedHeightExists;
+    int PICAM_SensorTypeExists;
+    int PICAM_ActiveBottomMarginExists;
+    int PICAM_ActiveHeightExists;
+    int PICAM_ActiveLeftMarginExists;
+    int PICAM_ActiveRightMarginExists;
+    int PICAM_ActiveTopMarginExists;
+    int PICAM_ActiveWidthExists;
+    int PICAM_MaskedBottomMarginExists;
+    int PICAM_MaskedHeightExists;
+    int PICAM_MaskedTopMarginExists;
+    int PICAM_SecondaryActiveHeightExists;
+    int PICAM_SecondaryMaskedHeightExists;
+    int PICAM_CleanBeforeExposureExists;
+    int PICAM_CleanCycleCountExists;
+    int PICAM_CleanCycleHeightExists;
+    int PICAM_CleanSectionFinalHeightExists;
+    int PICAM_CleanSectionFinalHeightCountExists;
+    int PICAM_CleanSerialRegisterExists;
+    int PICAM_CleanUntilTriggerExists;
+    int PICAM_DisableCoolingFanExists;
+    int PICAM_EnableSensorWindowHeaterExists;
+    int PICAM_SensorTemperatureReadingExists;
+    int PICAM_SensorTemperatureSetPointExists;
+    int PICAM_SensorTemperatureStatusExists;
 
     int PICAM_ExposureTimeRelevant;
     int PICAM_ShutterClosingDelayRelevant;
@@ -368,8 +525,6 @@ private:
     piint availableCamerasCount;
     piint unavailableCamerasCount;
     NDArray *pImage;
-//    epicsEventId  piTriggerCallbacksGenericPointerEvent;
-//    epicsEventId  piTriggerParamCallbacksEvent;
     epicsEventId  piHandleNewImageEvent;
     size_t imageDims[2];
     NDDataType_t  imageDataType;
@@ -378,9 +533,11 @@ private:
     piflt acqStatusReadoutRate;
     void *acqAvailableInitialReadout;
     pi64s acqAvailableReadoutCount;
+    epicsMutex dataLock;
 
     asynStatus initializeDetector();
-    asynStatus piClearParameterRelevance(asynUser *pasynUser);
+    asynStatus piClearParameterExists();
+    asynStatus piClearParameterRelevance();
     asynStatus piAcquireStart();
     asynStatus piAcquireStop();
     asynStatus piLoadUnavailableCameraIDs();
@@ -390,6 +547,8 @@ private:
     asynStatus piRegisterConstraintChangeWatch(PicamHandle cameraHandle);
     asynStatus piRegisterRelevantWatch(PicamHandle cameraHandle);
     asynStatus piRegisterValueChangeWatch(PicamHandle cameraHandle);
+    asynStatus piSetParameterExists(asynUser *pasynUser,
+            PicamParameter parameter, int exists);
     asynStatus piSetParameterRelevance(asynUser *pasynUser,
             PicamParameter parameter, int relevence);
     asynStatus piSetParameterValuesFromSelectedCamera();
@@ -401,7 +560,8 @@ private:
     asynStatus piUnregisterConstraintChangeWatch(PicamHandle cameraHandle);
     asynStatus piUnregisterRelevantWatch(PicamHandle cameraHandle);
     asynStatus piUnregisterValueChangeWatch(PicamHandle cameraHandle);
-    asynStatus piUpdateParameterRelevance(asynUser *pasynUser);
+    asynStatus piUpdateParameterExists();
+    asynStatus piUpdateParameterRelevance();
     asynStatus piUpdateAvailableCamerasList();
     asynStatus piUpdateParameterListValues(PicamParameter parameter,
             int driverParameter);
@@ -432,6 +592,38 @@ private:
 #define PICAM_SensorNameUnavailableString       "PICAM_SENSOR_NAME_UNAVAILABLE"
 #define PICAM_SerialNumberUnavailableString     "PICAM_SERIAL_NUMBER_UNAVAILABLE"
 #define PICAM_FirmwareRevisionUnavailableString "PICAM_FIRMWARE_REVISION_UNAVAILABLE"
+//Shutter Timing
+
+// Intensifier
+#define PICAM_BracketGatingString                      "PICAM_BRACKET_GATING"
+#define PICAM_CustomModulationSequenceString           "PICAM_CUSTOM_MODULATION_SEQUENCE"
+#define PICAM_DifEndingGateString                      "PICAM_DIF_ENDING_GATE"
+#define PICAM_DifStartingGateString                    "PICAM_DIF_STARTING_GATE"
+#define PICAM_EMIccdGainString                         "PICAM_EMI_CCD_GAIN"
+#define PICAM_EMIccdGainControlModeString              "PICAM_EMI_CCD_GAIN_CONTROL_MODE"
+#define PICAM_EnableIntensifierString                   "PICAM_ENABLE_INTENSIFIER"
+#define PICAM_EnableModulationString                   "PICAM_ENABLE_MODULATION"
+#define PICAM_GatingModeString                         "PICAM_GATING_MODE"
+#define PICAM_GatingSpeedString                        "PICAM_GATING_SPEED"
+#define PICAM_IntensifierDiameterString                "PICAM_INTENSIFIER_DIAMETER"
+#define PICAM_IntensifierGainString                    "PICAM_INTENSIFIER_GAIN"
+#define PICAM_IntensifierOptionsString                 "PICAM_INTENSIFIER_OPTIONS"
+#define PICAM_IntensifierStatusString                  "PICAM_INTENSIFIER_STATUS"
+#define PICAM_ModulationDurationString                 "PICAM_MODULATION_DURATION"
+#define PICAM_ModulationFrequencyString                "PICAM_MODULATION_FREQUENCY"
+#define PICAM_PhosphorDecayDelayString                 "PICAM_PHOSPHOR_DECAY_DELAY"
+#define PICAM_PhosphorDecayDelayResolutionString       "PICAM_PHOSPHOR_DECAY_DELAY_RESOLUTION"
+#define PICAM_PhosphorTypeString                       "PICAM_PHOSPHOR_TYPE"
+#define PICAM_PhotocathodeSensitivityString            "PICAM_PHOTOCATHODE_SENSITIVITY"
+#define PICAM_RepetitiveGateString                     "PICAM_REPETITIVE_GATE"
+#define PICAM_RepetitiveModulationString               "PICAM_REPETITIVE_MODULATION"
+#define PICAM_SequentialStartingModulationPhaseString  "PICAM_SEQUENTIAL_STARTING_MODULATION_PHASE"
+#define PICAM_SequentialEndingModulationPhaseString    "PICAM_SEQUENTIAL_ENDING_MODULATION_PHASE"
+#define PICAM_SequentialEndingGateString               "PICAM_SEQUENTIAL_ENDING_GATE"
+#define PICAM_SequentialGateStepCountString            "PICAM_SEQUENTIAL_GATE_STEP_COUNT"
+#define PICAM_SequentialGateStepIterationsString       "PICAM_SEQUENTIAL_GATE_STEP_ITERATIONS"
+#define PICAM_SequentialStartingGareString             "PICAM_SEQUENTIAL_STARTING_GATE"
+
 //AnalogToDigitalConversion
 #define PICAM_AdcAnalogGainString               "PICAM_ADC_ANALOG_GAIN"
 #define PICAM_AdcBitDepthString                 "PICAM_ADC_BIT_DEPTH"
@@ -504,7 +696,7 @@ private:
 #define PICAM_SensorActiveRightMarginString      "PICAM_SENSOR_ACTIVE_RIGHT_MARGIN"
 #define PICAM_SensorActiveTopMarginString        "PICAM_SENSOR_ACTIVE_TOP_MARGIN"
 #define PICAM_SensorActiveWidthString            "PICAM_SENSOE_ACTIVE_WIDTH"
-#define PICAM_SensorMaskedBottomMarginString     "PICAM_SENSOR_MASKED_BOTTOM_"
+#define PICAM_SensorMaskedBottomMarginString     "PICAM_SENSOR_MASKED_BOTTOM_MARGIN"
 #define PICAM_SensorMaskedHeightString           "PICAM_SENSOR_MASKED_HEIGHT"
 #define PICAM_SensorMaskedTopMarginString        "PICAM_SENSOR_MASKED_TOP_MARGIN"
 #define PICAM_SensorSecondaryActiveHeightString  "PICAM_SENSOR_SECONDARY_ACTIVE_HEIGHT"
@@ -537,8 +729,136 @@ private:
 #define PICAM_EnableSensorWindowHeaterString     "PICAM_ENABLE_SENSOR_WINDOW_HEATER"
 #define PICAM_SensorTemperatureStatusString      "PICAM_SENSOR_TEMPERATURE_STATUS"
 
-// Enumeration Visibility
-#define PICAM_AvailableCamerasVisibleString   "PICAM_AVAILABLE_CAMERAS_VISIBLE"
+// Camera Parameter Exists
+#define PICAM_ExposureTimeExistsString           "PICAM_EXPOSURE_TIME_EX"
+#define PICAM_ShutterClosingDelayExistsString    "PICAM_SHUTTER_CLOSING_DELAY_EX"
+#define PICAM_ShutterDelayResolutionExistsString "PICAM_SHUTTER_DELAY_RESOLUTION_EX"
+#define PICAM_ShutterOpeningDelayExistsString    "PICAM_SHUTTER_OPEN_DELAY_EX"
+#define PICAM_ShutterTimingModeExistsString      "PICAM_SHUTTER_TIMING_MODE_EX"
+#define PICAM_BracketGatingExistsString          "PICAM_BRACKET_GATING_EX"
+#define PICAM_CustomModulationSequenceExistsString      "PICAM_CUSTOM_MODULATION_SEQUENCE_EX"
+#define PICAM_DifEndingGateExistsString                 "PICAM_DIF_END_GATE_EX"
+#define PICAM_DifStartingGateExistsString               "PICAM_DIF_START_GATE_EX"
+#define PICAM_EMIccdGainExistsString                    "PICAM_EMI_CCD_GAIN_EX"
+#define PICAM_EMIccdGainControlModeExistsString         "PICAM_EMI_CCD_GAIN_CTL_MODE_EX"
+#define PICAM_EnableIntensifierExistsString             "PICAM_ENABLE_INTENSIFIER_EX"
+#define PICAM_EnableModulationExistsString              "PICAM_ENABLE_MODULATION_EX"
+#define PICAM_GatingModeExistsString                    "PICAM_GATING_MODE_EX"
+#define PICAM_GatingSpeedExistsString                   "PICAM_GATING_SPEED_EX"
+#define PICAM_IntensifierDiameterExistsString           "PICAM_INTENSIFIER_DIAM_EX"
+#define PICAM_IntensifierGainExistsString               "PICAM_INTENSIFIER_GAIN_EX"
+#define PICAM_IntensifierOptionsExistsString            "PICAM_INTENSIFIER_OPTIONS_EX"
+#define PICAM_IntensifierStatusExistsString             "PICAM_INTENSIFIER_STATUS_EX"
+#define PICAM_ModulationDurationExistsString            "PICAM_MODULATION_DURATION_EX"
+#define PICAM_ModulationFrequencyExistsString           "PICAM_MODULATION_FREQUENCY_EX"
+#define PICAM_PhosphorDecayDelayExistsString            "PICAM_PHOSFOR_DECAY_DELAY_EX"
+#define PICAM_PhosphorDecayDelayResolutionExistsString  "PICAM_PHOSFOR_DELAY_DECAY_RES_EX"
+#define PICAM_PhosphorTypeExistsString                  "PICAM_PHOSFOR_TYPE_EX"
+#define PICAM_PhotocathodeSensitivityExistsString       "PICAM_PHOTOCATHODE_SENSITIVITY_EX"
+#define PICAM_RepetitiveGateExistsString                "PICAM_REPETITIVE_GATE_EX"
+#define PICAM_RepetitiveModulationPhaseExistsString     "PICAM_REPETITIVE_MODULATION_EX"
+#define PICAM_SequentialStartingModulationPhaseExistsString "PICAM_SEQ_STARTING_MODULATION_PHASE_EX"
+#define PICAM_SequentialEndingModulationPhaseExistsString   "PICAM_SEQ_END_MODULATION_PHASE_EX"
+#define PICAM_SequentialEndingGateExistsString          "PICAM_SEQ_END_GATE_EX"
+#define PICAM_SequentialGateStepCountExistsString       "PICAM_SEQ_GATE_STEP_COUNT_EX"
+#define PICAM_SequentialGateStepIterationsExistsString  "PICAM_SEQ_GATE_STEP_ITERATIONS_EX"
+#define PICAM_SequentialStartingGateExistsString        "PICAM_SEQ_START_GATE_EX"
+#define PICAM_AdcAnalogGainExistsString                 "PICAM_ADC_ANALOG_GAIN_EX"
+#define PICAM_AdcBitDepthExistsString                   "PICAM_ADC_BIT_DEPTH_EX"
+#define PICAM_AdcEMGainExistsString                     "PICAM_ADC_EM_GAIN_EX"
+#define PICAM_AdcQualityExistsString                    "PICAM_ADC_QUALITY_EX"
+#define PICAM_AdcSpeedExistsString                      "PICAM_ADC_SPEED_EX"
+#define PICAM_CorrectPixelBiasExistsString              "PICAM_CORRECT_PIXEL_BIAS_EX"
+#define PICAM_AuxOutputExistsString                     "PICAM_AUX_OUTPUT_EX"
+#define PICAM_EnableModulationOutputSignalExistsString          "PICAM_ENABLE_MODULATION_OUT_SIGNAL_EX"
+#define PICAM_ModulationOutputSignalFrequencyExistsString "PICAM_MODULATION_OUT_SIGNAL_FREQ_EX"
+#define PICAM_ModulationOutputSignalAmplitudeExistsString "PICAM_MODULATION_OUT_SIGNAL_AMPL_EX"
+#define PICAM_EnableSyncMasterExistsString              "PICAM_SYNC_MASTER_EX"
+#define PICAM_InvertOutputSignalExistsString            "PICAM_INVERT_OUTPUT_SIGNAL_EX"
+#define PICAM_OutputSignalExistsString                  "PICAM_OUTPUT_SIGNAL_EX"
+#define PICAM_SyncMaster2DelayExistsString              "PICAM_SYNC_MASTER2_DELAY_EX"
+#define PICAM_TriggerCouplingExistsString               "PICAM_TRIGGER_COUPLING_EX"
+#define PICAM_TriggerDeterminationExistsString          "PICAM_TRIGGER_DETERMINATION_EX"
+#define PICAM_TriggerFrequencyExistsString              "PICAM_TRIGGER_FREQUENCY_EX"
+#define PICAM_TriggerResponseExistsString               "PICAM_TRIGGER_RESPONSE_EX"
+#define PICAM_TriggerSourceExistsString                 "PICAM_TRIGGER_SOURCE_EX"
+#define PICAM_TriggerTerminationExistsString            "PICAM_TRIGGER_TERMINATION_EX"
+#define PICAM_TriggerThresholdExistsString              "PICAM_TRIGGER_THRESHOLD_EX"
+#define PICAM_AccumulationsExistsString                 "PICAM_ACCUMULATIONS_EX"
+#define PICAM_EnableNondestructiveReadoutExistsString   "PICAM_ENABLE_NONDESTRUCT_READOUT_EX"
+#define PICAM_KineticsWindowHeightExistsString          "PICAM_KINETICS_WINDOW_HEIGHT_EX"
+#define PICAM_NondestructiveReadoutPeriodExistsString   "PICAM_NONDESTRUCT_READOUT_PERIOD_EX"
+#define PICAM_ReadoutControlModeExistsString            "PICAM_READOUT_CONTROL_MODE_EX"
+#define PICAM_ReadoutOrientationExistsString            "PICAM_READOUNT_ORIENTATION_EX"
+#define PICAM_ReadoutPortCountExistsString              "PICAM_READOUT_PORT_COUNT_EX"
+#define PICAM_ReadoutTimeCalculationExistsString        "PICAM_READOUT_TIME_CALC_EX"
+#define PICAM_VerticalShiftRateExistsString             "PICAM_VERTICAL_SHIFT_RATE_EX"
+#define PICAM_DisableDataFormattingExistsString         "PICAM_DISABLE_DATA_FORMATTING_EX"
+#define PICAM_ExactReadoutCountMaximumExistsString      "PICAM_EXACT_READOUT_COUNT_MAX_EX"
+#define PICAM_FrameRateCalculationExistsString          "PICAM_FRAME_RATE_CALC_EX"
+#define PICAM_FrameSizeExistsString                     "PICAM_FRAME_SIZE_EX"
+#define PICAM_FramesPerReadoutExistsString              "PICAM_FRAMES_PER_READOUT_EX"
+#define PICAM_FrameStrideExistsString                   "PICAM_FRAME_STRIDE_EX"
+#define PICAM_FrameTrackingBitDepthExistsString         "PICAM_FRAME_TRK_BIT_DEPTH_EX"
+#define PICAM_GateTrackingExistsString                  "PICAM_GATE_TRACKING_EX"
+#define PICAM_GateTrackingBitDepthExistsString          "PICAM_FRAME_TRACKING_BIT_DEPTH_EX"
+#define PICAM_ModulationTrackingExistsString            "PICAM_MODULATION_TRACKING_EX"
+#define PICAM_ModulationTrackingBitDepthExistsString    "PICAM_MODULATION_TRACKING_BIT_DEPTH_EX"
+#define PICAM_NormalizeOrientationExistsString          "PICAM_NORMALIZE_ORIENTATION_EX"
+#define PICAM_OnlineReadoutRateCalculationExistsString  "PICAM_ONLINE_READOUT_RATE_CALC_EX"
+#define PICAM_OrientationExistsString                   "PICAM_ORIENTATION_EX"
+#define PICAM_PhotonDetectionModeExistsString           "PICAM_PHOTON_DETECTION_MODE_EX"
+#define PICAM_PhotonDetectionThresholdExistsString      "PICAM_PHOTON_DETECT_THRESHOLD_EX"
+#define PICAM_PixelBitDepthExistsString                 "PICAM_PIXEL_BIT_DEPTH_EX"
+#define PICAM_PixelFormatExistsString                   "PICAM_PIXEL_FORMAT_EX"
+#define PICAM_ReadoutCountExistsString                  "PICAM_READOUT_COUNT_EX"
+#define PICAM_ReadoutRateCalculationExistsString   "PICAM_READOUT_RATE_CALC_EX"
+#define PICAM_ReadoutStrideExistsString                 "PICAM_READOUT_STRIDE_EX"
+#define PICAM_RoisExistsString                          "PICAM_ROIS_EX"
+#define PICAM_TimeStampBitDepthExistsString             "PICAM_TIME_STAMP_BIT_DEPTH_EX"
+#define PICAM_TimeStampResolutionExistsString           "PICAM_TIME_STAMP_RESOLUTION_EX"
+#define PICAM_TimeStampsExistsString                    "PICAM_TIME_STAMPS_EX"
+#define PICAM_TrackFramesExistsString                   "PICAM_TRACK_FRAMES_EX"
+#define PICAM_CcdCharacteristicsExistsString            "PICAM_CCD_CHARACTERISTICS_EX"
+#define PICAM_PixelGapHeightExistsString                "PICAM_PIXEL_GAP_HEIGHT_EX"
+#define PICAM_PixelGapWidthExistsString                 "PICAM_PIXEL_GAP_WIDTH_EX"
+#define PICAM_PixelHeightExistsString                   "PICAM_PIXEL_HEIGHT_EX"
+#define PICAM_PixelWidthExistsString                    "PICAM_PIXEL_WIDTH_EX"
+#define PICAM_SensorActiveBottomMarginExistsString      "PICAM_SENSOR_ACTIVE_BOTTOM_MARGIN_EX"
+#define PICAM_SensorActiveHeightExistsString            "PICAM_SENSOR_ACTIVE_HEIGHT_EX"
+#define PICAM_SensorActiveLeftMarginExistsString        "PICAM_SENSOR_ACTIVE_LEFT_MARGIN_EX"
+#define PICAM_SensorActiveRightMarginExistsString       "PICAM_SENSOR_ACTIVE_RIGHT_MARGIN_EX"
+#define PICAM_SensorActiveTopMarginExistsString         "PICAM_SENSOR_ACTIVE_TOP_MARGIN_EX"
+#define PICAM_SensorActiveWidthExistsString             "PICAM_SENSOR_ACTIVE_WIDTH_EX"
+#define PICAM_SensorMaskedBottomMarginExistsString      "PICAM_SENSOR_MASK_BOTTOM_MARGIN_EX"
+#define PICAM_SensorMaskedHeightExistsString            "PICAM_SENSOR_MASK_HEIGHT_EX"
+#define PICAM_SensorMaskedTopMarginExistsString         "PICAM_SENSOR_MASK_TOP_MARGIN_EX"
+#define PICAM_SensorSecondaryActiveHeightExistsString   "PICAM_SENSOR_SECONDARY_ACTIVE_HEIGHT_EX"
+#define PICAM_SensorSecondaryMaskedHeightExistsString   "PICAM_SENSOR_SECONDARY_MASK_HEIGHT_EX"
+#define PICAM_SensorTypeExistsString                   "PICAM_SENSOR_TYPE_EX"
+#define PICAM_ActiveBottomMarginExistsString            "PICAM_ACTIVE_BOTTOM_MARGIN_EX"
+#define PICAM_ActiveHeightExistsString                  "PICAM_ACTIVE_HEIGHT_EX"
+#define PICAM_ActiveLeftMarginExistsString              "PICAM_ACTIVE_LEFT_MARGIN_EX"
+#define PICAM_ActiveRightMarginExistsString             "PICAM_ACTIVE_RIGHT_MARGIN_EX"
+#define PICAM_ActiveTopMarginExistsString               "PICAM_ACTIVE_TOP_MARGIN_EX"
+#define PICAM_ActiveWidthExistsString                   "PICAM_ACTIVE_WIDTH_EX"
+#define PICAM_MaskedBottomMarginExistsString            "PICAM_MASK_BOTTOM_MARGIN_EX"
+#define PICAM_MaskedHeightExistsString                  "PICAM_MASK_HEIGHT_EX"
+#define PICAM_MaskedTopMarginExistsString               "PICAM_MASK_TOP_MARGIN_EX"
+#define PICAM_SecondaryActiveHeightExistsString         "PICAM_SECONDARY_ACTIVE_HEIGHT_EX"
+#define PICAM_SecondaryMaskedHeightExistsString         "PICAM_SECONDARY_MASK_HEIGHT_EX"
+#define PICAM_CleanBeforeExposureExistsString           "PICAM_CLEAN_BEFORE_EXPOSURE_EX"
+#define PICAM_CleanCycleCountExistsString               "PICAM_CLEAN_CYCLE_COUNT_EX"
+#define PICAM_CleanCycleHeightExistsString              "PICAM_CLEAN_CYCLE_HEIGHT_EX"
+#define PICAM_CleanSectionFinalHeightExistsString       "PICAM_CLEAN_SECTION_FINAL_HEIGHT_EX"
+#define PICAM_CleanSectionFinalHeightCountExistsString  "PICAM_CLEAN_SECTION_FINAL_COUNT_EX"
+#define PICAM_CleanSerialRegisterExistsString           "PICAM_CLEAN_SERIAL_REGISTER_EX"
+#define PICAM_CleanUntilTriggerExistsString             "PICAM_CLEAN_UNTIL_TRIG_EX"
+#define PICAM_DisableCoolingFanExistsString             "PICAM_DISABLE_COOLING_FAN_EX"
+#define PICAM_EnableSensorWindowHeaterExistsString      "PICAM_ENABLE_WINDOW_SENSOR_HEATER_EX"
+#define PICAM_SensorTemperatureReadingExistsString      "PICAM_SENSOR_TEMPERATURE_READING_EX"
+#define PICAM_SensorTemperatureSetPointExistsString     "PICAM_SENSOR_TEMPERATURE_SETPOINT_EX"
+#define PICAM_SensorTemperatureStatusExistsString       "PICAM_SENSOR_TEMPERATURE_STATUS_EX"
 // Camera Parameter Relevance
 #define PICAM_ExposureTimeRelString           "PICAM_EXPOSURE_TIME_PR"
 #define PICAM_ShutterClosingDelayRelString    "PICAM_SHUTTER_CLOSING_DELAY_PR"       
@@ -550,7 +870,7 @@ private:
 #define PICAM_DifEndingGateRelString                 "PICAM_DIF_END_GATE_PR"
 #define PICAM_DifStartingGateRelString               "PICAM_DIF_START_GATE_PR"
 #define PICAM_EMIccdGainRelString                    "PICAM_EMI_CCD_GAIN_PR"
-#define PICAM_EMIccdGainControlMode                  "PICAM_EMI_CCD_GAIN_CTL_MODE_PR"
+#define PICAM_EMIccdGainControlModeRelString         "PICAM_EMI_CCD_GAIN_CTL_MODE_PR"
 #define PICAM_EnableIntensifierRelString             "PICAM_ENABLE_INTENSIFIER_PR"  
 #define PICAM_EnableModulationRelString              "PICAM_ENABLE_MODULATION_PR"
 #define PICAM_GatingModeRelString                    "PICAM_GATING_MODE_PR"
