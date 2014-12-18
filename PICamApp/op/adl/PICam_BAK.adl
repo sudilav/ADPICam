@@ -124,11 +124,6 @@ display {
 		name="PICam_SensorTemperature.adl"
 		args="P=$(P),R=$(R)"
 	}
-	display[6] {
-		label="Hardware I/O"
-		name="PICam_HardwareIO.adl"
-		args="P=$(P),R=$(R)"
-	}
 	clr=14
 	bclr=4
 }
