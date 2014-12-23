@@ -94,7 +94,9 @@ public:
     void report(FILE *fp, int details);
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
-
+    virtual asynStatus readOctet(asynUser *pasynUser, char *value,
+                                        size_t nChars, size_t *nActual,
+										int *eomReason);
 protected:
 
     int PICAM_VersionNumber;
