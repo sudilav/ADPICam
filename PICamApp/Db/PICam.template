@@ -3407,3 +3407,40 @@ record(stringin, "$(P)$(R)SensorTemperatureStatus")
     field(SCAN, "I/O Intr")
     field(VAL, "Unknown")
 }
+
+record(bi, "$(P)$(R)EnableROIMinXInput")
+{
+    field(SCAN, "I/O Intr")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_ROI_MINX_INPUT")
+    field(ZNAM, "Disable")
+    field(ONAM, "Enable")
+}
+
+record(bi, "$(P)$(R)EnableROISizeXInput")
+{
+    field(SCAN, "I/O Intr")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_ROI_SIZEX_INPUT")
+    field(ZNAM, "Disable")
+    field(ONAM, "Enable")
+}
+
+record(bi, "$(P)$(R)EnableROIMinYInput")
+{
+    field(SCAN, "I/O Intr")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_ROI_MINY_INPUT")
+    field(ZNAM, "Disable")
+    field(ONAM, "Enable")
+}
+
+record(bi, "$(P)$(R)EnableROISizeYInput")
+{
+    field(SCAN, "I/O Intr")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_ROI_SIZEY_INPUT")
+    field(ZNAM, "Disable")
+    field(ONAM, "Enable")
+}
+
