@@ -1,5 +1,6 @@
 /* PICam.cpp */
 #include "ADPICam.h"
+#include <cstring>
 #include <string>
 #include <cmath>
 #include <algorithm>
@@ -172,15 +173,15 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
             &PICAM_EnableModulation);
     createParam(PICAM_GatingModeString , asynParamInt32,
             &PICAM_GatingMode);
-    createParam(PICAM_GatingSpeedString , asynParamInt32,
+    createParam(PICAM_GatingSpeedString , asynParamOctet,
             &PICAM_GatingSpeed);
     createParam(PICAM_IntensifierDiameterString , asynParamFloat64,
             &PICAM_IntensifierDiameter);
     createParam(PICAM_IntensifierGainString , asynParamInt32,
             &PICAM_IntensifierGain);
-    createParam(PICAM_IntensifierOptionsString , asynParamInt32,
+    createParam(PICAM_IntensifierOptionsString , asynParamOctet,
             &PICAM_IntensifierOptions);
-    createParam(PICAM_IntensifierStatusString , asynParamInt32,
+    createParam(PICAM_IntensifierStatusString , asynParamOctet,
             &PICAM_IntensifierStatus);
     createParam(PICAM_ModulationDurationString , asynParamFloat64,
             &PICAM_ModulationDuration);
@@ -190,9 +191,9 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
             &PICAM_PhosphorDecayDelay);
     createParam(PICAM_PhosphorDecayDelayResolutionString , asynParamFloat64,
             &PICAM_PhosphorDecayDelayResolution);
-    createParam(PICAM_PhosphorTypeString , asynParamInt32,
+    createParam(PICAM_PhosphorTypeString , asynParamOctet,
             &PICAM_PhosphorType);
-    createParam(PICAM_PhotocathodeSensitivityString , asynParamInt32,
+    createParam(PICAM_PhotocathodeSensitivityString , asynParamOctet,
             &PICAM_PhotocathodeSensitivity);
     //TODO Repetitive Gate needs Pulse Type
     createParam(PICAM_RepetitiveModulationString , asynParamFloat64,
@@ -261,7 +262,7 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
             &PICAM_NondestructiveReadoutPeriod);
     createParam(PICAM_ReadoutControlModeString, asynParamInt32,
             &PICAM_ReadoutControlMode);
-    createParam(PICAM_ReadoutOrientationString, asynParamInt32,
+    createParam(PICAM_ReadoutOrientationString, asynParamOctet,
             &PICAM_ReadoutOrientation);
     createParam(PICAM_ReadoutPortCountString, asynParamInt32,
             &PICAM_ReadoutPortCount);
@@ -295,7 +296,7 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
             &PICAM_NormalizeOrientation);
     createParam(PICAM_OnlineReadoutRateCalcString, asynParamFloat64,
             &PICAM_OnlineReadoutRateCalc);
-    createParam(PICAM_OrientationString, asynParamInt32,
+    createParam(PICAM_OrientationString, asynParamOctet,
             &PICAM_Orientation);
     createParam(PICAM_PhotonDetectionModeString, asynParamInt32,
             &PICAM_PhotonDetectionMode);
@@ -320,7 +321,7 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
     createParam(PICAM_TrackFramesString, asynParamInt32,
             &PICAM_TrackFrames);
 
-    createParam(PICAM_CcdCharacteristicsString, asynParamInt32,
+    createParam(PICAM_CcdCharacteristicsString, asynParamOctet,
     		&PICAM_CcdCharacteristics);
     createParam(PICAM_PixelGapHeightString, asynParamFloat64,
     		&PICAM_PixelGapHeight);
@@ -352,7 +353,7 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
     		&PICAM_SensorSecondaryActiveHeight);
     createParam(PICAM_SensorSecondaryMaskedHeightString, asynParamInt32,
     		&PICAM_SensorSecondaryMaskedHeight);
-    createParam(PICAM_SensorTypeString, asynParamInt32,
+    createParam(PICAM_SensorTypeString, asynParamOctet,
     		&PICAM_SensorType);
     //Sensor Layout
     createParam(PICAM_ActiveBottomMarginString, asynParamInt32,
@@ -398,7 +399,7 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
             &PICAM_DisableCoolingFan);
     createParam(PICAM_EnableSensorWindowHeaterString, asynParamInt32,
             &PICAM_EnableSensorWindowHeater);
-    createParam(PICAM_SensorTemperatureStatusString, asynParamInt32,
+    createParam(PICAM_SensorTemperatureStatusString, asynParamOctet,
             &PICAM_SensorTemperatureStatus);
 
     // Camera Parameter Exists for detector
@@ -1191,7 +1192,11 @@ asynStatus ADPICam::readEnum(asynUser *pasynUser, char *strings[], int values[],
 								picamParameterET,
 								(int)constraints->values_array[ii],
 								&paramConstraintString);
-							printf("---%s\n", paramConstraintString);
+							asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+									"%s:%s ---%s\n",
+									driverName,
+									functionName,
+									paramConstraintString);
 							strings[*nIn] = epicsStrDup(paramConstraintString);
 							values[*nIn] = (int)constraints->values_array[ii];
 							Picam_DestroyString(paramConstraintString);
@@ -1405,6 +1410,17 @@ void ADPICam::report(FILE *fp, int details) {
                         roisConstraints->height_constraint.minimum,
                         roisConstraints->height_constraint.maximum,
                         roisConstraints->rules);
+				fprintf(fp, "-----x_binning_limits:\n");
+				for (int jj = 0; jj < roisConstraints->x_binning_limits_count; jj++) {
+					fprintf(fp, "------ %d\n",
+							roisConstraints->x_binning_limits_array[jj]);
+				}
+				fprintf(fp, "-----y_binning_limits:\n");
+				for (int kk = 0; kk < roisConstraints->y_binning_limits_count; kk++) {
+					fprintf(fp, "------ %d\n",
+							roisConstraints->y_binning_limits_array[kk]);
+				}
+
                 //			roisConstraints->x_.minimum,
                 //			roisConstraints->x_constraint.minimum);
                 Picam_DestroyRoisConstraints(roisConstraints);
@@ -1567,6 +1583,7 @@ asynStatus ADPICam::writeInt32(asynUser *pasynUser, epicsInt32 value) {
                         function,
                         picamParameter);
             }
+
         }
 
     } else if (function == ADSizeX) {
@@ -1656,6 +1673,78 @@ asynStatus ADPICam::writeInt32(asynUser *pasynUser, epicsInt32 value) {
 
     return (asynStatus) status;
 
+}
+
+asynStatus ADPICam::readOctet(asynUser *pasynUser, char *value,
+                                    size_t nChars, size_t *nActual,
+									int *eomReason)
+{
+	static const char *functionName = "writeOctet";
+	int status = asynSuccess;
+	pibln parameterDoesExist;
+	pibln parameterRelevant;
+	piint intValue;
+	int function = pasynUser->reason;
+	PicamParameter picamParameter;
+	PicamValueType valueType;
+	PicamEnumeratedType enumType;
+	PicamError error;
+	const char *errString;
+	const char *enumString;
+
+	if ( piLookupPICamParameter(function, picamParameter) == PicamError_None) {
+		Picam_DoesParameterExist(currentCameraHandle,
+				picamParameter,
+				&parameterDoesExist);
+		if (parameterDoesExist){
+			error = Picam_IsParameterRelevant(currentCameraHandle,
+					picamParameter,
+					&parameterRelevant);
+		}
+		if (error != PicamError_None){
+			Picam_GetEnumerationString(PicamEnumeratedType_Error,
+					error, &errString);
+			asynPrint(pasynUser, ASYN_TRACE_ERROR,
+					"%s:%s Trouble determining if parameter is relevant: %s\n");
+			return asynError;
+		}
+		if (parameterRelevant){
+			Picam_GetParameterValueType(currentCameraHandle,
+					picamParameter,
+					&valueType);
+			switch (valueType) {
+			case PicamValueType_Enumeration:
+				Picam_GetParameterEnumeratedType(currentCameraHandle,
+						picamParameter,
+						&enumType);
+				Picam_GetParameterIntegerValue(currentCameraHandle,
+						picamParameter,
+						&intValue);
+				Picam_GetEnumerationString(enumType, intValue, &enumString);
+				asynPrint (pasynUserSelf, ASYN_TRACE_FLOW,
+						"%s:%s ----readOctet value=%s\n",
+						driverName,
+						functionName,
+						enumString);
+				lock();
+				strncpy (value, enumString, nChars);
+				unlock();
+				value[nChars-1] = '\0';
+				*nActual = strlen(value);
+				Picam_DestroyString(enumString);
+				break;
+			}
+		}
+	}
+	else  {
+        /* If this parameter belongs to a base class call its method */
+        if (function < PICAM_FIRST_PARAM) {
+            status = ADDriver::readOctet(pasynUser, value, nChars, nActual,
+            		eomReason);
+        }
+	}
+
+	return (asynStatus)status;
 }
 
 asynStatus ADPICam::writeFloat64(asynUser *pasynUser, epicsFloat64 value) {
@@ -4163,82 +4252,111 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
                 paramString);
         Picam_DestroyString(paramString);
         driverParam = piLookupDriverParameter(parameterList[ii]);
-        if (driverParam >= 0) {
-            error = Picam_GetParameterValueType(currentCameraHandle,
-                    parameterList[ii], &paramType);
-            if (error != PicamError_None) {
-                //TODO
-            }
-            PicamConstraintType constraintType;
-            Picam_GetParameterConstraintType(currentCameraHandle,
-                    parameterList[ii],
-                    &constraintType);
-            if (constraintType == PicamConstraintType_Collection){
-                const pichar *paramString;
-                Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
-                        parameterList[ii],
-                        &paramString);
-                printf ("updating list for %s\n", paramString);
-                Picam_DestroyString(paramString);
-                piUpdateParameterListValues(parameterList[ii], driverParam);
-            }
-            switch (paramType) {
-            case PicamValueType_Integer:
-            case PicamValueType_Enumeration:
-                piint intVal;
-                error = Picam_GetParameterIntegerValue(currentCameraHandle,
-                        parameterList[ii], &intVal);
-                setIntegerParam(driverParam, intVal);
-                break;
-            case PicamValueType_LargeInteger:
-                pi64s largeVal;
-                int val;
-                error = Picam_GetParameterLargeIntegerValue(currentCameraHandle,
-                        parameterList[ii], &largeVal);
-                val = (int)largeVal;
-                setIntegerParam(driverParam, val);
-                break;
-            case PicamValueType_FloatingPoint:
-                piflt fltVal;
-                const PicamCollectionConstraint *speedConstraint;
-                if (parameterList[ii] == PicamParameter_AdcSpeed) {
-                    error = Picam_GetParameterCollectionConstraint(
-                            currentCameraHandle, PicamParameter_AdcSpeed,
-                            PicamConstraintCategory_Capable, &speedConstraint);
-                    error = Picam_GetParameterFloatingPointValue(
-                            currentCameraHandle, PicamParameter_AdcSpeed,
-                            &fltVal);
-                    for (int ii = 0; ii < speedConstraint->values_count; ii++) {
-                        if (speedConstraint->values_array[ii] == fltVal) {
-                            setIntegerParam(driverParam, ii);
-                        }
-                    }
-                } else {
-                    error = Picam_GetParameterFloatingPointValue(
-                            currentCameraHandle, parameterList[ii], &fltVal);
-                    setDoubleParam(driverParam, fltVal);
+        pibln doesParamExist;
+        Picam_DoesParameterExist(currentCameraHandle,
+        		parameterList[ii],
+				&doesParamExist);
+        if (doesParamExist) {
+			if (driverParam >= 0) {
+				error = Picam_GetParameterValueType(currentCameraHandle,
+						parameterList[ii], &paramType);
+				if (error != PicamError_None) {
+					//TODO
+				}
+				PicamConstraintType constraintType;
+				Picam_GetParameterConstraintType(currentCameraHandle,
+						parameterList[ii],
+						&constraintType);
+				if (constraintType == PicamConstraintType_Collection){
+					const pichar *paramString;
+					Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
+							parameterList[ii],
+							&paramString);
+					asynPrint (pasynUserSelf, ASYN_TRACE_FLOW,
+							"%s:%s Updating list for %s\n",
+							driverName,
+							functionName,
+							paramString);
+					Picam_DestroyString(paramString);
+					piUpdateParameterListValues(parameterList[ii], driverParam);
+				}
+				switch (paramType) {
+				case PicamValueType_Integer:
+					piint intVal;
+					error = Picam_GetParameterIntegerValue(currentCameraHandle,
+							parameterList[ii], &intVal);
+					setIntegerParam(driverParam, intVal);
+					break;
+				case PicamValueType_Enumeration:
+					if (constraintType != PicamConstraintType_None) {
+						error = Picam_GetParameterIntegerValue(currentCameraHandle,
+								parameterList[ii], &intVal);
+						setIntegerParam(driverParam, intVal);
+					}
+					else {
+						PicamEnumeratedType picamET;
+						const char *enumString;
+						int intValue;
+						Picam_GetParameterEnumeratedType(currentCameraHandle,
+								parameterList[ii],
+								&picamET);
+						Picam_GetParameterIntegerValue(currentCameraHandle,
+												parameterList[ii], &intValue);
+						Picam_GetEnumerationString(picamET, intValue, &enumString);
+						setStringParam(driverParam, enumString);
+						Picam_DestroyString(enumString);
+					}
+					break;
+				case PicamValueType_LargeInteger:
+					pi64s largeVal;
+					int val;
+					error = Picam_GetParameterLargeIntegerValue(currentCameraHandle,
+							parameterList[ii], &largeVal);
+					val = (int)largeVal;
+					setIntegerParam(driverParam, val);
+					break;
+				case PicamValueType_FloatingPoint:
+					piflt fltVal;
+					const PicamCollectionConstraint *speedConstraint;
+					if (parameterList[ii] == PicamParameter_AdcSpeed) {
+						error = Picam_GetParameterCollectionConstraint(
+								currentCameraHandle, PicamParameter_AdcSpeed,
+								PicamConstraintCategory_Capable, &speedConstraint);
+						error = Picam_GetParameterFloatingPointValue(
+								currentCameraHandle, PicamParameter_AdcSpeed,
+								&fltVal);
+						for (int ii = 0; ii < speedConstraint->values_count; ii++) {
+							if (speedConstraint->values_array[ii] == fltVal) {
+								setIntegerParam(driverParam, ii);
+							}
+						}
+					} else {
+						error = Picam_GetParameterFloatingPointValue(
+								currentCameraHandle, parameterList[ii], &fltVal);
+						setDoubleParam(driverParam, fltVal);
 
-                }
-                break;
-            }
+					}
+					break;
+				}
 
-        } else if (parameterList[ii] == PicamParameter_Rois) {
-            const PicamRois *paramRois;
-            error = Picam_GetParameterRoisValue(currentCameraHandle,
-                    parameterList[ii], &paramRois);
-            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "Rois %d\n",
-                    paramRois->roi_count);
+			} else if (parameterList[ii] == PicamParameter_Rois) {
+				const PicamRois *paramRois;
+				error = Picam_GetParameterRoisValue(currentCameraHandle,
+						parameterList[ii], &paramRois);
+				asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "Rois %d\n",
+						paramRois->roi_count);
 
-            if (paramRois->roi_count == 1) {
-                setIntegerParam(ADBinX, paramRois->roi_array[0].x_binning);
-                setIntegerParam(ADBinY, paramRois->roi_array[0].y_binning);
-                setIntegerParam(ADMinX, paramRois->roi_array[0].x);
-                setIntegerParam(ADMinY, paramRois->roi_array[0].y);
-                setIntegerParam(ADSizeX, paramRois->roi_array[0].width);
-                setIntegerParam(ADSizeY, paramRois->roi_array[0].height);
-                setIntegerParam(NDArraySizeX, paramRois->roi_array[0].width);
-                setIntegerParam(NDArraySizeY, paramRois->roi_array[0].height);
-            }
+				if (paramRois->roi_count == 1) {
+					setIntegerParam(ADBinX, paramRois->roi_array[0].x_binning);
+					setIntegerParam(ADBinY, paramRois->roi_array[0].y_binning);
+					setIntegerParam(ADMinX, paramRois->roi_array[0].x);
+					setIntegerParam(ADMinY, paramRois->roi_array[0].y);
+					setIntegerParam(ADSizeX, paramRois->roi_array[0].width);
+					setIntegerParam(ADSizeY, paramRois->roi_array[0].height);
+					setIntegerParam(NDArraySizeX, paramRois->roi_array[0].width);
+					setIntegerParam(NDArraySizeY, paramRois->roi_array[0].height);
+				}
+			}
         }
     }
 
@@ -4893,7 +5011,10 @@ asynStatus ADPICam::piUpdateParameterListValues(
 							picamParameterET,
 							(int)constraints->values_array[ii],
 							&paramConstraintString);
-						printf("%s driver Parameter: %d\n",
+						asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+								"%s:%s  -- %s,  driver Parameter: %d\n",
+								driverName,
+								functionName,
 								paramConstraintString,
 								driverParameter);
 						strings[nIn] = epicsStrDup(paramConstraintString);
@@ -5000,8 +5121,48 @@ asynStatus ADPICam::piWriteInt32RangeType(asynUser *pasynUser,
     }
     if (valType == PicamValueType_Integer) {
         error = Picam_SetParameterIntegerValue(currentCameraHandle,
-                PicamParameter_ReadoutCount, value);
-        if (error != PicamError_None) {
+                picamParameter, value);
+        if (error == PicamError_InvalidParameterValue) {
+        	PicamConstraintType paramCT;
+        	Picam_GetParameterConstraintType(currentCameraHandle,
+        			picamParameter,
+					&paramCT);
+        	if (paramCT == PicamConstraintType_Range){
+        		const PicamRangeConstraint *constraint;
+        		Picam_GetParameterRangeConstraint(currentCameraHandle,
+        				picamParameter,
+						PicamConstraintCategory_Required,
+						&constraint);
+        		if (value < constraint->minimum){
+        			value = (int)constraint->minimum;
+        		}
+        		else if (value > constraint->maximum){
+        			value = (int)constraint->maximum;
+        		}
+                error = Picam_SetParameterIntegerValue(currentCameraHandle,
+                        picamParameter, value);
+        		if (error != PicamError_None) {
+                    Picam_GetEnumerationString(PicamEnumeratedType_Error, error,
+                            &errorString);
+                    Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
+                            picamParameter,
+                            &paramString);
+                    asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                            "%s:%s error writing %d to  %s \n"
+                            "Reason %s and not out of range\n",
+                            driverName,
+                            functionName,
+                            value,
+                            paramString,
+                            errorString);
+                    Picam_DestroyString(paramString);
+                    Picam_DestroyString(errorString);
+                    return asynError;
+                }
+
+        	}
+        }
+        else if (error != PicamError_None) {
             Picam_GetEnumerationString(PicamEnumeratedType_Error, error,
                     &errorString);
             Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
@@ -5024,7 +5185,7 @@ asynStatus ADPICam::piWriteInt32RangeType(asynUser *pasynUser,
         pi64s largeValue;
         largeValue = value;
         error = Picam_SetParameterLargeIntegerValue(currentCameraHandle,
-                PicamParameter_ReadoutCount, largeValue);
+                picamParameter, largeValue);
         if (error != PicamError_None) {
             Picam_GetEnumerationString(PicamEnumeratedType_Error, error,
                     &errorString);
