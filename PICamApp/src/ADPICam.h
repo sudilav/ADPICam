@@ -60,10 +60,6 @@ public:
             PicamParameter parameter, const PicamModulations *value);
     asynStatus piLoadAvailableCameraIDs();
     asynStatus piPrintRoisConstraints();
-    static PicamError PIL_CALL piParameterRelevanceChanged(
-            PicamHandle camera,
-            PicamParameter parameter,
-            pibln relevent );
     static PicamError PIL_CALL piParameterFloatingPointValueChanged(
             PicamHandle camera,
             PicamParameter parameter,
@@ -76,20 +72,22 @@ public:
             PicamHandle camera,
             PicamParameter parameter,
             pi64s value );
-    static PicamError PIL_CALL piParameterRoisValueChanged(
-            PicamHandle camera,
-            PicamParameter parameter,
-            const PicamRois *value );
-    static PicamError PIL_CALL piParameterPulseValueChanged(
-            PicamHandle camera,
-            PicamParameter parameter,
-            const PicamPulse *value );
     static PicamError PIL_CALL piParameterModulationsValueChanged(
             PicamHandle camera,
             PicamParameter parameter,
             const PicamModulations *value );
-//    void piTriggerCallbacksGenericPointerTask(void);
-//    void piTriggerParamCallbacksTask(void);
+    static PicamError PIL_CALL piParameterPulseValueChanged(
+            PicamHandle camera,
+            PicamParameter parameter,
+            const PicamPulse *value );
+    static PicamError PIL_CALL piParameterRelevanceChanged(
+            PicamHandle camera,
+            PicamParameter parameter,
+            pibln relevent );
+    static PicamError PIL_CALL piParameterRoisValueChanged(
+            PicamHandle camera,
+            PicamParameter parameter,
+            const PicamRois *value );
     void piHandleNewImageTask(void);
     void report(FILE *fp, int details);
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
@@ -538,10 +536,10 @@ private:
     epicsMutex dataLock;
 
     asynStatus initializeDetector();
-    asynStatus piClearParameterExists();
-    asynStatus piClearParameterRelevance();
     asynStatus piAcquireStart();
     asynStatus piAcquireStop();
+    asynStatus piClearParameterExists();
+    asynStatus piClearParameterRelevance();
     asynStatus piLoadUnavailableCameraIDs();
     int piLookupDriverParameter(PicamParameter picamParameter);
     PicamError piLookupPICamParameter(int driverParameter,
@@ -562,17 +560,17 @@ private:
     asynStatus piUnregisterConstraintChangeWatch(PicamHandle cameraHandle);
     asynStatus piUnregisterRelevantWatch(PicamHandle cameraHandle);
     asynStatus piUnregisterValueChangeWatch(PicamHandle cameraHandle);
-    asynStatus piUpdateParameterExists();
-    asynStatus piUpdateParameterRelevance();
     asynStatus piUpdateAvailableCamerasList();
+    asynStatus piUpdateParameterExists();
     asynStatus piUpdateParameterListValues(PicamParameter parameter,
             int driverParameter);
+    asynStatus piUpdateParameterRelevance();
     asynStatus piUpdateUnavailableCamerasList();
-    asynStatus piWriteInt32RangeType(asynUser *pasynUser,
+    asynStatus piWriteInt32CollectionType(asynUser *pasynUser,
             epicsInt32 value,
             int driverParameter,
             PicamParameter picamParameter);
-    asynStatus piWriteInt32CollectionType(asynUser *pasynUser,
+    asynStatus piWriteInt32RangeType(asynUser *pasynUser,
             epicsInt32 value,
             int driverParameter,
             PicamParameter picamParameter);

@@ -1637,8 +1637,6 @@ asynStatus ADPICam::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     static const char *functionName = "writeInt32";
     int status = asynSuccess;
     PicamError error = PicamError_None;
-    const PicamRois * paramRois;
-    const PicamRoisConstraint *roisConstraint;
     const char* errorString;
     int sizeX, sizeY, binX, binY, minX, minY;
     int function = pasynUser->reason;
@@ -1673,7 +1671,6 @@ asynStatus ADPICam::writeInt32(asynUser *pasynUser, epicsInt32 value) {
             Picam_DestroyString(errorString);
             return asynError;
         }
-        PicamValueType valType;
         if (isRelevant && currentCameraHandle != NULL){
             PicamConstraintType constraintType;
             error = Picam_GetParameterConstraintType(currentCameraHandle,
@@ -1928,7 +1925,6 @@ asynStatus ADPICam::piAcquireStart(){
 asynStatus ADPICam::piAcquireStop(){
     const char *functionName = "piAcquireStop";
     int status = asynSuccess;
-    PicamError error;
 
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "Stop acquisition\n");
@@ -4231,7 +4227,6 @@ asynStatus ADPICam::piSetParameterRelevance(asynUser *pasynUser,
 asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
     int status = asynSuccess;
     PicamError error;
-    const pichar *errorString;
     const pichar *paramString;
     piint parameterCount;
     const PicamParameter *parameterList;
