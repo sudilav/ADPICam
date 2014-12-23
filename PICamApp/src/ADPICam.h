@@ -253,6 +253,12 @@ protected:
     int PICAM_EnableSensorWindowHeater;
     int PICAM_SensorTemperatureStatus;
 
+    //Display Aids
+    int PICAM_EnableROIMinXInput;
+    int PICAM_EnableROISizeXInput;
+    int PICAM_EnableROIMinYInput;
+    int PICAM_EnableROISizeYInput;
+
     // Camera Parameter exists for this detector
     int PICAM_ExposureTimeExists;
     int PICAM_ShutterClosingDelayExists;
@@ -728,6 +734,12 @@ private:
 #define PICAM_DisableCoolingFanString          "PICAM_DISABLE_COOLING_FAN"
 #define PICAM_EnableSensorWindowHeaterString     "PICAM_ENABLE_SENSOR_WINDOW_HEATER"
 #define PICAM_SensorTemperatureStatusString      "PICAM_SENSOR_TEMPERATURE_STATUS"
+
+//Display Aids
+#define PICAM_EnableROIMinXInputString         "PICAM_ENABLE_ROI_MINX_INPUT"
+#define PICAM_EnableROISizeXInputString         "PICAM_ENABLE_ROI_SIZEX_INPUT"
+#define PICAM_EnableROIMinYInputString         "PICAM_ENABLE_ROI_MINY_INPUT"
+#define PICAM_EnableROISizeYInputString         "PICAM_ENABLE_ROI_SIZEY_INPUT"
 
 // Camera Parameter Exists
 #define PICAM_ExposureTimeExistsString           "PICAM_EXPOSURE_TIME_EX"
