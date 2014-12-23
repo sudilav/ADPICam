@@ -2891,34 +2891,65 @@ asynStatus ADPICam::piHandleCameraDiscovery(const PicamCameraID *id,
 }
 
 /**
- * Handler method called by piParameterRelevanceChanged callback method
- * Sets the relevence of a parameter based on changes in parameters.
+ * Handler method called by piParameterFloatingPointValueChanged callback method
+ * Makes necessary since the parameter has changed.  Primarily will update the
+ * Readback value for many parameters.
  */
-asynStatus ADPICam::piHandleParameterRelevanceChanged(PicamHandle camera,
-        PicamParameter parameter, pibln relevant) {
-    const char *functionName = "piHandleParameterRelevanceChanged";
+asynStatus ADPICam::piHandleParameterFloatingPointValueChanged(
+        PicamHandle camera, PicamParameter parameter, piflt value) {
+    const char *functionName = "piHandleParameterFloatingPointValueChanged";
     PicamError error = PicamError_None;
     int status = asynSuccess;
-    PicamConstraintType constraintType;
-    PicamValueType valueType;
+    const pichar *parameterString;
     int driverParameter;
 
-    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-            "%s:%s Enter",
-            driverName,
+    driverParameter = piLookupDriverParameter(parameter);
+    // Handle special cases
+    if (parameter == PicamParameter_AdcSpeed) {
+        const PicamCollectionConstraint *speedConstraint;
+        piflt fltVal;
+        error = Picam_GetParameterCollectionConstraint(currentCameraHandle,
+                PicamParameter_AdcSpeed, PicamConstraintCategory_Capable,
+                &speedConstraint);
+        error = Picam_GetParameterFloatingPointValue(currentCameraHandle,
+                PicamParameter_AdcSpeed, &fltVal);
+        printf("setting value for ADCspeed % f\n", fltVal);
+        for (int ii = 0; ii < speedConstraint->values_count; ii++) {
+            if (speedConstraint->values_array[ii] == fltVal) {
+                setIntegerParam(driverParameter, ii);
+            }
+        }
+    //Handle the cases where simple translation between PICAM and areaDetector
+    //is possible
+    } else if (driverParameter >= 0) {
+        Picam_GetEnumerationString(PicamEnumeratedType_Parameter, parameter,
+                &parameterString);
+        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                "%s:%s Setting PICAM parameter %s to driverParameter %d, "
+        		"value %f\n",
+                driverName, functionName, parameterString, driverParameter,
+                value);
+        Picam_DestroyString(parameterString);
+        setDoubleParam(driverParameter, value);
+        // Notify that handling a parameter is about to fall on the floor
+        // unhandled
+    } else {
+        Picam_GetEnumerationString(PicamEnumeratedType_Parameter, parameter,
+                &parameterString);
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s:%s Parameter %s floating point value Changed to %f.  "
+                        "This change is not handled.\n", driverName,
+                functionName, parameterString, value);
+        Picam_DestroyString(parameterString);
+        switch (parameter) {
+        case PicamParameter_ExposureTime:
+            setDoubleParam(ADAcquireTime, value);
+        }
+    }
+    callParamCallbacks();
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s Exit\n", driverName,
             functionName);
 
-    status = piSetParameterRelevance(pasynUserSelf, parameter, (int) relevant);
-    if (relevant != 0) {
-    	Picam_GetParameterConstraintType(currentCameraHandle, parameter, &constraintType);
-    	Picam_GetParameterValueType(currentCameraHandle, parameter, &valueType);
-    	driverParameter = piLookupDriverParameter(parameter);
-    	if ((driverParameter > 0) &&
-    			((constraintType == PicamConstraintType_Collection) ||
-    					(valueType == PicamValueType_Enumeration))) {
-    		piUpdateParameterListValues(parameter, driverParameter);
-    	}
-    }
     return (asynStatus) status;
 }
 
@@ -3021,87 +3052,21 @@ asynStatus ADPICam::piHandleParameterLargeIntegerValueChanged(
 }
 
 /**
- * Handler method called by piParameterFloatingPointValueChanged callback method
- * Makes necessary since the parameter has changed.  Primarily will update the
- * Readback value for many parameters.
+ * Handle case when a PicamModulations value has changed.  Called by
+ * piParameterModulationsValueChanged.
  */
-asynStatus ADPICam::piHandleParameterFloatingPointValueChanged(
-        PicamHandle camera, PicamParameter parameter, piflt value) {
-    const char *functionName = "piHandleParameterFloatingPointValueChanged";
-    PicamError error = PicamError_None;
-    int status = asynSuccess;
-    const pichar *parameterString;
-    int driverParameter;
-
-    driverParameter = piLookupDriverParameter(parameter);
-    // Handle special cases
-    if (parameter == PicamParameter_AdcSpeed) {
-        const PicamCollectionConstraint *speedConstraint;
-        piflt fltVal;
-        error = Picam_GetParameterCollectionConstraint(currentCameraHandle,
-                PicamParameter_AdcSpeed, PicamConstraintCategory_Capable,
-                &speedConstraint);
-        error = Picam_GetParameterFloatingPointValue(currentCameraHandle,
-                PicamParameter_AdcSpeed, &fltVal);
-        printf("setting value for ADCspeed % f\n", fltVal);
-        for (int ii = 0; ii < speedConstraint->values_count; ii++) {
-            if (speedConstraint->values_array[ii] == fltVal) {
-                setIntegerParam(driverParameter, ii);
-            }
-        }
-    //Handle the cases where simple translation between PICAM and areaDetector
-    //is possible
-    } else if (driverParameter >= 0) {
-        Picam_GetEnumerationString(PicamEnumeratedType_Parameter, parameter,
-                &parameterString);
-        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                "%s:%s Setting PICAM parameter %s to driverParameter %d, "
-        		"value %f\n",
-                driverName, functionName, parameterString, driverParameter,
-                value);
-        Picam_DestroyString(parameterString);
-        setDoubleParam(driverParameter, value);
-        // Notify that handling a parameter is about to fall on the floor
-        // unhandled
-    } else {
-        Picam_GetEnumerationString(PicamEnumeratedType_Parameter, parameter,
-                &parameterString);
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s:%s Parameter %s floating point value Changed to %f.  "
-                        "This change is not handled.\n", driverName,
-                functionName, parameterString, value);
-        Picam_DestroyString(parameterString);
-        switch (parameter) {
-        case PicamParameter_ExposureTime:
-            setDoubleParam(ADAcquireTime, value);
-        }
-    }
-    callParamCallbacks();
-    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s Exit\n", driverName,
-            functionName);
-
-    return (asynStatus) status;
-}
-
-/**
- * Handle the case that an ROI value has changed.
- */
-asynStatus ADPICam::piHandleParameterRoisValueChanged(PicamHandle camera,
-        PicamParameter parameter, const PicamRois *value) {
-    const char *functionName = "piHandleParameterRoisValueChanged";
+asynStatus ADPICam::piHandleParameterModulationsValueChanged(PicamHandle camera,
+        PicamParameter parameter, const PicamModulations *value) {
+    const char *functionName = "piHandleParameterModulationsValueChanged";
     PicamError error = PicamError_None;
     int status = asynSuccess;
     const char *parameterString;
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s Enter\n", driverName,
+            functionName);
     Picam_GetEnumerationString(PicamEnumeratedType_Parameter, parameter,
             &parameterString);
-    printf("parameter %s Rois value Changed\n", parameterString);
-    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "\n----- minX = %d\n----- minY = %d\n"
-                    "----- sizeX = %d\n----- sizeY = %d\n"
-                    "----- binX = %d\n----- binY = %d\n", value->roi_array[0].x,
-            value->roi_array[0].y, value->roi_array[0].width,
-            value->roi_array[0].height, value->roi_array[0].x_binning,
-            value->roi_array[0].y_binning);
+    printf("parameter %s Modulations value Changed to %f", parameterString,
+            value);
     Picam_DestroyString(parameterString);
 
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s Exit\n", driverName,
@@ -3134,21 +3099,56 @@ asynStatus ADPICam::piHandleParameterPulseValueChanged(PicamHandle camera,
 }
 
 /**
- * Handle case when a PicamModulations value has changed.  Called by
- * piParameterModulationsValueChanged.
+ * Handler method called by piParameterRelevanceChanged callback method
+ * Sets the relevence of a parameter based on changes in parameters.
  */
-asynStatus ADPICam::piHandleParameterModulationsValueChanged(PicamHandle camera,
-        PicamParameter parameter, const PicamModulations *value) {
-    const char *functionName = "piHandleParameterModulationsValueChanged";
+asynStatus ADPICam::piHandleParameterRelevanceChanged(PicamHandle camera,
+        PicamParameter parameter, pibln relevant) {
+    const char *functionName = "piHandleParameterRelevanceChanged";
+    PicamError error = PicamError_None;
+    int status = asynSuccess;
+    PicamConstraintType constraintType;
+    PicamValueType valueType;
+    int driverParameter;
+
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+            "%s:%s Enter",
+            driverName,
+            functionName);
+
+    status = piSetParameterRelevance(pasynUserSelf, parameter, (int) relevant);
+    if (relevant != 0) {
+    	Picam_GetParameterConstraintType(currentCameraHandle, parameter, &constraintType);
+    	Picam_GetParameterValueType(currentCameraHandle, parameter, &valueType);
+    	driverParameter = piLookupDriverParameter(parameter);
+    	if ((driverParameter > 0) &&
+    			((constraintType == PicamConstraintType_Collection) ||
+    					(valueType == PicamValueType_Enumeration))) {
+    		piUpdateParameterListValues(parameter, driverParameter);
+    	}
+    }
+    return (asynStatus) status;
+}
+
+/**
+ * Handle the case that an ROI value has changed.
+ */
+asynStatus ADPICam::piHandleParameterRoisValueChanged(PicamHandle camera,
+        PicamParameter parameter, const PicamRois *value) {
+    const char *functionName = "piHandleParameterRoisValueChanged";
     PicamError error = PicamError_None;
     int status = asynSuccess;
     const char *parameterString;
-    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s Enter\n", driverName,
-            functionName);
     Picam_GetEnumerationString(PicamEnumeratedType_Parameter, parameter,
             &parameterString);
-    printf("parameter %s Modulations value Changed to %f", parameterString,
-            value);
+    printf("parameter %s Rois value Changed\n", parameterString);
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "\n----- minX = %d\n----- minY = %d\n"
+                    "----- sizeX = %d\n----- sizeY = %d\n"
+                    "----- binX = %d\n----- binY = %d\n", value->roi_array[0].x,
+            value->roi_array[0].y, value->roi_array[0].width,
+            value->roi_array[0].height, value->roi_array[0].x_binning,
+            value->roi_array[0].y_binning);
     Picam_DestroyString(parameterString);
 
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s Exit\n", driverName,
@@ -3179,15 +3179,16 @@ asynStatus ADPICam::piRegisterConstraintChangeWatch(PicamHandle cameraHandle) {
 }
 
 /**
- * Callback event to catch when a parameter's relevance has changed.
+ * Callback to Handle when a FloatingPoint value changes.
  */
-PicamError PIL_CALL ADPICam::piParameterRelevanceChanged(PicamHandle camera,
-        PicamParameter parameter, pibln relevent) {
+PicamError PIL_CALL ADPICam::piParameterFloatingPointValueChanged(
+        PicamHandle camera, PicamParameter parameter, piflt value) {
     int status = asynSuccess;
     PicamError error = PicamError_None;
+    const char *functionName = "piParameterFloatingPointValueChanged";
 
-    status = ADPICam_Instance->piHandleParameterRelevanceChanged(camera,
-            parameter, relevent);
+    status = ADPICam_Instance->piHandleParameterFloatingPointValueChanged(
+            camera, parameter, value);
 
     return error;
 }
@@ -3223,30 +3224,16 @@ PicamError PIL_CALL ADPICam::piParameterLargeIntegerValueChanged(
 }
 
 /**
- * Callback to Handle when a FloatingPoint value changes.
+ * Callback to Handle when a PicamModulations value changes.
  */
-PicamError PIL_CALL ADPICam::piParameterFloatingPointValueChanged(
-        PicamHandle camera, PicamParameter parameter, piflt value) {
+PicamError PIL_CALL ADPICam::piParameterModulationsValueChanged(
+        PicamHandle camera, PicamParameter parameter,
+        const PicamModulations *value) {
     int status = asynSuccess;
     PicamError error = PicamError_None;
-    const char *functionName = "piParameterFloatingPointValueChanged";
+    const char *functionName = "piParameterModulationsValueChanged";
 
-    status = ADPICam_Instance->piHandleParameterFloatingPointValueChanged(
-            camera, parameter, value);
-
-    return error;
-}
-
-/**
- * Callback to Handle when a Roi7 value changes.
- */
-PicamError PIL_CALL ADPICam::piParameterRoisValueChanged(PicamHandle camera,
-        PicamParameter parameter, const PicamRois *value) {
-    int status = asynSuccess;
-    PicamError error = PicamError_None;
-    const char *functionName = "piParameterRoisValueChanged";
-
-    status = ADPICam_Instance->piHandleParameterRoisValueChanged(camera,
+    status = ADPICam_Instance->piHandleParameterModulationsValueChanged(camera,
             parameter, value);
 
     return error;
@@ -3268,16 +3255,29 @@ PicamError PIL_CALL ADPICam::piParameterPulseValueChanged(PicamHandle camera,
 }
 
 /**
- * Callback to Handle when a PicamModulations value changes.
+ * Callback event to catch when a parameter's relevance has changed.
  */
-PicamError PIL_CALL ADPICam::piParameterModulationsValueChanged(
-        PicamHandle camera, PicamParameter parameter,
-        const PicamModulations *value) {
+PicamError PIL_CALL ADPICam::piParameterRelevanceChanged(PicamHandle camera,
+        PicamParameter parameter, pibln relevent) {
     int status = asynSuccess;
     PicamError error = PicamError_None;
-    const char *functionName = "piParameterModulationsValueChanged";
 
-    status = ADPICam_Instance->piHandleParameterModulationsValueChanged(camera,
+    status = ADPICam_Instance->piHandleParameterRelevanceChanged(camera,
+            parameter, relevent);
+
+    return error;
+}
+
+/**
+ * Callback to Handle when a Roi7 value changes.
+ */
+PicamError PIL_CALL ADPICam::piParameterRoisValueChanged(PicamHandle camera,
+        PicamParameter parameter, const PicamRois *value) {
+    int status = asynSuccess;
+    PicamError error = PicamError_None;
+    const char *functionName = "piParameterRoisValueChanged";
+
+    status = ADPICam_Instance->piHandleParameterRoisValueChanged(camera,
             parameter, value);
 
     return error;
