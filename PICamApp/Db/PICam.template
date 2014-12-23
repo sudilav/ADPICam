@@ -2204,12 +2204,14 @@ record(mbbi, "$(P)$(R)GatingMode_RBV")
     field(SCAN, "I/O Intr")
 }
 
-record(mbbi, "$(P)$(R)GatingSpeed")
-{
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_GATING_SPEED")
-    field(DTYP, "asynInt32")
-    field(SCAN, "I/O Intr")
-}
+#record(stringin, "$(P)$(R)GatingSpeed")
+#{
+#    field(PINI, "YES")
+#    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_GATING_SPEED")
+#    field(DTYP, "asynOctetRead")
+#    field(SCAN, "I/O Intr")
+#    field(VAL, "Unknown")
+#}
 
 record(ai, "$(P)$(R)IntensifierDiameter")
 {
@@ -2234,19 +2236,23 @@ record(longin, "$(P)$(R)IntensifierGain_RBV")
    field(SCAN, "I/O Intr")
 }
 
-record(mbbi, "$(P)$(R)IntensifierOptions")
-{
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_INTENSIFIER_OPTIONS")
-    field(DTYP, "asynInt32")
-    field(SCAN, "I/O Intr")
-}
+#record(stringin, "$(P)$(R)IntensifierOptions")
+#{
+#    field(PINI, "YES")
+#    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_INTENSIFIER_OPTIONS")
+#    field(DTYP, "asynOctetRead")
+#    field(SCAN, "I/O Intr")
+#    field(VAL, "Unknown")
+#}
 
-record(mbbi, "$(P)$(R)IntensifierStatus")
-{
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_INTENSIFIER_OPTIONS")
-    field(DTYP, "asynInt32")
-    field(SCAN, "I/O Intr")
-}
+#record(stringin, "$(P)$(R)IntensifierStatus")
+#{
+#    field(PINI, "YES")
+#    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_INTENSIFIER_OPTIONS")
+#    field(DTYP, "asynOctetRead")
+#    field(SCAN, "I/O Intr")
+#    field(VAL, "Unknown")
+#}
 
 record(ao, "$(P)$(R)ModulationDuration")
 {
@@ -2652,11 +2658,13 @@ record(mbbi, "$(P)$(R)ReadoutControlMode_RBV")
     field(SCAN, "I/O Intr")
 }
 
-record(mbbi, "$(P)$(R)ReadoutOrientation")
+record(stringin, "$(P)$(R)ReadoutOrientation")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_READOUT_ORIENTATION")
-    field(DTYP, "asynInt32")
+    field(PINI, "YES")
+   field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_READOUT_ORIENTATION")
+    field(DTYP, "asynOctetRead")
     field(SCAN, "I/O Intr")
+    field(VAL, "Unknown")
 }
 
 record(longout, "$(P)$(R)ReadoutPortCount")
@@ -2837,11 +2845,13 @@ record(ai, "$(P)$(R)OnlineReadoutRateCalc")
    field(SCAN, "I/O Intr")
 }
 
-record(mbbi, "$(P)$(R)Orientation")
+record(stringin, "$(P)$(R)Orientation")
 {
+    field(PINI, "YES")
     field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ORIENTATION")
-    field(DTYP, "asynInt32")
+    field(DTYP, "asynOctetRead")
     field(SCAN, "I/O Intr")
+    field(VAL, "Unknown")
 }
 
 record(mbbo, "$(P)$(R)PhotonDetectionMode")
@@ -2982,11 +2992,13 @@ record(mbbi, "$(P)$(R)TrackFrames_RBV")
 }
 
 ################## Sensor Information
-record(mbbi, "$(P)$(R)CcdCharacteristics")
+record(stringin, "$(P)$(R)CcdCharacteristics")
 {
+    field(PINI, "YES")
     field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_CCD_CHARACTERISTICS")
-    field(DTYP, "asynInt32")
+    field(DTYP, "asynOctetRead")
     field(SCAN, "I/O Intr")
+    field(VAL, "Unknown")
 }
 
 record(ai, "$(P)$(R)PixelGapHeight")
@@ -3088,11 +3100,13 @@ record(longin, "$(P)$(R)SensorSecondaryMaskedHeight")
    field(SCAN, "I/O Intr")
 }
 
-record(mbbi, "$(P)$(R)SensorType")
+record(stringin, "$(P)$(R)SensorType")
 {
-   field(DTYP, "asynInt32")
+   field(PINI, "YES")
+   field(DTYP, "asynOctetRead")
    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_TYPE")
    field(SCAN, "I/O Intr")
+    field(VAL, "Unknown")
 }
 
 ################## Sensor Layout
@@ -3385,9 +3399,11 @@ record(bi, "$(P)$(R)EnableSensorWindowHeater_RBV")
     field(SCAN, "I/O Intr")
 }
 
-record(mbbi, "$(P)$(R)SensorTemperatureStatus")
+record(stringin, "$(P)$(R)SensorTemperatureStatus")
 {
+    field(PINI, "YES")
     field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_TEMPERATURE_STATUS")
-    field(DTYP, "asynInt32")
+    field(DTYP, "asynOctetRead")
     field(SCAN, "I/O Intr")
+    field(VAL, "Unknown")
 }
