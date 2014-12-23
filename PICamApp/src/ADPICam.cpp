@@ -1290,6 +1290,78 @@ asynStatus ADPICam::readEnum(asynUser *pasynUser, char *strings[], int values[],
     return asynSuccess;
 }
 
+asynStatus ADPICam::readOctet(asynUser *pasynUser, char *value,
+                                    size_t nChars, size_t *nActual,
+									int *eomReason)
+{
+	static const char *functionName = "writeOctet";
+	int status = asynSuccess;
+	pibln parameterDoesExist;
+	pibln parameterRelevant;
+	piint intValue;
+	int function = pasynUser->reason;
+	PicamParameter picamParameter;
+	PicamValueType valueType;
+	PicamEnumeratedType enumType;
+	PicamError error;
+	const char *errString;
+	const char *enumString;
+
+	if ( piLookupPICamParameter(function, picamParameter) == PicamError_None) {
+		Picam_DoesParameterExist(currentCameraHandle,
+				picamParameter,
+				&parameterDoesExist);
+		if (parameterDoesExist){
+			error = Picam_IsParameterRelevant(currentCameraHandle,
+					picamParameter,
+					&parameterRelevant);
+		}
+		if (error != PicamError_None){
+			Picam_GetEnumerationString(PicamEnumeratedType_Error,
+					error, &errString);
+			asynPrint(pasynUser, ASYN_TRACE_ERROR,
+					"%s:%s Trouble determining if parameter is relevant: %s\n");
+			return asynError;
+		}
+		if (parameterRelevant){
+			Picam_GetParameterValueType(currentCameraHandle,
+					picamParameter,
+					&valueType);
+			switch (valueType) {
+			case PicamValueType_Enumeration:
+				Picam_GetParameterEnumeratedType(currentCameraHandle,
+						picamParameter,
+						&enumType);
+				Picam_GetParameterIntegerValue(currentCameraHandle,
+						picamParameter,
+						&intValue);
+				Picam_GetEnumerationString(enumType, intValue, &enumString);
+				asynPrint (pasynUserSelf, ASYN_TRACE_FLOW,
+						"%s:%s ----readOctet value=%s\n",
+						driverName,
+						functionName,
+						enumString);
+				lock();
+				strncpy (value, enumString, nChars);
+				unlock();
+				value[nChars-1] = '\0';
+				*nActual = strlen(value);
+				Picam_DestroyString(enumString);
+				break;
+			}
+		}
+	}
+	else  {
+        /* If this parameter belongs to a base class call its method */
+        if (function < PICAM_FIRST_PARAM) {
+            status = ADDriver::readOctet(pasynUser, value, nChars, nActual,
+            		eomReason);
+        }
+	}
+
+	return (asynStatus)status;
+}
+
 void ADPICam::report(FILE *fp, int details) {
     static const char *functionName = "report";
     PicamError error = PicamError_None;
@@ -1509,6 +1581,58 @@ void ADPICam::report(FILE *fp, int details) {
     }
 }
 
+asynStatus ADPICam::writeFloat64(asynUser *pasynUser, epicsFloat64 value) {
+    static const char *functionName = "writeFloat64";
+    int status = asynSuccess;
+    PicamError error = PicamError_None;
+    const char *errorString;
+    int function = pasynUser->reason;
+
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: entry\n", driverName,
+            functionName);
+
+    if (function == ADTemperature) {
+        error = Picam_SetParameterFloatingPointValue(currentCameraHandle,
+                PicamParameter_SensorTemperatureSetPoint, (piflt) value);
+        if (error != PicamError_None) {
+            Picam_GetEnumerationString(PicamEnumeratedType_Error, error,
+                    &errorString);
+
+            asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                    "%s:%s error writing SensorTemperatureSetPoint to %f\n"
+                            "Reason %s\n", driverName, functionName, value,
+                    errorString);
+            Picam_DestroyString(errorString);
+            return asynError;
+        }
+    }
+    if (function == ADAcquireTime) {
+        error = Picam_SetParameterFloatingPointValue(currentCameraHandle,
+                PicamParameter_ExposureTime, (piflt) value);
+    } else {
+        /* If this parameter belongs to a base class call its method */
+        if (function < PICAM_FIRST_PARAM) {
+            status = ADDriver::writeFloat64(pasynUser, value);
+        }
+
+    }
+    /* Do callbacks so higher layers see any changes */
+    callParamCallbacks();
+
+    if (status)
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                "%s:%s: error, status=%d function=%d, value=%f\n", driverName,
+                functionName, status, function, value);
+    else
+        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
+                "%s:%s: function=%d, value=%f\n", driverName, functionName,
+                function, value);
+    return (asynStatus) status;
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: exit\n", driverName,
+            functionName);
+
+}
+
 asynStatus ADPICam::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     static const char *functionName = "writeInt32";
     int status = asynSuccess;
@@ -1672,130 +1796,6 @@ asynStatus ADPICam::writeInt32(asynUser *pasynUser, epicsInt32 value) {
                 function, value);
 
     return (asynStatus) status;
-
-}
-
-asynStatus ADPICam::readOctet(asynUser *pasynUser, char *value,
-                                    size_t nChars, size_t *nActual,
-									int *eomReason)
-{
-	static const char *functionName = "writeOctet";
-	int status = asynSuccess;
-	pibln parameterDoesExist;
-	pibln parameterRelevant;
-	piint intValue;
-	int function = pasynUser->reason;
-	PicamParameter picamParameter;
-	PicamValueType valueType;
-	PicamEnumeratedType enumType;
-	PicamError error;
-	const char *errString;
-	const char *enumString;
-
-	if ( piLookupPICamParameter(function, picamParameter) == PicamError_None) {
-		Picam_DoesParameterExist(currentCameraHandle,
-				picamParameter,
-				&parameterDoesExist);
-		if (parameterDoesExist){
-			error = Picam_IsParameterRelevant(currentCameraHandle,
-					picamParameter,
-					&parameterRelevant);
-		}
-		if (error != PicamError_None){
-			Picam_GetEnumerationString(PicamEnumeratedType_Error,
-					error, &errString);
-			asynPrint(pasynUser, ASYN_TRACE_ERROR,
-					"%s:%s Trouble determining if parameter is relevant: %s\n");
-			return asynError;
-		}
-		if (parameterRelevant){
-			Picam_GetParameterValueType(currentCameraHandle,
-					picamParameter,
-					&valueType);
-			switch (valueType) {
-			case PicamValueType_Enumeration:
-				Picam_GetParameterEnumeratedType(currentCameraHandle,
-						picamParameter,
-						&enumType);
-				Picam_GetParameterIntegerValue(currentCameraHandle,
-						picamParameter,
-						&intValue);
-				Picam_GetEnumerationString(enumType, intValue, &enumString);
-				asynPrint (pasynUserSelf, ASYN_TRACE_FLOW,
-						"%s:%s ----readOctet value=%s\n",
-						driverName,
-						functionName,
-						enumString);
-				lock();
-				strncpy (value, enumString, nChars);
-				unlock();
-				value[nChars-1] = '\0';
-				*nActual = strlen(value);
-				Picam_DestroyString(enumString);
-				break;
-			}
-		}
-	}
-	else  {
-        /* If this parameter belongs to a base class call its method */
-        if (function < PICAM_FIRST_PARAM) {
-            status = ADDriver::readOctet(pasynUser, value, nChars, nActual,
-            		eomReason);
-        }
-	}
-
-	return (asynStatus)status;
-}
-
-asynStatus ADPICam::writeFloat64(asynUser *pasynUser, epicsFloat64 value) {
-    static const char *functionName = "writeFloat64";
-    int status = asynSuccess;
-    PicamError error = PicamError_None;
-    const char *errorString;
-    int function = pasynUser->reason;
-
-    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: entry\n", driverName,
-            functionName);
-
-    if (function == ADTemperature) {
-        error = Picam_SetParameterFloatingPointValue(currentCameraHandle,
-                PicamParameter_SensorTemperatureSetPoint, (piflt) value);
-        if (error != PicamError_None) {
-            Picam_GetEnumerationString(PicamEnumeratedType_Error, error,
-                    &errorString);
-
-            asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                    "%s:%s error writing SensorTemperatureSetPoint to %f\n"
-                            "Reason %s\n", driverName, functionName, value,
-                    errorString);
-            Picam_DestroyString(errorString);
-            return asynError;
-        }
-    }
-    if (function == ADAcquireTime) {
-        error = Picam_SetParameterFloatingPointValue(currentCameraHandle,
-                PicamParameter_ExposureTime, (piflt) value);
-    } else {
-        /* If this parameter belongs to a base class call its method */
-        if (function < PICAM_FIRST_PARAM) {
-            status = ADDriver::writeFloat64(pasynUser, value);
-        }
-
-    }
-    /* Do callbacks so higher layers see any changes */
-    callParamCallbacks();
-
-    if (status)
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                "%s:%s: error, status=%d function=%d, value=%f\n", driverName,
-                functionName, status, function, value);
-    else
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
-                "%s:%s: function=%d, value=%f\n", driverName, functionName,
-                function, value);
-    return (asynStatus) status;
-    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: exit\n", driverName,
-            functionName);
 
 }
 
@@ -2023,25 +2023,26 @@ PicamError PIL_CALL ADPICam::piCameraDiscovered(const PicamCameraID *id,
 /**
  Set all PICAM parameter relevance parameters to false
  */
-asynStatus ADPICam::piClearParameterRelevance() {
-    int iParam;
-    int status = asynSuccess;
-
-    for (iParam = PICAM_ExposureTimeRelevant;
-            iParam <= PICAM_SensorTemperatureStatusRelevant; iParam++) {
-        status |= setIntegerParam(iParam, 0);
-    }
-    return (asynStatus) status;
-}
-/**
- Set all PICAM parameter relevance parameters to false
- */
 asynStatus ADPICam::piClearParameterExists() {
     int iParam;
     int status = asynSuccess;
 
     for (iParam = PICAM_ExposureTimeExists;
             iParam <= PICAM_SensorTemperatureStatusExists; iParam++) {
+        status |= setIntegerParam(iParam, 0);
+    }
+    return (asynStatus) status;
+}
+
+/**
+ Set all PICAM parameter relevance parameters to false
+ */
+asynStatus ADPICam::piClearParameterRelevance() {
+    int iParam;
+    int status = asynSuccess;
+
+    for (iParam = PICAM_ExposureTimeRelevant;
+            iParam <= PICAM_SensorTemperatureStatusRelevant; iParam++) {
         status |= setIntegerParam(iParam, 0);
     }
     return (asynStatus) status;
