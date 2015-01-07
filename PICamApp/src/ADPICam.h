@@ -580,6 +580,10 @@ private:
             epicsInt32 value,
             int driverParameter,
             PicamParameter picamParameter);
+    asynStatus piWriteFloat64RangeType(asynUser *pasynUser,
+            epicsFloat64 value,
+            int driverParameter,
+            PicamParameter picamParameter);
 
     static ADPICam *ADPICam_Instance;
 };
