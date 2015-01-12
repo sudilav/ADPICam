@@ -1248,17 +1248,17 @@ asynStatus ADPICam::readEnum(asynUser *pasynUser, char *strings[], int values[],
 						case PicamValueType_LargeInteger:
 							char largeIntString[12];
 							sprintf(largeIntString, "%d",
-									constraints->values_array[ii]);
+									(pi64s)constraints->values_array[ii]);
 							printf("---%s\n", largeIntString);
 							strings[*nIn] = epicsStrDup(largeIntString);
-							values[*nIn] = ii;
+							values[*nIn] = (int)constraints->values_array[ii];
 							severities[*nIn] = 0;
 							(*nIn)++;
 							break;
 						case PicamValueType_Boolean:
 							strings[*nIn] = epicsStrDup(
-									constraints->values_array[ii] ? "Yes":"No");
-							values[*nIn] = ii;
+									constraints->values_array[ii] ? "No":"Yes");
+							values[*nIn] = constraints->values_array[ii];
 							severities[*nIn] = 0;
 							(*nIn)++;
 							break;
@@ -1963,6 +1963,7 @@ asynStatus ADPICam::piAcquireStart(){
             largePreset);
     int readoutStride;
     double onlineReadoutRate;
+    int timeStampsUsed;
 
     Picam_GetParameterIntegerValue(currentCameraHandle,
     		PicamParameter_ReadoutStride,
@@ -1970,9 +1971,12 @@ asynStatus ADPICam::piAcquireStart(){
     Picam_GetParameterFloatingPointValue(currentCameraHandle,
     		PicamParameter_OnlineReadoutRateCalculation,
 			&onlineReadoutRate);
+    Picam_GetParameterIntegerValue(currentCameraHandle,
+    		PicamParameter_TimeStamps,
+			&timeStampsUsed);
     pi64s readouts =
     		static_cast<pi64s>(std::ceil(std::max(6.*onlineReadoutRate, 6.)));
-    buffer_.resize(readouts * readoutStride);
+    buffer_.resize(readouts * (readoutStride+3*8));
     PicamAcquisitionBuffer piBuffer;
     piBuffer.memory = &buffer_[0];
     piBuffer.memory_size = buffer_.size();
@@ -4551,7 +4555,7 @@ asynStatus ADPICam::piSetRois(int minX, int minY, int width, int height,
         return asynError;
     }
     error = Picam_GetParameterRoisConstraint(currentCameraHandle,
-            PicamParameter_Rois, PicamConstraintCategory_Capable,
+            PicamParameter_Rois, PicamConstraintCategory_Required,
             &roisConstraints);
     printf ("ROIConstraints->rules 0x%X\n", roisConstraints->rules);
     if (error != PicamError_None) {
@@ -4576,23 +4580,24 @@ asynStatus ADPICam::piSetRois(int minX, int minY, int width, int height,
         	setIntegerParam(ADSizeX, numXPixels- 2*minX);
         }
         else {
-            if (minX >= roisConstraints->x_constraint.minimum
-                    && minX <= roisConstraints->x_constraint.maximum) {
-                roi->x = minX;
-                setIntegerParam(ADMinX, minX);
-            } else {
-                allInRange = false;
+
+        	if (minX < 1) {
+                minX = 1;
+            } else if (minX > numXPixels) {
+            	minX = numXPixels;
             }
-            if (width >= roisConstraints->width_constraint.minimum
-                    && width <= roisConstraints->width_constraint.maximum) {
-                printf("widthmin : %d, widthmax : %d\n",
-                        roisConstraints->width_constraint.minimum,
-                        roisConstraints->width_constraint.maximum);
-                roi->width = width;
-                setIntegerParam(ADSizeX, width);
-            } else {
-                allInRange = false;
+            roi->x = minX;
+            setIntegerParam(ADMinX, minX);
+            if (width < 1){
+                width = 1;
+            } else if (width > (numXPixels - minX)) {
+            	width = numXPixels - minX;
+            	if (width < 1) {
+            		width = 1;
+            	}
             }
+            roi->width = width;
+            setIntegerParam(ADSizeX, width);
 
         }
         if (roisConstraints->rules & PicamRoisConstraintRulesMask_VerticalSymmetry) {
@@ -4606,21 +4611,24 @@ asynStatus ADPICam::piSetRois(int minX, int minY, int width, int height,
         }
         else {
 
-			if (minY >= roisConstraints->y_constraint.minimum
-					&& minY <= roisConstraints->y_constraint.maximum) {
-				roi->y = minY;
-				setIntegerParam(ADMinY, minY);
-			} else {
-				allInRange = false;
+        	if (minY < 1){
+				minY = 1;
 			}
-			if (height >= roisConstraints->height_constraint.minimum
-					&& height <= roisConstraints->height_constraint.maximum) {
-				roi->height = height;
-				setIntegerParam(ADSizeY, height);
-
-			} else {
-				allInRange = false;
+			else if (minY > numYPixels){
+				minY = numYPixels;
 			}
+			roi->y = minY;
+			setIntegerParam(ADMinY, minY);
+			if (height > (numYPixels - minY)) {
+				height = numYPixels - minY;
+				if (height < 1) {
+					height = 1;
+				}
+			} else if (height < 1 ) {
+				height = 1;
+			}
+			roi->height = height;
+			setIntegerParam(ADSizeY, height);
         }
         error = Picam_SetParameterRoisValue(currentCameraHandle,
                 PicamParameter_Rois, rois);
@@ -5228,16 +5236,16 @@ asynStatus ADPICam::piUpdateParameterListValues(
 					case PicamValueType_LargeInteger:
 						char largeIntString[12];
 						sprintf(largeIntString, "%d",
-								constraints->values_array[ii]);
+								(int)constraints->values_array[ii]);
 						strings[nIn] = epicsStrDup(largeIntString);
-						values[nIn] = ii;
+						values[nIn] = (int)constraints->values_array[ii];
 						severities[nIn] = 0;
 						(nIn)++;
 						break;
 					case PicamValueType_Boolean:
 						strings[nIn] = epicsStrDup(
-								constraints->values_array[ii] ? "Yes":"No");
-						values[nIn] = ii;
+								constraints->values_array[ii] ? "No":"Yes");
+						values[nIn] = constraints->values_array[ii];
 						severities[nIn] = 0;
 						(nIn)++;
 						break;
@@ -5578,6 +5586,14 @@ asynStatus ADPICam::piWriteInt32CollectionType(asynUser *pasynUser,
         // TODO
         return asynError;
     }
+    if (valType == PicamValueType_Boolean) {
+        error = Picam_SetParameterIntegerValue(currentCameraHandle,
+                picamParameter, value);
+        if (error != PicamError_None) {
+            //TODO
+            return asynError;
+        }
+    }
     if (valType == PicamValueType_Integer) {
         error = Picam_SetParameterIntegerValue(currentCameraHandle,
                 picamParameter, value);
@@ -5656,9 +5672,24 @@ void ADPICam::piHandleNewImageTask(void)
     NDArrayInfo arrayInfo;
     epicsTimeStamp currentTime;
     PicamError error;
+    int useDriverTimestamps;
+    int useFrameTracking;
+    int trackFrames;
+    int frameTrackingBitDepth;
+    pi64s timeStampValue;
+    pi64s *pTimeStampValue;
+    pi64s frameValue;
+    pi64s *pFrameValue;
+    int timeStampBitDepth;
+    int timeStampResolution;
+    int frameSize;
+    int numTimeStamps;
+
   while (1) {
     epicsEventWait(piHandleNewImageEvent);
-        if (acqStatusErrors == PicamAcquisitionErrorsMask_None) {
+	getIntegerParam(PICAM_TimeStamps, &useDriverTimestamps);
+	getIntegerParam(PICAM_TrackFrames, &useFrameTracking);
+    	if (acqStatusErrors == PicamAcquisitionErrorsMask_None) {
             if (acqStatusRunning ||
                     (!acqStatusRunning && (acqAvailableReadoutCount != 0) )) {
                 getIntegerParam(ADImageMode, &imageMode);
@@ -5724,12 +5755,85 @@ void ADPICam::piHandleNewImageTask(void)
                     lock();
                     setIntegerParam(NDArrayCounter, arrayCounter);
                     unlock();
-                    pImage->uniqueId = arrayCounter;
-                    //TODO work on time stamp from driver
-                    epicsTimeGetCurrent(&currentTime);
-                    pImage->timeStamp = currentTime.secPastEpoch
-                            + currentTime.nsec / 1.e9;
-                    updateTimeStamp(&pImage->epicsTS);
+                    // Get timestamp from the driver if requested
+                    getIntegerParam(PICAM_TimeStampBitDepth,
+                			&timeStampBitDepth);
+                	getIntegerParam(PICAM_TimeStampResolution,
+                			&timeStampResolution);
+                	Picam_GetParameterIntegerValue(currentCameraHandle,
+                			PicamParameter_FrameSize,
+							&frameSize);
+                    if (!useDriverTimestamps){
+						epicsTimeGetCurrent(&currentTime);
+						pImage->timeStamp = currentTime.secPastEpoch
+								+ currentTime.nsec / 1.e9;
+						updateTimeStamp(&pImage->epicsTS);
+                    }
+                    else {
+                    	pTimeStampValue =
+                    			(pi64s*) ((pibyte *)acqAvailableInitialReadout
+                    					+ frameSize);
+                    	timeStampValue = *pTimeStampValue;
+                    	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                    			"%s%s TimeStamp %d  Res %d frame size %d timestamp %f\n",
+								driverName,
+								functionName,
+								timeStampValue,
+								timeStampResolution,
+								frameSize,
+								(double)timeStampValue /(double)timeStampResolution);
+                    	pImage->timeStamp = (double)timeStampValue /
+                    			(double)timeStampResolution;
+						updateTimeStamp(&pImage->epicsTS);
+                    }
+                    // use frame tracking for UniqueID if requested
+                    if (!useFrameTracking) {
+                    	pImage->uniqueId = arrayCounter;
+                    }
+                    else {
+                    	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                    			"%s:%s  TimeStamps 0X%X\n",
+								driverName,
+								functionName,
+								useDriverTimestamps);
+                    	// Frame tracking info follows data and time stamps.
+                    	// need to determine the correct number of time stamps
+                    	// to skip
+                    	if ((useDriverTimestamps ==
+                    			PicamTimeStampsMask_None)) {
+                    		numTimeStamps = 0;
+                    	}
+                    	else if ((useDriverTimestamps ==
+									PicamTimeStampsMask_ExposureStarted) ||
+                    		(useDriverTimestamps ==
+                    				PicamTimeStampsMask_ExposureEnded) ) {
+                    		numTimeStamps = 1;
+                    	}
+                    	else  {
+                    		numTimeStamps = 2;
+                    	}
+                    	getIntegerParam(PICAM_FrameTrackingBitDepth,
+                    			&frameTrackingBitDepth);
+                    	switch (frameTrackingBitDepth){
+                    	case 64:
+                        	pFrameValue =
+                        			(pi64s*) ((pibyte *)acqAvailableInitialReadout
+                        			+ frameSize
+									+ (numTimeStamps * timeStampBitDepth/8));
+                        	asynPrint (pasynUserSelf, ASYN_TRACE_FLOW,
+                        			"%s%s Frame tracking bit depth %d"
+                        			" timeStampBitDepth %d frameValue %d "
+                        			" readout count %d\n",
+    								driverName,
+    								functionName,
+    								frameTrackingBitDepth,
+    								timeStampBitDepth,
+									*pFrameValue,
+									acqAvailableReadoutCount);
+                        	pImage->uniqueId = (int)(*pFrameValue);
+                        	break;
+                    	}
+                    }
 
                     /* Get attributes that have been defined for this driver */
                     getAttributes(pImage->pAttributeList);
@@ -5737,7 +5841,6 @@ void ADPICam::piHandleNewImageTask(void)
                     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
                             "%s:%s: calling imageDataCallback\n", driverName,
                             functionName);
-                    //epicsEventSignal(piTriggerCallbacksGenericPointerEvent);
 
                     doCallbacksGenericPointer(pImage, NDArrayData, 0);
                 }
