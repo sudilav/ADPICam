@@ -2986,7 +2986,7 @@ record(bo, "$(P)$(R)TrackFrames")
     field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_TRACK_FRAMES")
 }
 
-record(mbbi, "$(P)$(R)TrackFrames_RBV")
+record(bi, "$(P)$(R)TrackFrames_RBV")
 {
     field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_TRACK_FRAMES")
     field(DTYP, "asynInt32")
