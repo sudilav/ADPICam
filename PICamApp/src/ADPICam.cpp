@@ -3281,8 +3281,10 @@ asynStatus ADPICam::piHandleParameterRoisValueChanged(PicamHandle camera,
             value->roi_array[0].y, value->roi_array[0].width,
             value->roi_array[0].height, value->roi_array[0].x_binning,
             value->roi_array[0].y_binning);
-    setIntegerParam(NDArraySizeX, value->roi_array[0].width);
-    setIntegerParam(NDArraySizeY, value->roi_array[0].height);
+    setIntegerParam(NDArraySizeX, value->roi_array[0].width/
+    		value->roi_array[0].x_binning);
+    setIntegerParam(NDArraySizeY, value->roi_array[0].height/
+    		value->roi_array[0].y_binning);
     Picam_DestroyString(parameterString);
 
     callParamCallbacks();
@@ -4503,16 +4505,16 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
 					setIntegerParam(NDArraySizeX, paramRois->roi_array[0].width);
 					setIntegerParam(NDArraySizeY, paramRois->roi_array[0].height);
 					if (roiConstraint->rules & PicamRoisConstraintRulesMask_HorizontalSymmetry) {
-						setIntegerParam(PICAM_EnableROISizeXInput, 0);
+						setIntegerParam(PICAM_EnableROIMinXInput, 0);
 					}
 					else {
-						setIntegerParam(PICAM_EnableROISizeXInput, 1);
+						setIntegerParam(PICAM_EnableROIMinXInput, 1);
 					}
 					if (roiConstraint->rules & PicamRoisConstraintRulesMask_VerticalSymmetry) {
-						setIntegerParam(PICAM_EnableROISizeYInput, 0);
+						setIntegerParam(PICAM_EnableROIMinYInput, 0);
 					}
 					else {
-						setIntegerParam(PICAM_EnableROISizeYInput, 1);
+						setIntegerParam(PICAM_EnableROIMinYInput, 1);
 					}
 				}
 			}
@@ -4571,13 +4573,19 @@ asynStatus ADPICam::piSetRois(int minX, int minY, int width, int height,
         PicamRoi *roi = &(rois->roi_array[0]);
         bool allInRange = true;
         if (roisConstraints->rules & PicamRoisConstraintRulesMask_HorizontalSymmetry) {
-        	if (minX >= numXPixels/2 ){
-        		minX = numXPixels/2 -1;
+        	if (width >= numXPixels/binX){
+        		width = numXPixels/binX;
         	}
-        	roi->x = minX;
-        	setIntegerParam(ADMinX, minX);
-        	roi->width = numXPixels - 2 * minX;
-        	setIntegerParam(ADSizeX, numXPixels- 2*minX);
+        	//make sure pixels in each quadrant are divisible by binnning
+        	if (((width/2)/binX) * binX != width){
+    			width = (((width/2)/binX) * binX)*2;
+    		}
+        	roi->x = ((numXPixels + 1)/2 ) - ((width/2) * binX) ;
+        	roi->width = width * binX;
+        	roi->x_binning = binX;
+        	setIntegerParam(ADMinX, roi->x);
+        	setIntegerParam(ADSizeX, width);
+        	setIntegerParam(ADBinX, binX);
         }
         else {
 
@@ -4601,13 +4609,19 @@ asynStatus ADPICam::piSetRois(int minX, int minY, int width, int height,
 
         }
         if (roisConstraints->rules & PicamRoisConstraintRulesMask_VerticalSymmetry) {
-        	if (minY >= numYPixels/2 ){
-        		minY = numYPixels/2 -1;
+        	if (height >= numYPixels/binY ){
+        		height = numYPixels/binY;
         	}
-        	roi->y = minY;
-        	setIntegerParam(ADMinY, minY);
-        	roi->height = numYPixels- 2 * minY;
-        	setIntegerParam(ADSizeY, numYPixels- 2 * minY);
+        	//make sure pixels in each quadrant are divisible by binnning
+        	if (((height/2)/binY) * binY != height){
+    			height = (((height/2)/binY) * binY)*2;
+    		}
+        	roi->y = ((numYPixels + 1)/2 ) - ((height/2) * binY) ;
+        	roi->height = height * binY;
+        	roi->y_binning = binY;
+        	setIntegerParam(ADMinY, roi->y);
+        	setIntegerParam(ADSizeY, height);
+        	setIntegerParam(ADBinY, binY);
         }
         else {
 
@@ -4636,8 +4650,19 @@ asynStatus ADPICam::piSetRois(int minX, int minY, int width, int height,
             Picam_GetEnumerationString(PicamEnumeratedType_Error, error,
                     &errorString);
             asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                    "%s:%s Error writing rois %s\n", driverName, functionName,
-                    errorString);
+                    "%s:%s Error writing rois %s\n"
+            		"(x,y) = (%d, %d), (height, width) = (%d, %d), "
+            		"(xbin, ybin) = (%d, %d)\n"
+            		, driverName,
+					functionName,
+                    errorString,
+					roi->x,
+					roi->y,
+					roi->width,
+					roi->height,
+					roi->x_binning,
+					roi->y_binning);
+
             Picam_DestroyString(errorString);
             return asynError;
         }
