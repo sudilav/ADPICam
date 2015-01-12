@@ -224,77 +224,36 @@ text {
 	textix="Binning"
 	align="horiz. right"
 }
-composite {
+"text update" {
 	object {
 		x=143
 		y=125
-		width=154
-		height=40
+		width=61
+		height=18
 	}
-	"composite name"=""
-	children {
-		"text update" {
-			object {
-				x=143
-				y=125
-				width=61
-				height=18
-			}
-			monitor {
-				chan="$(P)$(R)MinX_RBV"
-				clr=54
-				bclr=4
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=143
-				y=145
-				width=60
-				height=20
-			}
-			control {
-				chan="$(P)$(R)MinX"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=236
-				y=145
-				width=60
-				height=20
-			}
-			control {
-				chan="$(P)$(R)MinY"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=236
-				y=125
-				width=61
-				height=18
-			}
-			monitor {
-				chan="$(P)$(R)MinY_RBV"
-				clr=54
-				bclr=4
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
+	monitor {
+		chan="$(P)$(R)MinX_RBV"
+		clr=54
+		bclr=4
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=236
+		y=125
+		width=61
+		height=18
+	}
+	monitor {
+		chan="$(P)$(R)MinY_RBV"
+		clr=54
+		bclr=4
+	}
+	align="horiz. centered"
+	limits {
 	}
 }
 text {
@@ -1022,5 +981,67 @@ composite {
 		vis="if not zero"
 		calc="A"
 		chan="$(P)$(R)EnableROISizeYInput"
+	}
+}
+composite {
+	object {
+		x=143
+		y=145
+		width=60
+		height=20
+	}
+	"composite name"=""
+	children {
+		"text entry" {
+			object {
+				x=143
+				y=145
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)MinX"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)EnableROIMinXInput"
+	}
+}
+composite {
+	object {
+		x=236
+		y=145
+		width=60
+		height=20
+	}
+	"composite name"=""
+	children {
+		"text entry" {
+			object {
+				x=236
+				y=145
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)MinY"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)EnableROIMinYInput"
 	}
 }
