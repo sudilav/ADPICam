@@ -4572,6 +4572,7 @@ asynStatus ADPICam::piSetRois(int minX, int minY, int width, int height,
     if (rois->roi_count == 1) {
         PicamRoi *roi = &(rois->roi_array[0]);
         bool allInRange = true;
+        if (binX == 0) binX = 1;
         if (roisConstraints->rules & PicamRoisConstraintRulesMask_HorizontalSymmetry) {
         	if (width >= numXPixels/binX){
         		width = numXPixels/binX;
@@ -4591,23 +4592,26 @@ asynStatus ADPICam::piSetRois(int minX, int minY, int width, int height,
 
         	if (minX < 1) {
                 minX = 1;
-            } else if (minX > numXPixels) {
+            } else if (minX > numXPixels-binX) {
             	minX = numXPixels;
             }
             roi->x = minX;
             setIntegerParam(ADMinX, minX);
             if (width < 1){
                 width = 1;
-            } else if (width > (numXPixels - minX)) {
-            	width = numXPixels - minX;
+            } else if (width > (numXPixels - minX + 1)/binX) {
+            	width = (numXPixels - minX + 1)/binX;
             	if (width < 1) {
             		width = 1;
             	}
             }
-            roi->width = width;
+            roi->width = width * binX;
+            roi->x_binning = binX;
             setIntegerParam(ADSizeX, width);
+            setIntegerParam(ADBinX, binX);
 
         }
+        if (binY == 0) binY = 1;
         if (roisConstraints->rules & PicamRoisConstraintRulesMask_VerticalSymmetry) {
         	if (height >= numYPixels/binY ){
         		height = numYPixels/binY;
@@ -4633,16 +4637,18 @@ asynStatus ADPICam::piSetRois(int minX, int minY, int width, int height,
 			}
 			roi->y = minY;
 			setIntegerParam(ADMinY, minY);
-			if (height > (numYPixels - minY)) {
-				height = numYPixels - minY;
+			if (height > (numYPixels - minY + 1)/binY) {
+				height = (numYPixels - minY + 1)/binY;
 				if (height < 1) {
 					height = 1;
 				}
 			} else if (height < 1 ) {
 				height = 1;
 			}
-			roi->height = height;
+			roi->height = height * binY;
+			roi->y_binning = binY;
 			setIntegerParam(ADSizeY, height);
+			setIntegerParam(ADBinY, binY);
         }
         error = Picam_SetParameterRoisValue(currentCameraHandle,
                 PicamParameter_Rois, rois);
