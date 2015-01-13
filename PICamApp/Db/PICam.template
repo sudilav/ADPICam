@@ -2113,6 +2113,35 @@ record(bi, "$(P)$(R)SensTempStatus_PR")
     field(SCAN, "I/O Intr")
 }
 
+#################  Shutter
+record(mbbo, "$(P)$(R)ShutterDelayResolution")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SHUTTER_DELAY_RESOLUTION")
+}
+
+record(mbbi, "$(P)$(R)ShutterDelayResolution_RBV")
+{
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SHUTTER_DELAY_RESOLUTION")
+    field(DTYP, "asynInt32")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)$(R)ShutterTimingMode")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SHUTTER_TIMING_MODE")
+}
+
+record(mbbi, "$(P)$(R)ShutterTimingMode_RBV")
+{
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SHUTTER_TIMING_MODE")
+    field(DTYP, "asynInt32")
+    field(SCAN, "I/O Intr")
+}
+
 
 #################  Intensifier
 record(bo, "$(P)$(R)BracketGating")

@@ -163,6 +163,11 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
             &PICAM_SerialNumberUnavailable);
     createParam(PICAM_FirmwareRevisionUnavailableString, asynParamOctet,
             &PICAM_FirmwareRevisionUnavailable);
+    //Shutter
+    createParam(PICAM_ShutterDelayResolutionString , asynParamInt32,
+            &PICAM_ShutterDelayResolution);
+    createParam(PICAM_ShutterTimingModeString , asynParamInt32,
+            &PICAM_ShutterTimingMode);
 
     //Intensifier
     createParam(PICAM_BracketGatingString , asynParamInt32,
@@ -2553,11 +2558,13 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
         driverParameter = ADShutterCloseDelay;
         break;
     case PicamParameter_ShutterDelayResolution:
+    	driverParameter = PICAM_ShutterDelayResolution;
         break;
     case PicamParameter_ShutterOpeningDelay:
         driverParameter = ADShutterOpenDelay;
         break;
     case PicamParameter_ShutterTimingMode:
+    	driverParameter = PICAM_ShutterTimingMode;
         break;
     case PicamParameter_SyncMaster2Delay:
         break;
@@ -2840,6 +2847,19 @@ PicamError ADPICam::piLookupPICamParameter(int driverParameter,
     else if (driverParameter == PICAM_SensorSecondaryMaskedHeight){
         parameter = PicamParameter_SensorSecondaryMaskedHeight;
     }
+    else if (driverParameter == ADShutterCloseDelay){
+        parameter = PicamParameter_ShutterClosingDelay;
+    }
+    else if (driverParameter == PICAM_ShutterDelayResolution){
+        parameter = PicamParameter_ShutterDelayResolution;
+    }
+    else if (driverParameter == ADShutterOpenDelay){
+        parameter = PicamParameter_ShutterOpeningDelay;
+    }
+    else if (driverParameter == PICAM_ShutterTimingMode){
+        parameter = PicamParameter_ShutterTimingMode;
+    }
+
     else if (driverParameter == ADTemperatureActual){
         parameter = PicamParameter_SensorTemperatureReading;
     }
@@ -2867,7 +2887,7 @@ PicamError ADPICam::piLookupPICamParameter(int driverParameter,
     else if (driverParameter ==PICAM_ReadoutControlMode) {
         parameter = PicamParameter_ReadoutControlMode;
     }
-    else if (driverParameter == ADShutterMode) {
+    else if (driverParameter == PICAM_ShutterTimingMode) {
         parameter = PicamParameter_ShutterTimingMode;
     }
     else if (driverParameter == PICAM_SyncMaster2Delay) {

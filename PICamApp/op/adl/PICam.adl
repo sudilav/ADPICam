@@ -129,6 +129,11 @@ display {
 		name="PICam_HardwareIO.adl"
 		args="P=$(P),R=$(R)"
 	}
+	display[7] {
+		label="Shutter"
+		name="PICAM_ShutterParams.adl"
+		args="P=$(P),R=$(R)"
+	}
 	clr=14
 	bclr=4
 }

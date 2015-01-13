@@ -602,7 +602,10 @@ private:
 #define PICAM_SensorNameUnavailableString       "PICAM_SENSOR_NAME_UNAVAILABLE"
 #define PICAM_SerialNumberUnavailableString     "PICAM_SERIAL_NUMBER_UNAVAILABLE"
 #define PICAM_FirmwareRevisionUnavailableString "PICAM_FIRMWARE_REVISION_UNAVAILABLE"
+
 //Shutter Timing
+#define PICAM_ShutterDelayResolutionString                   "PICAM_SHUTTER_DELAY_RESOLUTION"
+#define PICAM_ShutterTimingModeString                        "PICAM_SHUTTER_TIMING_MODE"
 
 // Intensifier
 #define PICAM_BracketGatingString                      "PICAM_BRACKET_GATING"
@@ -611,7 +614,7 @@ private:
 #define PICAM_DifStartingGateString                    "PICAM_DIF_STARTING_GATE"
 #define PICAM_EMIccdGainString                         "PICAM_EMI_CCD_GAIN"
 #define PICAM_EMIccdGainControlModeString              "PICAM_EMI_CCD_GAIN_CONTROL_MODE"
-#define PICAM_EnableIntensifierString                   "PICAM_ENABLE_INTENSIFIER"
+#define PICAM_EnableIntensifierString                  "PICAM_ENABLE_INTENSIFIER"
 #define PICAM_EnableModulationString                   "PICAM_ENABLE_MODULATION"
 #define PICAM_GatingModeString                         "PICAM_GATING_MODE"
 #define PICAM_GatingSpeedString                        "PICAM_GATING_SPEED"
