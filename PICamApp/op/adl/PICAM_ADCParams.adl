@@ -111,66 +111,105 @@ text {
 	textix="Analog to Digital Conversion"
 	align="horiz. centered"
 }
-composite {
+text {
+	object {
+		x=50
+		y=37
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Analog Gain"
+	align="horiz. right"
+}
+text {
+	object {
+		x=51
+		y=61
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Bit Depth"
+	align="horiz. right"
+}
+text {
+	object {
+		x=52
+		y=85
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Speed"
+	align="horiz. right"
+}
+rectangle {
 	object {
 		x=1
 		y=31
 		width=337
 		height=150
 	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+}
+text {
+	object {
+		x=52
+		y=108
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Quality"
+	align="horiz. right"
+}
+text {
+	object {
+		x=51
+		y=131
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="EM Gain"
+	align="horiz. right"
+}
+text {
+	object {
+		x=55
+		y=154
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Correct Pixel Bias"
+	align="horiz. right"
+}
+composite {
+	object {
+		x=137
+		y=38
+		width=198
+		height=20
+	}
 	"composite name"=""
 	children {
-		text {
-			object {
-				x=50
-				y=37
-				width=70
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Analog Gain"
-			align="horiz. right"
-		}
-		text {
-			object {
-				x=51
-				y=61
-				width=70
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Bit Depth"
-			align="horiz. right"
-		}
-		text {
-			object {
-				x=52
-				y=85
-				width=70
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Speed"
-			align="horiz. right"
-		}
-		rectangle {
-			object {
-				x=1
-				y=31
-				width=337
-				height=150
-			}
-			"basic attribute" {
-				clr=14
-				fill="outline"
-			}
-		}
 		menu {
 			object {
 				x=137
@@ -180,32 +219,6 @@ composite {
 			}
 			control {
 				chan="$(P)$(R)AdcAnalogGain"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=137
-				y=62
-				width=84
-				height=20
-			}
-			control {
-				chan="$(P)$(R)AdcBitDepth"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=137
-				y=84
-				width=84
-				height=20
-			}
-			control {
-				chan="$(P)$(R)AdcSpeed"
 				clr=14
 				bclr=51
 			}
@@ -226,6 +239,35 @@ composite {
 			limits {
 			}
 		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)AdcAnalogGain_PR"
+	}
+}
+composite {
+	object {
+		x=137
+		y=59
+		width=198
+		height=23
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=137
+				y=62
+				width=84
+				height=20
+			}
+			control {
+				chan="$(P)$(R)AdcBitDepth"
+				clr=14
+				bclr=51
+			}
+		}
 		"text update" {
 			object {
 				x=240
@@ -240,6 +282,35 @@ composite {
 			}
 			align="horiz. right"
 			limits {
+			}
+		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)AdcBitDepth_PR"
+	}
+}
+composite {
+	object {
+		x=137
+		y=81
+		width=198
+		height=23
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=137
+				y=84
+				width=84
+				height=20
+			}
+			control {
+				chan="$(P)$(R)AdcSpeed"
+				clr=14
+				bclr=51
 			}
 		}
 		"text update" {
@@ -258,19 +329,22 @@ composite {
 			limits {
 			}
 		}
-		text {
-			object {
-				x=52
-				y=108
-				width=70
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Quality"
-			align="horiz. right"
-		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)AdcSpeed_PR"
+	}
+}
+composite {
+	object {
+		x=136
+		y=104
+		width=197
+		height=23
+	}
+	"composite name"=""
+	children {
 		menu {
 			object {
 				x=136
@@ -300,19 +374,22 @@ composite {
 			limits {
 			}
 		}
-		text {
-			object {
-				x=51
-				y=131
-				width=70
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="EM Gain"
-			align="horiz. right"
-		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)AdcQuality_PR"
+	}
+}
+composite {
+	object {
+		x=138
+		y=131
+		width=199
+		height=20
+	}
+	"composite name"=""
+	children {
 		"text update" {
 			object {
 				x=237
@@ -322,48 +399,6 @@ composite {
 			}
 			monitor {
 				chan="$(P)$(R)EMGain_RBV"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=55
-				y=154
-				width=70
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Correct Pixel Bias"
-			align="horiz. right"
-		}
-		menu {
-			object {
-				x=139
-				y=154
-				width=84
-				height=20
-			}
-			control {
-				chan="$(P)$(R)CorrectPixelBias"
-				clr=14
-				bclr=51
-			}
-		}
-		"text update" {
-			object {
-				x=241
-				y=154
-				width=95
-				height=18
-			}
-			monitor {
-				chan="$(P)$(R)CorrectPixelBias_RBV"
 				clr=54
 				bclr=4
 			}
@@ -402,5 +437,55 @@ composite {
 				chan="$(P)$(R)EMGain"
 			}
 		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)AdcEMGain_PR"
+	}
+}
+composite {
+	object {
+		x=139
+		y=154
+		width=197
+		height=20
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=139
+				y=154
+				width=84
+				height=20
+			}
+			control {
+				chan="$(P)$(R)CorrectPixelBias"
+				clr=14
+				bclr=51
+			}
+		}
+		"text update" {
+			object {
+				x=241
+				y=154
+				width=95
+				height=18
+			}
+			monitor {
+				chan="$(P)$(R)CorrectPixelBias_RBV"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)CorrectPixelBias_PR"
 	}
 }
