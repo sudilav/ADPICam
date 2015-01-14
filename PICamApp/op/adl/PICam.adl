@@ -134,6 +134,11 @@ display {
 		name="PICAM_ShutterParams.adl"
 		args="P=$(P),R=$(R)"
 	}
+	display[8] {
+		label="Readout Parameters"
+		name="PICAM_ReadoutParams.adl"
+		args="P=$(P),R=$(R)"
+	}
 	clr=14
 	bclr=4
 }
