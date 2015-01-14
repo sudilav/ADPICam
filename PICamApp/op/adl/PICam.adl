@@ -139,6 +139,11 @@ display {
 		name="PICAM_ReadoutParams.adl"
 		args="P=$(P),R=$(R)"
 	}
+	display[9] {
+		label="ADC Parameters"
+		name="PICAM_AdcParams.adl"
+		args="P=$(P),R=$(R)"
+	}
 	clr=14
 	bclr=4
 }
