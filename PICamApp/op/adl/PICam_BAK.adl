@@ -129,6 +129,16 @@ display {
 		name="PICam_HardwareIO.adl"
 		args="P=$(P),R=$(R)"
 	}
+	display[7] {
+		label="Shutter"
+		name="PICAM_ShutterParams.adl"
+		args="P=$(P),R=$(R)"
+	}
+	display[8] {
+		label="Readout Parameters"
+		name="PICAM_ReadoutParams.adl"
+		args="P=$(P),$(R)"
+	}
 	clr=14
 	bclr=4
 }
