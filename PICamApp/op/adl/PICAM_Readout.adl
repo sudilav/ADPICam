@@ -102,8 +102,8 @@ rectangle {
 	object {
 		x=0
 		y=0
-		width=1920
-		height=1130
+		width=350
+		height=300
 	}
 	"basic attribute" {
 		clr=14

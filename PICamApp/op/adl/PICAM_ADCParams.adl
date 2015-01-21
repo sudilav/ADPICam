@@ -8,7 +8,7 @@ display {
 		x=37
 		y=64
 		width=341
-		height=182
+		height=205
 	}
 	clr=14
 	bclr=4
@@ -153,9 +153,9 @@ text {
 rectangle {
 	object {
 		x=1
-		y=31
+		y=0
 		width=337
-		height=150
+		height=205
 	}
 	"basic attribute" {
 		clr=14
@@ -198,7 +198,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="Correct Pixel Bias"
+	textix="Correct"
 	align="horiz. right"
 }
 composite {
@@ -447,7 +447,7 @@ composite {
 composite {
 	object {
 		x=139
-		y=154
+		y=163
 		width=197
 		height=20
 	}
@@ -456,7 +456,7 @@ composite {
 		menu {
 			object {
 				x=139
-				y=154
+				y=163
 				width=84
 				height=20
 			}
@@ -469,7 +469,7 @@ composite {
 		"text update" {
 			object {
 				x=241
-				y=154
+				y=163
 				width=95
 				height=18
 			}
@@ -488,4 +488,17 @@ composite {
 		calc="A"
 		chan="$(P)$(R)CorrectPixelBias_PR"
 	}
+}
+text {
+	object {
+		x=53
+		y=175
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Pixel Bias"
+	align="horiz. right"
 }

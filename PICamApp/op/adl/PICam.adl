@@ -8,7 +8,7 @@ display {
 		x=855
 		y=132
 		width=729
-		height=819
+		height=566
 	}
 	clr=14
 	bclr=4
@@ -89,10 +89,10 @@ display {
 }
 "related display" {
 	object {
-		x=637
-		y=750
-		width=33
-		height=27
+		x=397
+		y=537
+		width=300
+		height=25
 	}
 	display[0] {
 		label="ParameterRelevance"
@@ -146,6 +146,7 @@ display {
 	}
 	clr=14
 	bclr=4
+	label="PICAM Specific Parameters"
 }
 composite {
 	object {
@@ -525,137 +526,6 @@ composite {
 			}
 			monitor {
 				chan="$(P)$(R)UnavailableCameras_RBV"
-				clr=14
-				bclr=4
-			}
-			limits {
-			}
-		}
-	}
-}
-text {
-	object {
-		x=21
-		y=539
-		width=350
-		height=25
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Sensor Temperature Set Point"
-}
-"text entry" {
-	object {
-		x=376
-		y=536
-		width=303
-		height=29
-	}
-	control {
-		chan="$(P)$(R)Temperature"
-		clr=14
-		bclr=4
-	}
-	limits {
-	}
-}
-"text update" {
-	object {
-		x=381
-		y=570
-		width=297
-		height=23
-	}
-	monitor {
-		chan="$(P)$(R)Temperature_RBV"
-		clr=14
-		bclr=4
-	}
-	limits {
-	}
-}
-text {
-	object {
-		x=19
-		y=604
-		width=350
-		height=25
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Sensor Temperature Actual"
-}
-"text update" {
-	object {
-		x=369
-		y=607
-		width=297
-		height=23
-	}
-	monitor {
-		chan="$(P)$(R)TemperatureActual"
-		clr=14
-		bclr=4
-	}
-	limits {
-	}
-}
-composite {
-	object {
-		x=28
-		y=646
-		width=650
-		height=59
-	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=205
-				y=646
-				width=2
-				height=2
-			}
-			"basic attribute" {
-				clr=14
-			}
-		}
-		text {
-			object {
-				x=28
-				y=646
-				width=200
-				height=25
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Readout Control Mode"
-		}
-		menu {
-			object {
-				x=278
-				y=646
-				width=400
-				height=23
-			}
-			control {
-				chan="$(P)$(R)ReadoutControlMode"
-				clr=14
-				bclr=4
-			}
-		}
-		"text update" {
-			object {
-				x=278
-				y=680
-				width=400
-				height=25
-			}
-			monitor {
-				chan="$(P)$(R)ReadoutControlMode_RBV"
 				clr=14
 				bclr=4
 			}
