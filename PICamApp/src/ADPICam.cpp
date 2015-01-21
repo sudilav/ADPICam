@@ -126,7 +126,7 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
 
     if (error != PicamError_None) {
         if (error == PicamError_NoCamerasAvailable) {
-            error = Picam_ConnectDemoCamera(PicamModel_Pixis100F,
+            error = Picam_ConnectDemoCamera(PicamModel_Quadro4320,
                     "CamNotFoundOnInit", &demoId);
             error = Picam_OpenFirstCamera(&currentCameraHandle);
         } else {
