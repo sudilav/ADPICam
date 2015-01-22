@@ -9,7 +9,7 @@
   <div style="text-align:center">
     <h1>areaDetector PICam driver</h1>
     <h2>John Hammonds</h2>
-    <h2>October 31, 2014</h2>
+    <h2>January 21, 2014</h2>
     <h2>Software Services Group</h2>
     <h2>Advanced Photon Source</h2>
       <h2>Argonne National Laboratory</h2>
@@ -26,6 +26,22 @@
   </ul>
   <h2 id="Introduction" style="text-align: left">
     Introduction</h2>
+    This is an EPICS areaDetector driver for Princeton Instruments (PI) 
+    detectors using the PICAM driver library from PI. The PICAM driver supports 
+    various models of cameras.  Supported families of detectors include:
+    <ul>
+    <li>PI-Max3</li>
+    <li>PI-MAX4, PI-MAX4:RF, PI-MAX4-EM</li>
+    <li>PIoNIR/NIRvana</li>
+    <li>PIXIS, PIXIS-XB, PIXIS-XF, PIXIS-XO</li>
+    <li>ProEM</li>
+    <li>ProEM+</li>
+    <li>PyLoN-IR</li>
+    <li>QuadRO</li>
+    </li>
+    PICAM version 2.8.1.1408 was used during development of this driver.  Most 
+    of the initial development was done using a QuadRO: 4320 camera or using
+    the PIXIS-100F demo (soft) camera.
   <p>
   <h2 id="StandardNotes" style="text-align: left">
     Implementation of standard driver parameters</h2>
@@ -6554,9 +6570,62 @@
   <p>
   <h2 id="Configuration">
     Configuration</h2>
+        This driver is configured via the <tt>PICamConfig()</tt> function. If this is to 
+        be used in an IOC, it must be called before <tt>iocInit()</tt>. It has the 
+        following signature:<p><p>
+        
+
+        <tt>int adscConfig(const char *portName, int maxBuffers, size_t maxMemory, int priority, int stackSize)</tt><p>
+    <dl>
+    <dt><tt>
+    portName</tt></dt>
+        <dd>ASYN port name for the driver instance<dd>
+    <dt><tt>
+    maxBuffers</tt><dt>
+        <dd>maxBuffers The maximum number of NDArray buffers that the NDArrayPool for this driver is 
+  *            allowed to allocate. Set this to 0 to allow an unlimited number of buffers.</dd>
+    <dt><tt>
+    maxMemory</tt><dt>
+        <dd>maxMemory The maximum amount of memory that the NDArrayPool for this driver is 
+  *            allowed to allocate. Set this to 0 to allow an unlimited amount of memory.</dd>
+    <dt><tt>
+    priority</tt><dt>
+        <dd>The thread priority for the asyn port driver thread if ASYN_CANBLOCK is set in asynFlags.</dd>
+    <dt><tt>
+    stackSize</tt><dt>
+        <dd>The stack size for the asyn port driver thread if ASYN_CANBLOCK is set in asynFlags.</dd>
+    </dl>
+    This configuration will attempt to find cameras supported by PICAM and 
+    provide a list from which to select the detector to be used.  If no cameras
+    are found, the driver adds a QuadRO demo camera (soft camera) as the current 
+    camera.  
+    For test purposes, it is possible to add demo cameras either before or after 
+    <tt>iocInit()</tt> is called.  To add a detector the method 
+    <tt>PICamAddDemoCamera()</tt>.  The signiture for this call is:<p>
+    <tt>PICamAddDemoCamera(const char* cameraName)</tt>
+    <dl>
+    <dt><tt>
+    cameraName</tt></dt>
+        <dd>proper values for cameraName can be found by running 
+        <tt>asynReport(portName, details)</tt> with a <tt>details > 20</tt>.</dd>
+    Added cameras will appear in the list of available cameras but may not appear 
+    until the display is refreshed.
+    </dl>    
   <p>
   <h2 id="MEDM_screens" style="text-align: left">
     MEDM screens</h2>
+  PICAMBase.adl<p>
+  <img src = "PICAMBase.png"  alt="Base display for PICAM"/><p>
+  PICAM.adl<p>
+  <img src = "PICAM.png"  alt="Available cameras"/><p>
+  PICAM_ParaneterRelevance.adl<p>
+  <img src = "PICAM_ParameterRelevance.png"  alt="Display if parameters exist "/><p>
+  PICAM_SensorCleaning.adl<p>
+  <img src = "PICAM_SensorCleaning.png"  alt="Base display for PICAM"/><p>
+  PICAM_SensorInformation.adl<p>
+  <img src = "PICAM_SensorInformation.png"  alt="Base display for PICAM"/><p>
+  PICAM_SensorLayout.adl<p>
+  <img src = "PICAM_SensorLayout.png"  alt="Base display for PICAM"/><p>
   <p>
   <h2 id="Restrictions">
     Restrictions</h2>
