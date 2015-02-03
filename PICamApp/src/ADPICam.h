@@ -7,18 +7,21 @@
 #ifndef ADPICAM_H
 #define ADPICAM_H
 
-#include "picam_advanced.h"
-#include "ADDriver.h"
-#include <iocsh.h>
-#include <epicsExport.h>
-#include <epicsString.h>
-#include <epicsEvent.h>
-#include <epicsThread.h>
 #include <vector>
 #include <stdlib.h>
 
+#include <iocsh.h>
 
-class ADPICam: public ADDriver {
+#include <epicsString.h>
+#include <epicsEvent.h>
+#include <epicsThread.h>
+
+#include "ADDriver.h"
+
+#include "picam_advanced.h"
+
+
+class epicsShareClass ADPICam: public ADDriver {
 public:
     static const char *notAvailable;
     static const char *driverName;

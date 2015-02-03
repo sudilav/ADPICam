@@ -1,16 +1,25 @@
 /* PICam.cpp */
-#include "ADPICam.h"
 #include <cstring>
 #include <string>
 #include <cmath>
 #include <algorithm>
+
 #include <epicsTime.h>
 #include <epicsExit.h>
+#include <epicsExport.h>
+
+#include "ADPICam.h"
 
 #define MAX_ENUM_STATES 16
 
+/** define C99 standard __func__ to come from MS's __FUNCTION__ */
+#if defined ( _MSC_VER )
+#define __func__ __FUNCTION__
+#endif
+
 static void piHandleNewImageTaskC(void *drvPvt);
 
+extern "C" {
 /** Configuration command for PICAM driver; creates a new PICam object.
  * \param[in] portName The name of the asyn port driver to be created.
  * \param[in] maxBuffers The maximum number of NDArray buffers that the
@@ -25,28 +34,28 @@ static void piHandleNewImageTaskC(void *drvPvt);
  * \param[in] stackSize The stack size for the asyn port driver thread if
  *            ASYN_CANBLOCK is set in asynFlags.
  */
-extern "C" int PICamConfig(const char *portName, int maxBuffers,
-        size_t maxMemory, int priority, int stackSize) {
-    new ADPICam(portName, maxBuffers, maxMemory, priority, stackSize);
-    return (asynSuccess);
-}
+	int PICamConfig(const char *portName, int maxBuffers,
+			size_t maxMemory, int priority, int stackSize) {
+		new ADPICam(portName, maxBuffers, maxMemory, priority, stackSize);
+		return (asynSuccess);
+	}
 
-/** Configuration command for PICAM driver; creates a new PICam object.
- * \param[in]  demoCameraName String identifying demoCameraName
- */
-extern "C" int PICamAddDemoCamera(const char *demoCameraName) {
-    ADPICam::piAddDemoCamera(demoCameraName);
-    return (asynSuccess);
-}
+	/** Configuration command for PICAM driver; creates a new PICam object.
+	 * \param[in]  demoCameraName String identifying demoCameraName
+	 */
+	int PICamAddDemoCamera(const char *demoCameraName) {
+		ADPICam::piAddDemoCamera(demoCameraName);
+		return (asynSuccess);
+	}
 
-/**
- * Callback function for exit hook
- */
-static void exitCallbackC(void *pPvt){
-    ADPICam *pADPICam = (ADPICam*)pPvt;
-    delete pADPICam;
+	/**
+	 * Callback function for exit hook
+	 */
+	static void exitCallbackC(void *pPvt){
+		ADPICam *pADPICam = (ADPICam*)pPvt;
+		delete pADPICam;
+	}
 }
-
 ADPICam * ADPICam::ADPICam_Instance = NULL;
 const char *ADPICam::notAvailable = "N/A";
 const char *ADPICam::driverName = "PICam";
@@ -92,7 +101,7 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
         if (error != PicamError_None) {
             Picam_GetEnumerationString(PicamEnumeratedType_Error, error,
                     &errorString);
-            asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
                     "%s%s Trouble Uninitializing Picam Library: %s\n", driverName,
                     functionName, errorString);
             Picam_DestroyString(errorString);
@@ -107,9 +116,13 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
         if (error != PicamError_None) {
             Picam_GetEnumerationString(PicamEnumeratedType_Error, error,
                     &errorString);
-            asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                    "%s%s Trouble Initializing Picam Library: %s\n", driverName,
-                    functionName, errorString);
+            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                    "------------------------------------------------\n"
+                    "%s%s Trouble Initializing Picam Library: %s\n"
+                    "------------------------------------------------\n",
+					driverName,
+                    functionName,
+					errorString);
             Picam_DestroyString(errorString);
             return;
         }
@@ -118,20 +131,26 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
     if (error != PicamError_None) {
         Picam_GetEnumerationString(PicamEnumeratedType_Error, error,
                 &errorString);
-        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                "%s%s Trouble Checking if Picam Library is initialized: %s\n",
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "---------------------------------------------------------\n"
+                "%s%s Trouble Checking if Picam Library is initialized: %s\n"
+                "---------------------------------------------------------\n",
                 driverName,
                 functionName, errorString);
         Picam_DestroyString(errorString);
-        
         return;
     }
-    ADPICam_Instance = this;
     if (!libInitialized) {
-        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                "%s%s Trouble Initializing Picam Library\n", driverName,
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "------------------------------------------------\n"
+        		"%s%s Trouble Initializing Picam Library\n"
+                "------------------------------------------------\n",
+				driverName,
                 functionName);
+        return;    // This was that last chance.  Can't do anything.
     }
+
+    ADPICam_Instance = this;
 
     //Open First available camera.  If no camera is available,
     // then open a demo camera
@@ -141,14 +160,55 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
         if (error == PicamError_NoCamerasAvailable) {
             error = Picam_ConnectDemoCamera(PicamModel_Quadro4320,
                     "CamNotFoundOnInit", &demoId);
+            if (error != PicamError_None) {
+            	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+            			error,
+						&errorString);
+            	const char *demoModelName;
+            	Picam_GetEnumerationString(PicamEnumeratedType_Model,
+            			PicamModel_Quadro4320,
+						&demoModelName);
+            	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            			"-------------------------------------------------\n"
+            			"No detectors were available and cannot connect to "
+            			"demo camera %s. Cannot run without a detector. \n"
+            			"-------------------------------------------------\n",
+						demoModelName,
+						errorString);
+            	Picam_DestroyString(demoModelName);
+            	Picam_DestroyString(errorString);
+            	return;
+            }
             error = Picam_OpenFirstCamera(&currentCameraHandle);
+            if (error != PicamError_None) {
+            	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+            			error,
+						&errorString);
+            	const char *demoModelName;
+            	Picam_GetEnumerationString(PicamEnumeratedType_Model,
+            			PicamModel_Quadro4320,
+						&demoModelName);
+            	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                        "------------------------------------------------\n"
+            			"Trouble opening demo camera %s \n%s"
+		                "------------------------------------------------\n",
+						demoModelName, errorString);
+            	Picam_DestroyString(demoModelName);
+            	Picam_DestroyString(errorString);
+            	return;
+            }
         } else {
             Picam_GetEnumerationString(PicamEnumeratedType_Error, error,
                     &errorString);
             asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                    "%s:%s Error opening first camera: %s\n", driverName,
-                    functionName, errorString);
+                    "------------------------------------------------\n"
+                    "%s:%s Unhandled Error opening first camera: %s\n"
+	                "------------------------------------------------\n",
+					driverName,
+                    functionName,
+					errorString);
             Picam_DestroyString(errorString);
+            return;
         }
     }
     PicamAdvanced_GetCameraDevice(currentCameraHandle, &currentDeviceHandle);
@@ -988,8 +1048,6 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
     setIntegerParam(PICAM_AvailableCameras, 0);
     callParamCallbacks();
 
-    // Comment out for now.  This is making the IOC crash.  Need to move on to
-    // reading parameters.
     piLoadUnavailableCameraIDs();
     if (status) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
@@ -1013,11 +1071,10 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
  * Destructor function.  Clear out Picam Library
  */
 ADPICam::~ADPICam() {
-    const char * functionName = "~ADPICam";
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s:%s Enter\n",
             driverName,
-            functionName);
+            __func__);
 
 
     Picam_StopAcquisition(currentCameraHandle);
@@ -1029,7 +1086,7 @@ ADPICam::~ADPICam() {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s:%s Exit\n",
             driverName,
-            functionName);
+            __func__);
 }
 
 /**
@@ -1051,7 +1108,7 @@ asynStatus ADPICam::initializeDetector() {
     // Read PICAM Library version #
     Picam_GetVersion(&versionMajor, &versionMinor, &versionDistribution,
             &versionReleased);
-    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
             "%s:%s Initialized PICam Version %d.%d.%d.%d\n", driverName,
             functionName, versionMajor, versionMinor, versionDistribution,
             versionReleased);
@@ -1125,8 +1182,9 @@ asynStatus ADPICam::readEnum(asynUser *pasynUser, char *strings[], int values[],
                     availableCameraIDs[ii].computer_interface,
                     availableCameraIDs[ii].sensor_name,
                     availableCameraIDs[ii].serial_number);
-            if (strings[*nIn])
+            if (strings[*nIn]) {
                 free(strings[*nIn]);
+            }
 
             Picam_DestroyString(modelString);
             strings[*nIn] = epicsStrDup(enumString);
@@ -1147,8 +1205,9 @@ asynStatus ADPICam::readEnum(asynUser *pasynUser, char *strings[], int values[],
                     unavailableCameraIDs[ii].computer_interface,
                     unavailableCameraIDs[ii].sensor_name,
                     unavailableCameraIDs[ii].serial_number);
-            if (strings[*nIn])
+            if (strings[*nIn]) {
                 free(strings[*nIn]);
+            }
 
             Picam_DestroyString(modelString);
             strings[*nIn] = epicsStrDup(enumString);
@@ -1189,6 +1248,24 @@ asynStatus ADPICam::readEnum(asynUser *pasynUser, char *strings[], int values[],
 				error = Picam_GetParameterConstraintType(currentCameraHandle,
 						picamParameter,
 						&constraintType);
+				if (error != PicamError_None) {
+					Picam_GetEnumerationString(PicamEnumeratedType_Error,
+							error,
+							&errorString);
+					Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
+							picamParameter,
+							&parameterName);
+					asynPrint(pasynUser, ASYN_TRACE_ERROR,
+							"%s:%s Could not determine constraint type for "
+							"parameter %s. %s",
+							driverName,
+							functionName,
+							parameterName,
+							errorString);
+					Picam_DestroyString(parameterName);
+					Picam_DestroyString(errorString);
+					return asynError;
+				}
 				if (isRelevant &&
 						(constraintType==PicamConstraintType_Collection)) {
 					error = Picam_GetParameterCollectionConstraint(
@@ -1208,6 +1285,7 @@ asynStatus ADPICam::readEnum(asynUser *pasynUser, char *strings[], int values[],
 								picamParameter,
 								errorString);
 						Picam_DestroyString(errorString);
+						return asynError;
 					}
 					if ( constraints->values_count == 0){
 						strings[0] = epicsStrDup(NAString);
@@ -1678,8 +1756,8 @@ asynStatus ADPICam::writeFloat64(asynUser *pasynUser, epicsFloat64 value) {
                         error,
                         &errorString);
                 asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                        "%s:%s Trouble getting parameter assocoated with driver"
-                        " param %d, picam param:%d: %s\n",
+                        "%s:%s Trouble getting constraint type assocoated with "
+                        "driver param %d, picam param:%d: %s\n",
                         driverName,
                         functionName,
                         function,
@@ -1729,17 +1807,19 @@ asynStatus ADPICam::writeFloat64(asynUser *pasynUser, epicsFloat64 value) {
     /* Do callbacks so higher layers see any changes */
     callParamCallbacks();
 
-    if (status)
+    if (status) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
                 "%s:%s: error, status=%d function=%d, value=%f\n", driverName,
                 functionName, status, function, value);
-    else
+    }
+    else {
         asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
                 "%s:%s: function=%d, value=%f\n", driverName, functionName,
                 function, value);
-    return (asynStatus) status;
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: exit\n", driverName,
             functionName);
+    }
+    return (asynStatus) status;
 
 }
 
@@ -1756,8 +1836,8 @@ asynStatus ADPICam::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     PicamParameter picamParameter;
 
     if (function == PICAM_AvailableCameras) {
-        piSetSelectedCamera(pasynUser, (int) value);
-        piSetParameterValuesFromSelectedCamera();
+        status |= piSetSelectedCamera(pasynUser, (int) value);
+        status |= piSetParameterValuesFromSelectedCamera();
     } else if (function == PICAM_UnavailableCameras) {
         piSetSelectedUnavailableCamera(pasynUser, (int) value);
     } else if (piLookupPICamParameter(function, picamParameter) ==
@@ -1794,14 +1874,15 @@ asynStatus ADPICam::writeInt32(asynUser *pasynUser, epicsInt32 value) {
                         error,
                         &errorString);
                 asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                        "%s:%s Trouble getting parameter assocoated with driver"
-                        " param %d, picam param:%d: %s\n",
+                        "%s:%s Trouble getting constraint type assocoated with "
+                        "driver param %d, picam param:%d: %s\n",
                         driverName,
                         functionName,
                         function,
                         picamParameter,
                         errorString);
                 Picam_DestroyString(errorString);
+                return asynError;
             }
 
             if (constraintType==PicamConstraintType_Range) {
@@ -1898,14 +1979,16 @@ asynStatus ADPICam::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     /* Do callbacks so higher layers see any changes */
     callParamCallbacks();
 
-    if (status)
+    if (status) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
                 "%s:%s: error, status=%d function=%d, value=%d\n", driverName,
                 functionName, status, function, value);
-    else
+    }
+    else {
         asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
                 "%s:%s: function=%d, value=%d\n", driverName, functionName,
                 function, value);
+    }
 
     return (asynStatus) status;
 
@@ -2012,7 +2095,9 @@ asynStatus ADPICam::piAcquireStart(){
                 errorString,
                 buffer_.size());
         Picam_DestroyString(errorString);
-
+        setIntegerParam(ADAcquire, 0);
+        setIntegerParam(ADStatus, ADStatusError);
+        return asynError;
     }
 
     lock();
@@ -2036,11 +2121,14 @@ asynStatus ADPICam::piAcquireStart(){
                 functionName,
                 errorString);
         Picam_DestroyString(errorString);
+
+        setIntegerParam(ADAcquire, 0);
+        setIntegerParam(ADStatus, ADStatusError);
+        return asynError;
     }
 
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-            "%s:%s Enter\n");
-
+            "%s:%s Exit\n");
     return (asynStatus)status;
 }
 
@@ -2104,11 +2192,24 @@ asynStatus ADPICam::piAddDemoCamera(const char *demoCameraName) {
     const char *errorString;
 
     pibln libInitialized = true;
-    Picam_IsLibraryInitialized(&libInitialized);
+    error = Picam_IsLibraryInitialized(&libInitialized);
 
     if (libInitialized) {
         error = Picam_GetAvailableDemoCameraModels(&demoModels,
                 &demoModelCount);
+        if (error != PicamError_None) {
+        	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        			error,
+					&errorString);
+        	asynPrint(ADPICam_Instance->pasynUserSelf, ASYN_TRACE_ERROR,
+        			"%s:%s Trouble getting list of available Demo Cameras.  "
+        			"%s\n",
+					driverName,
+					functionName,
+					errorString);
+        	Picam_DestroyString(errorString);
+        	return asynError;
+        }
         for (int ii = 0; ii < demoModelCount; ii++) {
             const char* modelString;
             error = Picam_GetEnumerationString(PicamEnumeratedType_Model,
@@ -2128,6 +2229,8 @@ asynStatus ADPICam::piAddDemoCamera(const char *demoCameraName) {
                     printf("%s:%s Error Adding camera demoCamera[%d] %s, %s\n",
                             driverName, functionName, ii, demoCameraName,
                             errorString);
+                    Picam_DestroyString(errorString);
+                    status = (asynStatus)asynError;
                 }
                 ii = demoModelCount;
             }
@@ -2135,7 +2238,16 @@ asynStatus ADPICam::piAddDemoCamera(const char *demoCameraName) {
         }
         Picam_DestroyModels(demoModels);
     } else {
-        status = asynError;
+    	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+    			error,
+				&errorString);
+    	asynPrint(ADPICam_Instance->pasynUserSelf, ASYN_TRACE_ERROR,
+    			"%s%s PICAM is not initialized.  Cannot add a camera. %s\n",
+				driverName,
+				functionName,
+				errorString);
+    	Picam_DestroyString(errorString);
+    	status = asynError;
     }
 
     return (asynStatus) status;
@@ -2993,7 +3105,7 @@ asynStatus ADPICam::piHandleCameraDiscovery(const PicamCameraID *id,
     case PicamDiscoveryAction_Found:
         Picam_GetEnumerationString(PicamEnumeratedType_Model, id->model,
                 &modelString);
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "Camera Found: %s\n",
+        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "Camera Found: %s\n",
                 modelString);
         Picam_DestroyString(modelString);
         if (device != NULL) {
@@ -3035,13 +3147,13 @@ asynStatus ADPICam::piHandleCameraDiscovery(const PicamCameraID *id,
     if (device == NULL) {
         Picam_GetEnumerationString(PicamEnumeratedType_Model, id->model,
                 &modelString);
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
                 "No device found with camera\n");
         Picam_DestroyString(modelString);
     } else {
         Picam_GetEnumerationString(PicamEnumeratedType_Model, id->model,
                 &modelString);
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
                 "Device found with camera\n");
 
         Picam_DestroyString(modelString);
@@ -3066,6 +3178,7 @@ asynStatus ADPICam::piHandleParameterFloatingPointValueChanged(
     PicamError error = PicamError_None;
     int status = asynSuccess;
     const pichar *parameterString;
+    const pichar *errorString;
     int driverParameter;
 
     driverParameter = piLookupDriverParameter(parameter);
@@ -3076,8 +3189,31 @@ asynStatus ADPICam::piHandleParameterFloatingPointValueChanged(
         error = Picam_GetParameterCollectionConstraint(currentCameraHandle,
                 PicamParameter_AdcSpeed, PicamConstraintCategory_Capable,
                 &speedConstraint);
+        if (error != PicamError_None) {
+        	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        			error,
+					&errorString);
+        	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        			"%s:%s Trouble getting Constraint Category for "
+        			"ADC_Speed%s\n",
+					driverName,
+					functionName,
+					errorString);
+        	Picam_DestroyString(errorString);
+        }
         error = Picam_GetParameterFloatingPointValue(currentCameraHandle,
                 PicamParameter_AdcSpeed, &fltVal);
+        if (error != PicamError_None) {
+        	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        			error,
+					&errorString);
+        	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        			"%s:%s Trouble getting Float value for ADC_Speed %s\n",
+					driverName,
+					functionName,
+					errorString);
+        	Picam_DestroyString(errorString);
+        }
         printf("setting value for ADCspeed % f\n", fltVal);
         for (int ii = 0; ii < speedConstraint->values_count; ii++) {
             if (speedConstraint->values_array[ii] == fltVal) {
@@ -3196,7 +3332,7 @@ asynStatus ADPICam::piHandleParameterLargeIntegerValueChanged(
         setIntegerParam(driverParameter, lValue);
         Picam_GetEnumerationString(PicamEnumeratedType_Parameter, parameter,
                 &parameterString);
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
                 "%s:%s Setting PICAM parameter %s to driverParameter %d, "
                 "value %d long value %d\n",
                 driverName, functionName, parameterString, driverParameter,
@@ -3206,8 +3342,13 @@ asynStatus ADPICam::piHandleParameterLargeIntegerValueChanged(
     } else {
         Picam_GetEnumerationString(PicamEnumeratedType_Parameter, parameter,
                 &parameterString);
-        printf("%s:%s Parameter %s large integer value Changed %d\n",
-                driverName, functionName, parameterString, value);
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        		"%s:%s Parameter %s large integer value Changed %d.\n"
+        		"This change was unhandled\n",
+                driverName,
+				functionName,
+				parameterString,
+				value);
         Picam_DestroyString(parameterString);
     }
 
@@ -3475,15 +3616,47 @@ asynStatus ADPICam::piRegisterConstraintChangeWatch(PicamHandle cameraHandle) {
     piint parameterCount;
     const PicamParameter *parameterList;
     PicamError error;
+    const char *errorString;
+    const char *paramString;
 
     error = Picam_GetParameters(currentCameraHandle, &parameterList,
             &parameterCount);
     if (error != PicamError_None) {
-        //TODO
+        Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        		error,
+				&errorString);
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        		"%s:%s Error: Trouble getting list of parameters for current "
+        		"camera.  %s\n",
+				driverName,
+				__func__,
+				errorString);
+        Picam_DestroyString(errorString);
+        return asynError;
     }
     for (int ii = 0; ii < parameterCount; ii++) {
-        error = PicamAdvanced_UnregisterForIsRelevantChanged(cameraHandle,
+        //TODO need to change to constraint change watches.  These depend on
+    	// parameter types.
+    	error = PicamAdvanced_RegisterForIsRelevantChanged(cameraHandle,
                 parameterList[ii], piParameterRelevanceChanged);
+        if (error != PicamError_None) {
+        	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        			error,
+					&errorString);
+        	Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
+        			parameterList[ii],
+					&paramString);
+
+        	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        			"%s:%s Trouble registering ConstraintChange for "
+        			"parameter %s. %s\n",
+					driverName,
+					__func__,
+					paramString,
+					errorString);
+        	Picam_DestroyString(paramString);
+        	Picam_DestroyString(errorString);
+        }
     }
     return (asynStatus) status;
 }
@@ -3496,15 +3669,45 @@ asynStatus ADPICam::piRegisterRelevantWatch(PicamHandle cameraHandle) {
     piint parameterCount;
     const PicamParameter *parameterList;
     PicamError error;
+    const char *errorString;
+    const char *paramString;
 
     error = Picam_GetParameters(currentCameraHandle, &parameterList,
             &parameterCount);
     if (error != PicamError_None) {
-        //TODO
+        Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        		error,
+				&errorString);
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        		"%s:%s Error: Trouble getting list of parameters for current "
+        		"camera.  %s\n",
+				driverName,
+				__func__,
+				errorString);
+        Picam_DestroyString(errorString);
+        return asynError;
     }
     for (int ii = 0; ii < parameterCount; ii++) {
         error = PicamAdvanced_RegisterForIsRelevantChanged(cameraHandle,
                 parameterList[ii], piParameterRelevanceChanged);
+        if (error != PicamError_None) {
+        	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        			error,
+					&errorString);
+        	Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
+        			parameterList[ii],
+					&paramString);
+
+        	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        			"%s:%s Trouble registering RelevantWatch for "
+        			"parameter %s. %s\n",
+					driverName,
+					__func__,
+					paramString,
+					errorString);
+        	Picam_DestroyString(paramString);
+        	Picam_DestroyString(errorString);
+        }
     }
     return (asynStatus) status;
 }
@@ -3520,11 +3723,23 @@ asynStatus ADPICam::piRegisterValueChangeWatch(PicamHandle cameraHandle) {
     PicamError error;
     const char *functionName = "piRegisterValueChangeWatch";
     pibln doesParamExist;
+    const char *errorString;
+    const char *paramString;
 
     error = Picam_GetParameters(currentCameraHandle, &parameterList,
             &parameterCount);
     if (error != PicamError_None) {
-        //TODO
+        Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        		error,
+				&errorString);
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        		"%s:%s Error: Trouble getting list of parameters for current "
+        		"camera.  %s\n",
+				driverName,
+				__func__,
+				errorString);
+        Picam_DestroyString(errorString);
+        return asynError;
     }
     for (int ii = 0; ii < parameterCount; ii++) {
     	Picam_DoesParameterExist(currentCameraHandle,
@@ -3534,8 +3749,21 @@ asynStatus ADPICam::piRegisterValueChangeWatch(PicamHandle cameraHandle) {
 			error = Picam_GetParameterValueType(cameraHandle, parameterList[ii],
 					&valueType);
 			if (error != PicamError_None) {
-				asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s \n", driverName,
-						functionName);
+		        Picam_GetEnumerationString(PicamEnumeratedType_Error,
+		        		error,
+						&errorString);
+	        	Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
+	        			parameterList[ii],
+						&paramString);
+				asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+						"%s:%s Trouble getting parameter value type for "
+						"parameter %s. %s\n",
+						driverName,
+						functionName,
+						paramString,
+						errorString);
+		        Picam_DestroyString(paramString);
+		        Picam_DestroyString(errorString);
 				return asynError;
 			}
 			switch (valueType) {
@@ -4410,6 +4638,7 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
     int status = asynSuccess;
     PicamError error;
     const pichar *paramString;
+    const pichar *errorString;
     piint parameterCount;
     const PicamParameter *parameterList;
     static const char *functionName = "piSetParameterValuesFromSelectedCamera";
@@ -4428,7 +4657,6 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
                 parameterList[ii], &paramString);
         asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "---- Found %s\n",
                 paramString);
-        Picam_DestroyString(paramString);
         driverParam = piLookupDriverParameter(parameterList[ii]);
         pibln doesParamExist;
         Picam_DoesParameterExist(currentCameraHandle,
@@ -4439,7 +4667,19 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
 				error = Picam_GetParameterValueType(currentCameraHandle,
 						parameterList[ii], &paramType);
 				if (error != PicamError_None) {
-					//TODO
+					Picam_GetEnumerationString(PicamEnumeratedType_Error,
+							error,
+							&errorString);
+					asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+							"%s:%s Trouble getting parameter value type for "
+							"parameter %s. %s",
+							driverName,
+							__func__,
+							paramString,
+							errorString);
+					Picam_DestroyString(paramString);
+					Picam_DestroyString(errorString);
+					return asynError;
 				}
 				PicamConstraintType constraintType;
 				Picam_GetParameterConstraintType(currentCameraHandle,
@@ -4463,12 +4703,36 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
 					piint intVal;
 					error = Picam_GetParameterIntegerValue(currentCameraHandle,
 							parameterList[ii], &intVal);
+					if (error != PicamError_None) {
+						Picam_GetEnumerationString(PicamEnumeratedType_Error,
+								error,
+								&errorString);
+						asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+								"%s:%s Trouble getting Integer parameter %s\n",
+								driverName,
+								functionName,
+								errorString);
+						Picam_DestroyString(errorString);
+						return asynError;
+					}
 					setIntegerParam(driverParam, intVal);
 					break;
 				case PicamValueType_Enumeration:
 					if (constraintType != PicamConstraintType_None) {
 						error = Picam_GetParameterIntegerValue(currentCameraHandle,
 								parameterList[ii], &intVal);
+						if (error != PicamError_None) {
+							Picam_GetEnumerationString(PicamEnumeratedType_Error,
+									error,
+									&errorString);
+							asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+									"%s:%s Trouble getting Integer parameter %s\n",
+									driverName,
+									functionName,
+									errorString);
+							Picam_DestroyString(errorString);
+							return asynError;
+						}
 						setIntegerParam(driverParam, intVal);
 					}
 					else {
@@ -4490,6 +4754,19 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
 					int val;
 					error = Picam_GetParameterLargeIntegerValue(currentCameraHandle,
 							parameterList[ii], &largeVal);
+					if (error != PicamError_None) {
+						Picam_GetEnumerationString(PicamEnumeratedType_Error,
+								error,
+								&errorString);
+						asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+								"%s:%s Trouble getting Large "
+								"Integer parameter %s\n",
+								driverName,
+								functionName,
+								errorString);
+						Picam_DestroyString(errorString);
+						return asynError;
+					}
 					val = (int)largeVal;
 					setIntegerParam(driverParam, val);
 					break;
@@ -4500,9 +4777,35 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
 						error = Picam_GetParameterCollectionConstraint(
 								currentCameraHandle, PicamParameter_AdcSpeed,
 								PicamConstraintCategory_Capable, &speedConstraint);
+						if (error != PicamError_None) {
+							Picam_GetEnumerationString(PicamEnumeratedType_Error,
+									error,
+									&errorString);
+							asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+									"%s:%s Trouble getting collection "
+									"constraint for AdcSpeed %s\n",
+									driverName,
+									functionName,
+									errorString);
+							Picam_DestroyString(errorString);
+							return asynError;
+						}
 						error = Picam_GetParameterFloatingPointValue(
 								currentCameraHandle, PicamParameter_AdcSpeed,
 								&fltVal);
+						if (error != PicamError_None) {
+							Picam_GetEnumerationString(PicamEnumeratedType_Error,
+									error,
+									&errorString);
+							asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+									"%s:%s Trouble getting Floationg value "
+									"for AdcSpeed %s\n",
+									driverName,
+									functionName,
+									errorString);
+							Picam_DestroyString(errorString);
+							return asynError;
+						}
 						for (int ii = 0; ii < speedConstraint->values_count; ii++) {
 							if (speedConstraint->values_array[ii] == fltVal) {
 								setIntegerParam(driverParam, ii);
@@ -4511,8 +4814,21 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
 					} else {
 						error = Picam_GetParameterFloatingPointValue(
 								currentCameraHandle, parameterList[ii], &fltVal);
+						if (error != PicamError_None) {
+							Picam_GetEnumerationString(PicamEnumeratedType_Error,
+									error,
+									&errorString);
+							asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+									"%s:%s Trouble getting collection "
+									"constraint for parameter %s, %s\n",
+									driverName,
+									functionName,
+									paramString,
+									errorString);
+							Picam_DestroyString(errorString);
+							return asynError;
+						}
 						setDoubleParam(driverParam, fltVal);
-
 					}
 					break;
 				}
@@ -4522,9 +4838,33 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
 				const PicamRoisConstraint *roiConstraint;
 				error = Picam_GetParameterRoisValue(currentCameraHandle,
 						parameterList[ii], &paramRois);
+				if (error != PicamError_None) {
+					Picam_GetEnumerationString(PicamEnumeratedType_Error,
+							error,
+							&errorString);
+					asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+							"%s:%s Trouble getting ROI value. %s",
+							driverName,
+							__func__,
+							errorString);
+					Picam_DestroyString(errorString);
+					return asynError;
+				}
 				error = Picam_GetParameterRoisConstraint(currentCameraHandle,
 						parameterList[ii], PicamConstraintCategory_Capable,
 						&roiConstraint);
+				if (error != PicamError_None) {
+					Picam_GetEnumerationString(PicamEnumeratedType_Error,
+							error,
+							&errorString);
+					asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+							"%s:%s Trouble getting ROI constraint. %s",
+							driverName,
+							__func__,
+							errorString);
+					Picam_DestroyString(errorString);
+					return asynError;
+				}
 				asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "Rois %d, rules 0X%X\n",
 						paramRois->roi_count,  roiConstraint->rules);
 
@@ -4552,6 +4892,7 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
 				}
 			}
         }
+        Picam_DestroyString(paramString);
     }
 
     Picam_DestroyParameters(parameterList);
@@ -4612,7 +4953,7 @@ asynStatus ADPICam::piSetRois(int minX, int minY, int width, int height,
         		width = numXPixels/binX;
         	}
         	//make sure pixels in each quadrant are divisible by binnning
-        	if (((width/2)/binX) * binX != width){
+        	if ((((width/2)/binX) * binX) * 2 != width){
     			width = (((width/2)/binX) * binX)*2;
     		}
         	roi->x = ((numXPixels + 1)/2 ) - ((width/2) * binX) ;
@@ -4727,13 +5068,15 @@ asynStatus ADPICam::piSetSelectedCamera(asynUser *pasynUser,
     static const char *functionName = "piSetSelectedCamera";
     char enumString[64];
     char firmwareString[64];
+    const char *errorString;
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, "%s:%s: Selected camera value=%d\n",
             driverName, functionName, selectedIndex);
     if (currentCameraHandle != NULL) {
-        piUnregisterRelevantWatch(currentCameraHandle);
-        piUnregisterConstraintChangeWatch(currentCameraHandle);
-        piUnregisterValueChangeWatch(currentCameraHandle);
+        status |= piUnregisterRelevantWatch(currentCameraHandle);
+        // comment out until method is fixed and register is added
+        // piUnregisterConstraintChangeWatch(currentCameraHandle);
+        status |= piUnregisterValueChangeWatch(currentCameraHandle);
         error = PicamAdvanced_UnregisterForAcquisitionUpdated(
         		currentDeviceHandle,
                 piAcquistionUpdated);
@@ -4750,6 +5093,7 @@ asynStatus ADPICam::piSetSelectedCamera(asynUser *pasynUser,
                     currentCameraHandle,
                     errorString);
             Picam_DestroyString(errorString);
+            return (asynStatus)asynError;
         }
     }
     if (selectedCameraIndex >= 0) {
@@ -4779,8 +5123,16 @@ asynStatus ADPICam::piSetSelectedCamera(asynUser *pasynUser,
                 &currentCameraHandle);
 
         if (error != PicamError_None) {
-            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                    "%s:%s Trouble Opening Camera\n", driverName, functionName);
+        	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        			error,
+					&errorString);
+        	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                    "%s:%s Trouble Opening Camera. %s\n",
+					driverName,
+					functionName,
+					errorString);
+        	Picam_DestroyString(errorString);
+        	return (asynStatus)asynError;
         }
         error = PicamAdvanced_GetCameraDevice(currentCameraHandle,
                 &currentDeviceHandle);
@@ -4849,9 +5201,7 @@ asynStatus ADPICam::piSetSelectedCamera(asynUser *pasynUser,
     }
     callParamCallbacks();
 
-    //piSetParameterValuesFromSelectedCamera();
-
-    piRegisterValueChangeWatch(currentCameraHandle);
+    status |= piRegisterValueChangeWatch(currentCameraHandle);
 
     /* Do callbacks so higher layers see any changes */
     callParamCallbacks();
@@ -4860,7 +5210,7 @@ asynStatus ADPICam::piSetSelectedCamera(asynUser *pasynUser,
     status |= piClearParameterRelevance();
     status |= piUpdateParameterExists();
     status |= piUpdateParameterRelevance();
-    piRegisterRelevantWatch(currentCameraHandle);
+    status |= piRegisterRelevantWatch(currentCameraHandle);
 
     return (asynStatus) status;
 }
@@ -4951,14 +5301,23 @@ asynStatus ADPICam::piUnregisterConstraintChangeWatch(
     piint parameterCount;
     const PicamParameter *parameterList;
     PicamError error;
+    const char *errorString;
 
     error = Picam_GetParameters(currentCameraHandle, &parameterList,
             &parameterCount);
     if (error != PicamError_None) {
-        //TODO
+    	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+    			error,
+				&errorString);
+    	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+    			"%s:%s ERROR getting list of parameters\n");
+    	Picam_DestroyString(errorString);
+    	return asynError;
     }
     for (int ii = 0; ii < parameterCount; ii++) {
-        error = PicamAdvanced_UnregisterForIsRelevantChanged(cameraHandle,
+    	//TODO Need to change to unregister constraint change watch.  Depends
+    	// on parameter
+    	error = PicamAdvanced_UnregisterForIsRelevantChanged(cameraHandle,
                 parameterList[ii], piParameterRelevanceChanged);
     }
     return (asynStatus) status;
@@ -4973,15 +5332,41 @@ asynStatus ADPICam::piUnregisterRelevantWatch(PicamHandle cameraHandle) {
     piint parameterCount;
     const PicamParameter *parameterList;
     PicamError error;
+    const char *errorString;
+    const char *paramString;
 
     error = Picam_GetParameters(currentCameraHandle, &parameterList,
             &parameterCount);
     if (error != PicamError_None) {
-        //TODO
+    	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+    			error,
+				&errorString);
+    	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+    			"%s:%s ERROR getting list of parameters\n");
+    	Picam_DestroyString(errorString);
+    	return asynError;
     }
     for (int ii = 0; ii < parameterCount; ii++) {
         error = PicamAdvanced_UnregisterForIsRelevantChanged(cameraHandle,
                 parameterList[ii], piParameterRelevanceChanged);
+        if (error != PicamError_None) {
+        	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        			error,
+					&errorString);
+        	Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
+        			parameterList[ii],
+					&paramString);
+        	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        			"%s:%s Trouble Unregistering RelevantChanged for parameter"
+        			"%s.  %s\n",
+					driverName,
+					__func__,
+					paramString,
+					errorString);
+
+        	Picam_DestroyString(paramString);
+        	Picam_DestroyString(errorString);
+        }
     }
     return (asynStatus) status;
 }
@@ -4998,11 +5383,19 @@ asynStatus ADPICam::piUnregisterValueChangeWatch(PicamHandle cameraHandle) {
     PicamError error;
     const char *functionName = "piUnregisterValueChangeWatch";
     pibln doesParamExist;
+    const char *errorString;
+    const char *paramString;
 
     error = Picam_GetParameters(currentCameraHandle, &parameterList,
             &parameterCount);
     if (error != PicamError_None) {
-        //TODO
+    	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+    			error,
+				&errorString);
+    	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+    			"%s:%s ERROR getting list of parameters\n");
+    	Picam_DestroyString(errorString);
+    	return asynError;
     }
     for (int ii = 0; ii < parameterCount; ii++) {
     	Picam_DoesParameterExist(currentCameraHandle,
@@ -5053,7 +5446,24 @@ asynStatus ADPICam::piUnregisterValueChangeWatch(PicamHandle cameraHandle) {
 						valueType);
 				return asynError;
 			}
-				break;
+			}
+			if (error != PicamError_None) {
+	        	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+	        			error,
+						&errorString);
+	        	Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
+	        			parameterList[ii],
+						&paramString);
+	        	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+	        			"%s:%s Trouble Unregistering ValueChangeWatch for "
+	        			"parameter %s.  %s\n",
+						driverName,
+						__func__,
+						paramString,
+						errorString);
+
+	        	Picam_DestroyString(paramString);
+	        	Picam_DestroyString(errorString);
 			}
     	}
     }
@@ -5069,7 +5479,7 @@ asynStatus ADPICam::piUpdateParameterExists() {
     const PicamParameter *parameterList;
     const pichar* string;
     Picam_GetParameters(currentCameraHandle, &parameterList, &parameterCount);
-    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "%d parameters found\n",
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%d parameters found\n",
             parameterCount);
 
     for (int ii = 0; ii < parameterCount; ii++) {
@@ -5244,6 +5654,7 @@ asynStatus ADPICam::piUpdateParameterListValues(
 							picamParameter,
 							errorString);
 					Picam_DestroyString(errorString);
+					return (asynStatus)asynError;
 				}
 
 				if ( constraints->values_count == 0){
@@ -5375,7 +5786,21 @@ asynStatus ADPICam::piWriteFloat64RangeType(asynUser *pasynUser,
     		picamParameter,
 			&valType);
     if (error != PicamError_None) {
-    	//TODO
+    	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+    			error,
+				&errorString);
+    	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+    			error,
+				&paramString);
+    	asynPrint(pasynUser, ASYN_TRACE_ERROR,
+    			"%s:%s ERROR: problem getting Parameter value type for"
+    			" parameter %s. %s\n",
+				driverName,
+				__func__,
+				paramString,
+				errorString);
+    	Picam_DestroyString(paramString);
+    	Picam_DestroyString(errorString);
     	return asynError;
     }
     if (valType == PicamValueType_FloatingPoint){
@@ -5443,6 +5868,7 @@ asynStatus ADPICam::piWriteFloat64RangeType(asynUser *pasynUser,
 
     		}
     	}
+    	return (asynStatus)asynError;
     }
     return (asynStatus)status;
 }
@@ -5470,7 +5896,21 @@ asynStatus ADPICam::piWriteInt32RangeType(asynUser *pasynUser,
             picamParameter,
             &valType);
     if (error != PicamError_None) {
-        // TODO
+    	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+    			error,
+				&errorString);
+    	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+    			error,
+				&paramString);
+    	asynPrint(pasynUser, ASYN_TRACE_ERROR,
+    			"%s:%s ERROR: problem getting Parameter value type for"
+    			" parameter %s. %s\n",
+				driverName,
+				__func__,
+				paramString,
+				errorString);
+    	Picam_DestroyString(paramString);
+    	Picam_DestroyString(errorString);
         return asynError;
     }
     if (valType == PicamValueType_Integer) {
@@ -5643,19 +6083,50 @@ asynStatus ADPICam::piWriteInt32CollectionType(asynUser *pasynUser,
     int status = asynSuccess;
     PicamValueType valType;
     PicamError error;
+    const char *paramString;
+    const char *errorString;
 
     error = Picam_GetParameterValueType(currentCameraHandle,
             picamParameter,
             &valType);
     if (error != PicamError_None) {
-        // TODO
+    	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+    			error,
+				&errorString);
+    	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+    			error,
+				&paramString);
+    	asynPrint(pasynUser, ASYN_TRACE_ERROR,
+    			"%s:%s ERROR: problem getting Parameter value type for"
+    			" parameter %s. %s\n",
+				driverName,
+				__func__,
+				paramString,
+				errorString);
+    	Picam_DestroyString(paramString);
+    	Picam_DestroyString(errorString);
         return asynError;
     }
     if (valType == PicamValueType_Boolean) {
         error = Picam_SetParameterIntegerValue(currentCameraHandle,
                 picamParameter, value);
         if (error != PicamError_None) {
-            //TODO
+        	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        			error,
+    				&errorString);
+        	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        			error,
+    				&paramString);
+        	asynPrint(pasynUser, ASYN_TRACE_ERROR,
+        			"%s:%s ERROR: problem setting Parameter value for"
+        			" parameter %s trying to set value to %s. %s\n",
+    				driverName,
+    				__func__,
+    				paramString,
+    				errorString,
+					value);
+        	Picam_DestroyString(paramString);
+        	Picam_DestroyString(errorString);
             return asynError;
         }
     }
@@ -5663,7 +6134,22 @@ asynStatus ADPICam::piWriteInt32CollectionType(asynUser *pasynUser,
         error = Picam_SetParameterIntegerValue(currentCameraHandle,
                 picamParameter, value);
         if (error != PicamError_None) {
-            //TODO
+        	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        			error,
+    				&errorString);
+        	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        			error,
+    				&paramString);
+        	asynPrint(pasynUser, ASYN_TRACE_ERROR,
+        			"%s:%s ERROR: problem setting Parameter value for"
+        			" parameter %s trying to set value to %s. %s\n",
+    				driverName,
+    				__func__,
+    				paramString,
+    				errorString,
+					value);
+        	Picam_DestroyString(paramString);
+        	Picam_DestroyString(errorString);
             return asynError;
         }
     }
@@ -5672,7 +6158,22 @@ asynStatus ADPICam::piWriteInt32CollectionType(asynUser *pasynUser,
         error = Picam_SetParameterLargeIntegerValue(currentCameraHandle,
                 picamParameter, largeVal);
         if (error != PicamError_None) {
-            //TODO
+        	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        			error,
+    				&errorString);
+        	Picam_GetEnumerationString(PicamEnumeratedType_Error,
+        			error,
+    				&paramString);
+        	asynPrint(pasynUser, ASYN_TRACE_ERROR,
+        			"%s:%s ERROR: problem setting Parameter value for"
+        			" parameter %s trying to set value to %s. %s\n",
+    				driverName,
+    				__func__,
+    				paramString,
+    				errorString,
+					largeVal);
+        	Picam_DestroyString(paramString);
+        	Picam_DestroyString(errorString);
             return asynError;
         }
     }
@@ -5775,8 +6276,9 @@ void ADPICam::piHandleNewImageTask(void)
                         acqStatusReadoutRate, acqAvailableReadoutCount);
                 /* Update the image */
                 /* First release the copy that we held onto last time */
-                if (this->pArrays[0])
+                if (this->pArrays[0]) {
                     this->pArrays[0]->release();
+                }
 
                 getIntegerParam(NDArrayCallbacks, &arrayCallbacks);
                 if (arrayCallbacks) {
@@ -5815,9 +6317,9 @@ void ADPICam::piHandleNewImageTask(void)
                     memcpy(pImage->pData, acqAvailableInitialReadout,
                             arrayInfo.totalBytes);
                     dataLock.unlock();
+                    lock();
                     getIntegerParam(NDArrayCounter, &arrayCounter);
                     arrayCounter++;
-                    lock();
                     setIntegerParam(NDArrayCounter, arrayCounter);
                     unlock();
                     // Get timestamp from the driver if requested
@@ -5835,9 +6337,11 @@ void ADPICam::piHandleNewImageTask(void)
 						updateTimeStamp(&pImage->epicsTS);
                     }
                     else {
+                    	dataLock.lock();
                     	pTimeStampValue =
                     			(pi64s*) ((pibyte *)acqAvailableInitialReadout
                     					+ frameSize);
+                    	dataLock.unlock();
                     	timeStampValue = *pTimeStampValue;
                     	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
                     			"%s%s TimeStamp %d  Res %d frame size %d timestamp %f\n",
@@ -5881,10 +6385,12 @@ void ADPICam::piHandleNewImageTask(void)
                     			&frameTrackingBitDepth);
                     	switch (frameTrackingBitDepth){
                     	case 64:
+                    		dataLock.lock()
                         	pFrameValue =
                         			(pi64s*) ((pibyte *)acqAvailableInitialReadout
                         			+ frameSize
 									+ (numTimeStamps * timeStampBitDepth/8));
+                    		dataLock.unlock();
                         	asynPrint (pasynUserSelf, ASYN_TRACE_FLOW,
                         			"%s%s Frame tracking bit depth %d"
                         			" timeStampBitDepth %d frameValue %d "

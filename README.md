@@ -6,8 +6,8 @@ An
 driver for Cameras from Princeton Instruments that support the PICAM library.  
 [PICam](ftp://ftp.princetoninstruments.com/public/Manuals/Princeton%20Instruments/PICam%20User%20Manual.pdf)
 This driver is based on the PICAM Virtual Camera Library.  
-It only runs on Microsoft Windows and supports only 64-bit versions of Windows.
-Detectors supported by the vendor PICAM driver library include:
+It only runs on Microsoft Windows (Vista, 7 & 8) and supports only 64-bit 
+versions of Windows. Detectors supported by the vendor PICAM driver library include:
 * PI-MAX3
 * PI-MAX4, PI-MAX4:RF, PI-MAX4:EM
 * PIoNIR/NIRvana
