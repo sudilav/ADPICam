@@ -525,24 +525,26 @@ protected:
 #define PICAM_LAST_PARAM PICAM_SensorTemperatureStatusRelevant
 
 private:
+    void *acqAvailableInitialReadout;
+    pi64s acqAvailableReadoutCount;
+    piflt acqStatusReadoutRate;
+    PicamAcquisitionErrorsMask acqStatusErrors;
+    pibln acqStatusRunning;
+    piint availableCamerasCount;
+    const PicamCameraID *availableCameraIDs;
     std::vector<pibyte> buffer_;
     PicamHandle currentCameraHandle;
     PicamHandle currentDeviceHandle;
-    int selectedCameraIndex;
-    const PicamCameraID *availableCameraIDs;
-    const PicamCameraID *unavailableCameraIDs;
-    piint availableCamerasCount;
-    piint unavailableCamerasCount;
-    NDArray *pImage;
-    epicsEventId  piHandleNewImageEvent;
-    size_t imageDims[2];
-    NDDataType_t  imageDataType;
-    pibln acqStatusRunning;
-    PicamAcquisitionErrorsMask acqStatusErrors;
-    piflt acqStatusReadoutRate;
-    void *acqAvailableInitialReadout;
-    pi64s acqAvailableReadoutCount;
     epicsMutex dataLock;
+    NDDataType_t  imageDataType;
+    size_t imageDims[2];
+    bool imageThreadKeepAlive = true;
+    epicsThreadId imageThreadId;
+    epicsEventId  piHandleNewImageEvent;
+    NDArray *pImage;
+    int selectedCameraIndex;
+    piint unavailableCamerasCount;
+    const PicamCameraID *unavailableCameraIDs;
 
     asynStatus initializeDetector();
     asynStatus piAcquireStart();

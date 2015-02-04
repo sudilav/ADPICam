@@ -94,6 +94,8 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
     selectedCameraIndex = -1;
     availableCamerasCount = 0;
     unavailableCamerasCount = 0;
+    imageThreadKeepAlive = true;
+
     error = Picam_IsLibraryInitialized(&libInitialized);
     if (libInitialized) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
@@ -1078,6 +1080,7 @@ ADPICam::~ADPICam() {
     int status = asynSuccess;
 
     Picam_StopAcquisition(currentCameraHandle);
+    imageThreadKeepAlive = false;
     PicamAdvanced_UnregisterForAcquisitionUpdated(currentDeviceHandle,
                     piAcquistionUpdated);
     status |= piUnregisterRelevantWatch(currentCameraHandle);
@@ -3429,7 +3432,9 @@ asynStatus ADPICam::piHandleParameterRelevanceChanged(PicamHandle camera,
 
     status = piSetParameterRelevance(pasynUserSelf, parameter, (int) relevant);
     if (relevant != 0) {
-    	Picam_GetParameterConstraintType(currentCameraHandle, parameter, &constraintType);
+    	Picam_GetParameterConstraintType(currentCameraHandle,
+    			parameter,
+				&constraintType);
     	Picam_GetParameterValueType(currentCameraHandle, parameter, &valueType);
     	driverParameter = piLookupDriverParameter(parameter);
     	if ((driverParameter > 0) &&
@@ -6292,10 +6297,23 @@ void ADPICam::piHandleNewImageTask(void)
     int timeStampResolution;
     int frameSize;
     int numTimeStamps;
+    epicsEventWaitStatus newImageTimeoutStatus = epicsEventWaitTimeout;
+    double imageTimeout = 0.0001;
 
   while (true) {
     unlock();
-	epicsEventWait(piHandleNewImageEvent);
+	while ( newImageTimeoutStatus ) {
+		newImageTimeoutStatus = epicsEventWaitWithTimeout(piHandleNewImageEvent,
+			imageTimeout);
+		if (!imageThreadKeepAlive){
+			  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+					  "%s:%s Image handling thread has been terminated.\n",
+					  driverName,
+					  __func__);
+			  return;
+		}
+	}
+	newImageTimeoutStatus = epicsEventWaitTimeout;
 	lock();
 	getIntegerParam(PICAM_TimeStamps, &useDriverTimestamps);
 	getIntegerParam(PICAM_TrackFrames, &useFrameTracking);
@@ -6328,133 +6346,139 @@ void ADPICam::piHandleNewImageTask(void)
                     this->pArrays[0] = pNDArrayPool->alloc(2, imageDims,
                             imageDataType, 0,
                             NULL);
-                    if (this->pArrays[0] == NULL) {
+                    if (this->pArrays[0] != NULL) {
+						if (acqStatusErrors != PicamAcquisitionErrorsMask_None) {
+							const char *acqStatusErrorString;
+							Picam_GetEnumerationString(
+									PicamEnumeratedType_AcquisitionErrorsMask,
+									acqStatusErrors, &acqStatusErrorString);
+							asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+									"%s:%s Error found during acquisition: %s",
+									driverName,
+									functionName,
+									acqStatusErrorString);
+							Picam_DestroyString(acqStatusErrorString);
+						}
+						pibln overran;
+						error = PicamAdvanced_HasAcquisitionBufferOverrun(
+								currentDeviceHandle, &overran);
+						if (overran) {
+							asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+									"%s:%s Overrun in acquisition buffer",
+									driverName, functionName);
+						}
+						pImage = this->pArrays[0];
+						pImage->getInfo(&arrayInfo);
+						// Copy data from the input to the output
+						dataLock.lock();
+						memcpy(pImage->pData, acqAvailableInitialReadout,
+								arrayInfo.totalBytes);
+						dataLock.unlock();
+						getIntegerParam(NDArrayCounter, &arrayCounter);
+						arrayCounter++;
+						setIntegerParam(NDArrayCounter, arrayCounter);
+						// Get timestamp from the driver if requested
+						getIntegerParam(PICAM_TimeStampBitDepth,
+								&timeStampBitDepth);
+						getIntegerParam(PICAM_TimeStampResolution,
+								&timeStampResolution);
+						Picam_GetParameterIntegerValue(currentCameraHandle,
+								PicamParameter_FrameSize,
+								&frameSize);
+						if (!useDriverTimestamps){
+							epicsTimeGetCurrent(&currentTime);
+							pImage->timeStamp = currentTime.secPastEpoch
+									+ currentTime.nsec / 1.e9;
+							updateTimeStamp(&pImage->epicsTS);
+						}
+						else {
+							dataLock.lock();
+							pTimeStampValue =
+									(pi64s*) ((pibyte *)acqAvailableInitialReadout
+											+ frameSize);
+							dataLock.unlock();
+							timeStampValue = *pTimeStampValue;
+							asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+									"%s%s TimeStamp %d  Res %d frame size %d "
+									"timestamp %f\n",
+									driverName,
+									functionName,
+									timeStampValue,
+									timeStampResolution,
+									frameSize,
+									(double)timeStampValue /(double)timeStampResolution);
+							pImage->timeStamp = (double)timeStampValue /
+									(double)timeStampResolution;
+							updateTimeStamp(&pImage->epicsTS);
+						}
+						// use frame tracking for UniqueID if requested
+						if (!useFrameTracking) {
+							pImage->uniqueId = arrayCounter;
+						}
+						else {
+							asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+									"%s:%s  TimeStamps 0X%X\n",
+									driverName,
+									functionName,
+									useDriverTimestamps);
+							// Frame tracking info follows data and time stamps.
+							// need to determine the correct number of time
+							// stamps to skip
+							if ((useDriverTimestamps ==
+									PicamTimeStampsMask_None)) {
+								numTimeStamps = 0;
+							}
+							else if ((useDriverTimestamps ==
+										PicamTimeStampsMask_ExposureStarted) ||
+								(useDriverTimestamps ==
+										PicamTimeStampsMask_ExposureEnded) ) {
+								numTimeStamps = 1;
+							}
+							else  {
+								numTimeStamps = 2;
+							}
+							getIntegerParam(PICAM_FrameTrackingBitDepth,
+									&frameTrackingBitDepth);
+							switch (frameTrackingBitDepth){
+							case 64:
+								dataLock.lock();
+								pFrameValue =
+										(pi64s*) ((pibyte *)acqAvailableInitialReadout
+										+ frameSize
+										+ (numTimeStamps * timeStampBitDepth/8));
+								dataLock.unlock();
+								asynPrint (pasynUserSelf, ASYN_TRACE_FLOW,
+										"%s%s Frame tracking bit depth %d"
+										" timeStampBitDepth %d frameValue %d "
+										" readout count %d\n",
+										driverName,
+										functionName,
+										frameTrackingBitDepth,
+										timeStampBitDepth,
+										*pFrameValue,
+										acqAvailableReadoutCount);
+								pImage->uniqueId = (int)(*pFrameValue);
+								break;
+							}
+						}
+
+						/* Get attributes that have been defined for this driver */
+						getAttributes(pImage->pAttributeList);
+
+						asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+								"%s:%s: calling imageDataCallback\n", driverName,
+								functionName);
+
+						doCallbacksGenericPointer(pImage, NDArrayData, 0);
+                    }
+                    else {
                         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
                                 "%s:%s error allocating buffer\n", driverName,
                                 functionName);
-                        return;
+                        piAcquireStop();
+                        setIntegerParam(ADStatus, ADStatusError);
+                        callParamCallbacks();
                     }
-                    if (acqStatusErrors != PicamAcquisitionErrorsMask_None) {
-                        const char *acqStatusErrorString;
-                        Picam_GetEnumerationString(
-                                PicamEnumeratedType_AcquisitionErrorsMask,
-                                acqStatusErrors, &acqStatusErrorString);
-                        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                                "%s:%s Error found during acquisition: %s",
-                                driverName, functionName, acqStatusErrorString);
-                        Picam_DestroyString(acqStatusErrorString);
-                    }
-                    pibln overran;
-                    error = PicamAdvanced_HasAcquisitionBufferOverrun(
-                            currentDeviceHandle, &overran);
-                    if (overran) {
-                        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                                "%s:%s Overrun in acquisition buffer",
-                                driverName, functionName);
-                    }
-                    pImage = this->pArrays[0];
-                    pImage->getInfo(&arrayInfo);
-                    // Copy data from the input to the output
-                    dataLock.lock();
-                    memcpy(pImage->pData, acqAvailableInitialReadout,
-                            arrayInfo.totalBytes);
-                    dataLock.unlock();
-                    getIntegerParam(NDArrayCounter, &arrayCounter);
-                    arrayCounter++;
-                    setIntegerParam(NDArrayCounter, arrayCounter);
-                    // Get timestamp from the driver if requested
-                    getIntegerParam(PICAM_TimeStampBitDepth,
-                			&timeStampBitDepth);
-                	getIntegerParam(PICAM_TimeStampResolution,
-                			&timeStampResolution);
-                	Picam_GetParameterIntegerValue(currentCameraHandle,
-                			PicamParameter_FrameSize,
-							&frameSize);
-                    if (!useDriverTimestamps){
-						epicsTimeGetCurrent(&currentTime);
-						pImage->timeStamp = currentTime.secPastEpoch
-								+ currentTime.nsec / 1.e9;
-						updateTimeStamp(&pImage->epicsTS);
-                    }
-                    else {
-                    	dataLock.lock();
-                    	pTimeStampValue =
-                    			(pi64s*) ((pibyte *)acqAvailableInitialReadout
-                    					+ frameSize);
-                    	dataLock.unlock();
-                    	timeStampValue = *pTimeStampValue;
-                    	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                    			"%s%s TimeStamp %d  Res %d frame size %d "
-                    			"timestamp %f\n",
-								driverName,
-								functionName,
-								timeStampValue,
-								timeStampResolution,
-								frameSize,
-								(double)timeStampValue /(double)timeStampResolution);
-                    	pImage->timeStamp = (double)timeStampValue /
-                    			(double)timeStampResolution;
-						updateTimeStamp(&pImage->epicsTS);
-                    }
-                    // use frame tracking for UniqueID if requested
-                    if (!useFrameTracking) {
-                    	pImage->uniqueId = arrayCounter;
-                    }
-                    else {
-                    	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                    			"%s:%s  TimeStamps 0X%X\n",
-								driverName,
-								functionName,
-								useDriverTimestamps);
-                    	// Frame tracking info follows data and time stamps.
-                    	// need to determine the correct number of time stamps
-                    	// to skip
-                    	if ((useDriverTimestamps ==
-                    			PicamTimeStampsMask_None)) {
-                    		numTimeStamps = 0;
-                    	}
-                    	else if ((useDriverTimestamps ==
-									PicamTimeStampsMask_ExposureStarted) ||
-                    		(useDriverTimestamps ==
-                    				PicamTimeStampsMask_ExposureEnded) ) {
-                    		numTimeStamps = 1;
-                    	}
-                    	else  {
-                    		numTimeStamps = 2;
-                    	}
-                    	getIntegerParam(PICAM_FrameTrackingBitDepth,
-                    			&frameTrackingBitDepth);
-                    	switch (frameTrackingBitDepth){
-                    	case 64:
-                    		dataLock.lock();
-                        	pFrameValue =
-                        			(pi64s*) ((pibyte *)acqAvailableInitialReadout
-                        			+ frameSize
-									+ (numTimeStamps * timeStampBitDepth/8));
-                    		dataLock.unlock();
-                        	asynPrint (pasynUserSelf, ASYN_TRACE_FLOW,
-                        			"%s%s Frame tracking bit depth %d"
-                        			" timeStampBitDepth %d frameValue %d "
-                        			" readout count %d\n",
-    								driverName,
-    								functionName,
-    								frameTrackingBitDepth,
-    								timeStampBitDepth,
-									*pFrameValue,
-									acqAvailableReadoutCount);
-                        	pImage->uniqueId = (int)(*pFrameValue);
-                        	break;
-                    	}
-                    }
-
-                    /* Get attributes that have been defined for this driver */
-                    getAttributes(pImage->pAttributeList);
-
-                    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                            "%s:%s: calling imageDataCallback\n", driverName,
-                            functionName);
-
-                    doCallbacksGenericPointer(pImage, NDArrayData, 0);
                 }
 
             }
@@ -6490,6 +6514,7 @@ void ADPICam::piHandleNewImageTask(void)
     }
     callParamCallbacks();
   }
+
 }
 
 /* Code for iocsh registration */
