@@ -240,255 +240,605 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
     createParam(PICAM_FirmwareRevisionUnavailableString, asynParamOctet,
             &PICAM_FirmwareRevisionUnavailable);
     //Shutter
-    createParam(PICAM_ShutterDelayResolutionString , asynParamInt32,
-            &PICAM_ShutterDelayResolution);
-    createParam(PICAM_ShutterTimingModeString , asynParamInt32,
-            &PICAM_ShutterTimingMode);
+    piCreateAndIndexADParam(PICAM_ExposureTimeString,
+            ADAcquireTime,
+            PICAM_ExposureTimeExists,
+            PICAM_ExposureTimeRelevant,
+            PicamParameter_ExposureTime);
+    piCreateAndIndexADParam(PICAM_ShutterClosingDelayString,
+            ADShutterCloseDelay,
+            PICAM_ShutterClosingDelayExists,
+            PICAM_ShutterClosingDelayRelevant,
+            PicamParameter_ShutterClosingDelay);
+    piCreateAndIndexPIParam(PICAM_ShutterDelayResolutionString,
+            asynParamInt32,
+            PICAM_ShutterDelayResolution,
+            PICAM_ShutterDelayResolutionExists,
+            PICAM_ShutterDelayResolutionRelevant,
+            PicamParameter_ShutterDelayResolution);
+    piCreateAndIndexADParam(PICAM_ShutterOpeningDelayString,
+            ADShutterOpenDelay,
+            PICAM_ShutterOpeningDelayExists,
+            PICAM_ShutterOpeningDelayRelevant,
+            PicamParameter_ShutterOpeningDelay);
+    piCreateAndIndexPIParam(PICAM_ShutterTimingModeString, asynParamInt32,
+            PICAM_ShutterTimingMode,
+            PICAM_ShutterTimingModeExists,
+            PICAM_ShutterTimingModeRelevant,
+            PicamParameter_ShutterTimingMode);
 
     //Intensifier
-    createParam(PICAM_BracketGatingString , asynParamInt32,
-            &PICAM_BracketGating);
+    piCreateAndIndexPIParam(PICAM_BracketGatingString,
+            asynParamInt32,
+            PICAM_BracketGating,
+            PICAM_BracketGatingExists,
+            PICAM_BracketGatingRelevant,
+            PicamParameter_BracketGating);
     //TODO  CustomModulationSequence needs Modulation Type
+    piCreateAndIndexPIModulationsParam(PICAM_CustomModulationSequenceString,
+            PICAM_CustomModulationSequenceExists,
+            PICAM_CustomModulationSequenceRelevant,
+            PicamParameter_CustomModulationSequence);
     //TODO  DifEndingGate  needs pulse type
+    piCreateAndIndexPIPulseParam(PICAM_DifEndingGateString,
+            PICAM_DifEndingGateExists,
+            PICAM_DifEndingGateRelevant,
+            PicamParameter_DifEndingGate);
     //TODO  DifStartingGate needs pulse type
-    createParam(PICAM_EMIccdGainString , asynParamInt32,
-            &PICAM_EMIccdGain);
-    createParam(PICAM_EMIccdGainControlModeString , asynParamInt32,
-            &PICAM_EMIccdGainControlMode);
-    createParam(PICAM_EnableIntensifierString , asynParamInt32,
-            &PICAM_EnableIntensifier);
-    createParam(PICAM_EnableModulationString , asynParamInt32,
-            &PICAM_EnableModulation);
-    createParam(PICAM_GatingModeString , asynParamInt32,
-            &PICAM_GatingMode);
-    createParam(PICAM_GatingSpeedString , asynParamOctet,
-            &PICAM_GatingSpeed);
-    createParam(PICAM_IntensifierDiameterString , asynParamFloat64,
-            &PICAM_IntensifierDiameter);
-    createParam(PICAM_IntensifierGainString , asynParamInt32,
-            &PICAM_IntensifierGain);
-    createParam(PICAM_IntensifierOptionsString , asynParamOctet,
-            &PICAM_IntensifierOptions);
-    createParam(PICAM_IntensifierStatusString , asynParamOctet,
-            &PICAM_IntensifierStatus);
-    createParam(PICAM_ModulationDurationString , asynParamFloat64,
-            &PICAM_ModulationDuration);
-    createParam(PICAM_ModulationFrequencyString , asynParamFloat64,
-            &PICAM_ModulationFrequency);
-    createParam(PICAM_PhosphorDecayDelayString , asynParamFloat64,
-            &PICAM_PhosphorDecayDelay);
-    createParam(PICAM_PhosphorDecayDelayResolutionString , asynParamInt32,
-            &PICAM_PhosphorDecayDelayResolution);
-    createParam(PICAM_PhosphorTypeString , asynParamOctet,
-            &PICAM_PhosphorType);
-    createParam(PICAM_PhotocathodeSensitivityString , asynParamOctet,
-            &PICAM_PhotocathodeSensitivity);
+    piCreateAndIndexPIPulseParam(PICAM_DifStartingGateString,
+            PICAM_DifStartingGateExists,
+            PICAM_DifStartingGateRelevant,
+            PicamParameter_DifStartingGate);
+    piCreateAndIndexPIParam(PICAM_EMIccdGainString, asynParamInt32,
+            PICAM_EMIccdGain, PICAM_EMIccdGainExists,
+            PICAM_EMIccdGainRelevant, PicamParameter_EMIccdGain);
+    piCreateAndIndexPIParam(PICAM_EMIccdGainControlModeString, asynParamInt32,
+            PICAM_EMIccdGainControlMode, PICAM_EMIccdGainControlModeExists,
+            PICAM_EMIccdGainControlModeRelevant,
+            PicamParameter_EMIccdGainControlMode);
+    piCreateAndIndexPIParam(PICAM_EnableIntensifierString, asynParamInt32,
+            PICAM_EnableIntensifier,
+            PICAM_EnableIntensifierExists,
+            PICAM_EnableIntensifierRelevant,
+            PicamParameter_EnableIntensifier);
+    piCreateAndIndexPIParam(PICAM_EnableModulationString, asynParamInt32,
+            PICAM_EnableModulation,
+            PICAM_EnableModulationExists,
+            PICAM_EnableModulationRelevant, PicamParameter_EnableModulation);
+    piCreateAndIndexPIParam(PICAM_GatingModeString, asynParamInt32,
+            PICAM_GatingMode,
+            PICAM_GatingModeExists,
+            PICAM_GatingModeRelevant,
+            PicamParameter_GatingMode);
+    piCreateAndIndexPIParam(PICAM_GatingSpeedString, asynParamOctet,
+            PICAM_GatingSpeed,
+            PICAM_GatingSpeedExists,
+            PICAM_GatingSpeedRelevant,
+            PicamParameter_GatingSpeed);
+    piCreateAndIndexPIParam(PICAM_IntensifierDiameterString, asynParamFloat64,
+            PICAM_IntensifierDiameter,
+            PICAM_IntensifierDiameterExists,
+            PICAM_IntensifierDiameterRelevant,
+            PicamParameter_IntensifierDiameter);
+    piCreateAndIndexPIParam(PICAM_IntensifierGainString, asynParamInt32,
+            PICAM_IntensifierGain, PICAM_IntensifierGainExists,
+            PICAM_IntensifierGainRelevant, PicamParameter_IntensifierGain);
+    piCreateAndIndexPIParam(PICAM_IntensifierOptionsString, asynParamOctet,
+            PICAM_IntensifierOptions, PICAM_IntensifierOptionsExists,
+            PICAM_IntensifierOptionsRelevant,
+            PicamParameter_IntensifierOptions);
+    piCreateAndIndexPIParam(PICAM_IntensifierStatusString, asynParamOctet,
+            PICAM_IntensifierStatus, PICAM_IntensifierStatusExists,
+            PICAM_IntensifierStatusRelevant, PicamParameter_IntensifierStatus);
+    piCreateAndIndexPIParam(PICAM_ModulationDurationString, asynParamFloat64,
+            PICAM_ModulationDuration, PICAM_ModulationDurationExists,
+            PICAM_ModulationDurationRelevant,
+            PicamParameter_ModulationDuration);
+    piCreateAndIndexPIParam(PICAM_ModulationFrequencyString, asynParamFloat64,
+            PICAM_ModulationFrequency, PICAM_ModulationFrequencyExists,
+            PICAM_ModulationFrequencyRelevant,
+            PicamParameter_ModulationFrequency);
+    piCreateAndIndexPIParam(PICAM_PhosphorDecayDelayString, asynParamFloat64,
+            PICAM_PhosphorDecayDelay, PICAM_PhosphorDecayDelayExists,
+            PICAM_PhosphorDecayDelayRelevant,
+            PicamParameter_PhosphorDecayDelay);
+    piCreateAndIndexPIParam(PICAM_PhosphorDecayDelayResolutionString,
+            asynParamInt32,
+            PICAM_PhosphorDecayDelayResolution,
+            PICAM_PhosphorDecayDelayResolutionExists,
+            PICAM_PhosphorDecayDelayResolutionRelevant,
+            PicamParameter_PhosphorDecayDelayResolution);
+    piCreateAndIndexPIParam(PICAM_PhosphorTypeString, asynParamOctet,
+            PICAM_PhosphorType, PICAM_PhosphorTypeExists,
+            PICAM_PhosphorTypeRelevant, PicamParameter_PhosphorType);
+    piCreateAndIndexPIParam(PICAM_PhotocathodeSensitivityString, asynParamOctet,
+            PICAM_PhotocathodeSensitivity,
+            PICAM_PhotocathodeSensitivityExists,
+            PICAM_PhotocathodeSensitivityRelevant,
+            PicamParameter_PhotocathodeSensitivity);
     //TODO Repetitive Gate needs Pulse Type
-    createParam(PICAM_RepetitiveModulationString , asynParamFloat64,
-            &PICAM_RepetitiveModulation);
-    createParam(PICAM_SequentialStartingModulationPhaseString , asynParamFloat64,
-            &PICAM_SequentialStartingModulationPhase);
-    createParam(PICAM_SequentialEndingModulationPhaseString , asynParamFloat64,
-            &PICAM_SequentialEndingModulationPhase);
+    piCreateAndIndexPIPulseParam(PICAM_RepetitiveGateString,
+            PICAM_RepetitiveGateExists,
+            PICAM_RepetitiveGateRelevant,
+            PicamParameter_RepetitiveGate);
+    piCreateAndIndexPIParam(PICAM_RepetitiveModulationString, asynParamFloat64,
+            PICAM_RepetitiveModulation, PICAM_RepetitiveModulationPhaseExists,
+            PICAM_RepetitiveModulationPhaseRelevant,
+            PicamParameter_RepetitiveModulationPhase);
+    piCreateAndIndexPIParam(PICAM_SequentialStartingModulationPhaseString,
+            asynParamFloat64, PICAM_SequentialStartingModulationPhase,
+            PICAM_SequentialStartingModulationPhaseExists,
+            PICAM_SequentialStartingModulationPhaseRelevant,
+            PicamParameter_SequentialStartingModulationPhase);
+    piCreateAndIndexPIParam(PICAM_SequentialEndingModulationPhaseString,
+            asynParamFloat64, PICAM_SequentialEndingModulationPhase,
+            PICAM_SequentialEndingModulationPhaseExists,
+            PICAM_SequentialEndingModulationPhaseRelevant,
+            PicamParameter_SequentialEndingModulationPhase);
     //TODO SequentialEndingGate needs Pulse Type
-    createParam(PICAM_SequentialGateStepCountString , asynParamInt32,
-            &PICAM_SequentialGateStepCount);
-    createParam(PICAM_SequentialGateStepIterationsString , asynParamInt32,
-            &PICAM_SequentialGateStepIterations);
-    //TODO SequentialEndingGate needs Pulse Type
+    piCreateAndIndexPIPulseParam(PICAM_SequentialEndingGateString,
+            PICAM_SequentialEndingGateExists,
+            PICAM_SequentialEndingGateRelevant,
+            PicamParameter_SequentialEndingGate);
+    piCreateAndIndexPIParam(PICAM_SequentialGateStepCountString, asynParamInt32,
+            PICAM_SequentialGateStepCount,
+            PICAM_SequentialGateStepCountExists,
+            PICAM_SequentialGateStepCountRelevant,
+            PicamParameter_SequentialGateStepCount);
+    piCreateAndIndexPIParam(PICAM_SequentialGateStepIterationsString,
+            asynParamInt32, PICAM_SequentialGateStepIterations,
+            PICAM_SequentialGateStepIterationsExists,
+            PICAM_SequentialGateStepIterationsRelevant,
+            PicamParameter_SequentialGateStepIterations);
+    //TODO SequentialStartingGate needs Pulse Type
+    piCreateAndIndexPIPulseParam(PICAM_SequentialStartingGateString,
+            PICAM_SequentialStartingGateExists,
+            PICAM_SequentialStartingGateRelevant,
+            PicamParameter_SequentialStartingGate);
 
     //Analog to Digital Conversion
-    createParam(PICAM_AdcAnalogGainString, asynParamInt32,
-            &PICAM_AdcAnalogGain);
-    createParam(PICAM_AdcBitDepthString, asynParamInt32, &PICAM_AdcBitDepth);
-    createParam(PICAM_AdcEMGainString, asynParamInt32, &PICAM_AdcEMGain);
-    createParam(PICAM_AdcQualityString, asynParamInt32, &PICAM_AdcQuality);
-    createParam(PICAM_AdcSpeedString, asynParamInt32, &PICAM_AdcSpeed);
-    createParam(PICAM_CorrectPixelBiasString, asynParamInt32,
-            &PICAM_CorrectPixelBias);
+    piCreateAndIndexPIParam(PICAM_AdcAnalogGainString, asynParamInt32,
+            PICAM_AdcAnalogGain, PICAM_AdcAnalogGainExists,
+            PICAM_AdcAnalogGainRelevant, PicamParameter_AdcAnalogGain);
+    piCreateAndIndexPIParam(PICAM_AdcBitDepthString, asynParamInt32,
+            PICAM_AdcBitDepth, PICAM_AdcBitDepthExists,
+            PICAM_AdcBitDepthRelevant, PicamParameter_AdcBitDepth);
+    piCreateAndIndexPIParam(PICAM_AdcEMGainString, asynParamInt32,
+            PICAM_AdcEMGain, PICAM_AdcEMGainExists, PICAM_AdcEMGainRelevant,
+            PicamParameter_AdcEMGain);
+    piCreateAndIndexPIParam(PICAM_AdcQualityString, asynParamInt32,
+            PICAM_AdcQuality, PICAM_AdcQualityExists,
+            PICAM_AdcQualityRelevant, PicamParameter_AdcQuality);
+    piCreateAndIndexPIParam(PICAM_AdcSpeedString, asynParamInt32, PICAM_AdcSpeed,
+            PICAM_AdcSpeedExists, PICAM_AdcSpeedRelevant,
+            PicamParameter_AdcSpeed);
+    piCreateAndIndexPIParam(PICAM_CorrectPixelBiasString, asynParamInt32,
+            PICAM_CorrectPixelBias, PICAM_CorrectPixelBiasExists,
+            PICAM_CorrectPixelBiasRelevant, PicamParameter_CorrectPixelBias);
 
     // Hardware I/O
-    //createParam(PICAM_Aux)  // Need to figure out pulse output
-    createParam(PICAM_EnableModulationOutputSignalString, asynParamInt32,
-            &PICAM_EnableModulationOutputSignal);
-    createParam(PICAM_ModulationOutputSignalFrequencyString,
-            asynParamFloat64,
-            &PICAM_ModulationOutputSignalFrequency);
-    createParam(PICAM_ModulationOutputSignalAmplitudeString,
-            asynParamFloat64,
-            &PICAM_ModulationOutputSignalAmplitude);
-    createParam(PICAM_EnableSyncMasterString, asynParamInt32,
-            &PICAM_EnableSyncMaster);
-    createParam(PICAM_InvertOutputSignalString, asynParamInt32,
-            &PICAM_InvertOutputSignal);
-    createParam(PICAM_OutputSignalString, asynParamInt32,
-            &PICAM_OutputSignal);
-    createParam(PICAM_SyncMaster2DelayString, asynParamFloat64,
-            &PICAM_SyncMaster2Delay);
-    createParam(PICAM_TriggerCouplingString, asynParamInt32,
-            &PICAM_TriggerCoupling);
-    createParam(PICAM_TriggerDeterminationString, asynParamInt32,
-            &PICAM_TriggerDetermination);
-    createParam(PICAM_TriggerFrequencyString, asynParamFloat64,
-            &PICAM_TriggerFrequency);
-    //TriggerResponse is hooked up to ADTrigger
-    createParam(PICAM_TriggerSourceString, asynParamInt32,
-            &PICAM_TriggerSource);
-    createParam(PICAM_TriggerTerminationString, asynParamInt32,
-            &PICAM_TriggerTermination);
-    createParam(PICAM_TriggerThresholdString, asynParamFloat64,
-            &PICAM_TriggerThreshold);
+    piCreateAndIndexPIPulseParam(PICAM_AuxOutputString,
+            PICAM_AuxOutputExists,
+            PICAM_AuxOutputRelevant,
+            PicamParameter_AuxOutput);
+    piCreateAndIndexPIParam(PICAM_EnableModulationOutputSignalString,
+            asynParamInt32, PICAM_EnableModulationOutputSignal,
+            PICAM_EnableModulationOutputSignalExists,
+            PICAM_EnableModulationOutputSignalRelevant,
+            PicamParameter_EnableModulationOutputSignal);
+    piCreateAndIndexPIParam(PICAM_ModulationOutputSignalFrequencyString,
+            asynParamFloat64, PICAM_ModulationOutputSignalFrequency,
+            PICAM_EnableModulationOutputSignalFrequencyExists,
+            PICAM_EnableModulationOutputSignalAmplitudeRelevant,
+            PicamParameter_ModulationOutputSignalFrequency);
+    piCreateAndIndexPIParam(PICAM_ModulationOutputSignalAmplitudeString,
+            asynParamFloat64, PICAM_ModulationOutputSignalAmplitude,
+            PICAM_EnableModulationOutputSignalAmplitudeExists,
+            PICAM_EnableModulationOutputSignalAmplitudeRelevant,
+            PicamParameter_ModulationOutputSignalAmplitude);
+    piCreateAndIndexPIParam(PICAM_EnableSyncMasterString, asynParamInt32,
+            PICAM_EnableSyncMaster, PICAM_EnableSyncMasterExists,
+            PICAM_EnableSyncMasterRelevant, PicamParameter_EnableSyncMaster);
+    piCreateAndIndexPIParam(PICAM_InvertOutputSignalString, asynParamInt32,
+            PICAM_InvertOutputSignal, PICAM_InvertOutputSignalExists,
+            PICAM_InvertOutputSignalRelevant,
+            PicamParameter_InvertOutputSignal);
+    piCreateAndIndexPIParam(PICAM_OutputSignalString, asynParamInt32,
+            PICAM_OutputSignal, PICAM_OutputSignalExists,
+            PICAM_OutputSignalRelevant, PicamParameter_OutputSignal);
+    piCreateAndIndexPIParam(PICAM_SyncMaster2DelayString, asynParamFloat64,
+            PICAM_SyncMaster2Delay, PICAM_SyncMaster2DelayExists,
+            PICAM_SyncMaster2DelayRelevant, PicamParameter_SyncMaster2Delay);
+    piCreateAndIndexPIParam(PICAM_TriggerCouplingString, asynParamInt32,
+            PICAM_TriggerCoupling, PICAM_TriggerCouplingExists,
+            PICAM_TriggerCouplingRelevant, PicamParameter_TriggerCoupling);
+    piCreateAndIndexPIParam(PICAM_TriggerDeterminationString, asynParamInt32,
+            PICAM_TriggerDetermination, PICAM_TriggerDeterminationExists,
+            PICAM_TriggerDeterminationRelevant,
+            PicamParameter_TriggerDetermination);
+    piCreateAndIndexPIParam(PICAM_TriggerFrequencyString, asynParamFloat64,
+            PICAM_TriggerFrequency, PICAM_TriggerFrequencyExists,
+            PICAM_TriggerFrequencyRelevant, PicamParameter_TriggerFrequency);
+    piCreateAndIndexADParam(PICAM_TriggerResponseString,
+            ADTriggerMode,
+            PICAM_TriggerResponseExists,
+            PICAM_TriggerResponseRelevant,
+            PicamParameter_TriggerResponse);
+    piCreateAndIndexPIParam(PICAM_TriggerSourceString, asynParamInt32,
+            PICAM_TriggerSource, PICAM_TriggerSourceExists,
+            PICAM_TriggerSourceRelevant, PicamParameter_TriggerSource);
+    piCreateAndIndexPIParam(PICAM_TriggerTerminationString, asynParamInt32,
+            PICAM_TriggerTermination, PICAM_TriggerTerminationExists,
+            PICAM_TriggerTerminationRelevant,
+            PicamParameter_TriggerTermination);
+    piCreateAndIndexPIParam(PICAM_TriggerThresholdString, asynParamFloat64,
+            PICAM_TriggerThreshold, PICAM_TriggerThresholdExists,
+            PICAM_TriggerThresholdRelevant, PicamParameter_TriggerThreshold);
 
     // Readout Control
-    createParam(PICAM_AccumulationsString, asynParamInt32,
-            &PICAM_Accumulations);
-    createParam(PICAM_EnableNondestructiveReadoutString, asynParamInt32,
-            &PICAM_EnableNondestructiveReadout);
-    createParam(PICAM_KineticsWindowHeightString, asynParamInt32,
-            &PICAM_KineticsWindowHeight);
-    createParam(PICAM_NondestructiveReadoutPeriodString, asynParamFloat64,
-            &PICAM_NondestructiveReadoutPeriod);
-    createParam(PICAM_ReadoutControlModeString, asynParamInt32,
-            &PICAM_ReadoutControlMode);
-    createParam(PICAM_ReadoutOrientationString, asynParamOctet,
-            &PICAM_ReadoutOrientation);
-    createParam(PICAM_ReadoutPortCountString, asynParamInt32,
-            &PICAM_ReadoutPortCount);
-    createParam(PICAM_ReadoutTimeCalcString, asynParamFloat64,
-            &PICAM_ReadoutTimeCalc);
-    createParam(PICAM_VerticalShiftRateString, asynParamFloat64,
-            &PICAM_VerticalShiftRate);
+    piCreateAndIndexPIParam(PICAM_AccumulationsString, asynParamInt32,
+            PICAM_Accumulations, PICAM_AccumulationsExists,
+            PICAM_AccumulationsRelevant, PicamParameter_Accumulations);
+    piCreateAndIndexPIParam(PICAM_EnableNondestructiveReadoutString,
+            asynParamInt32, PICAM_EnableNondestructiveReadout,
+            PICAM_EnableNondestructiveReadoutExists,
+            PICAM_EnableNondestructiveReadoutRelevant,
+            PicamParameter_EnableNondestructiveReadout);
+    piCreateAndIndexPIParam(PICAM_KineticsWindowHeightString, asynParamInt32,
+            PICAM_KineticsWindowHeight, PICAM_KineticsWindowHeightExists,
+            PICAM_KineticsWindowHeightRelevant,
+            PicamParameter_KineticsWindowHeight);
+    piCreateAndIndexPIParam(PICAM_NondestructiveReadoutPeriodString,
+            asynParamFloat64, PICAM_NondestructiveReadoutPeriod,
+            PICAM_NondestructiveReadoutPeriodExists,
+            PICAM_NondestructiveReadoutPeriodRelevant,
+            PicamParameter_NondestructiveReadoutPeriod);
+    piCreateAndIndexPIParam(PICAM_ReadoutControlModeString, asynParamInt32,
+            PICAM_ReadoutControlMode, PICAM_ReadoutControlModeExists,
+            PICAM_ReadoutControlModeRelevant,
+            PicamParameter_ReadoutControlMode);
+    piCreateAndIndexPIParam(PICAM_ReadoutOrientationString, asynParamOctet,
+            PICAM_ReadoutOrientation, PICAM_ReadoutOrientationExists,
+            PICAM_ReadoutOrientationRelevant,
+            PicamParameter_ReadoutOrientation);
+    piCreateAndIndexPIParam(PICAM_ReadoutPortCountString, asynParamInt32,
+            PICAM_ReadoutPortCount, PICAM_ReadoutPortCountExists,
+            PICAM_ReadoutPortCountRelevant, PicamParameter_ReadoutPortCount);
+    piCreateAndIndexPIParam(PICAM_ReadoutTimeCalcString, asynParamFloat64,
+            PICAM_ReadoutTimeCalc, PICAM_ReadoutTimeCalculationExists,
+            PICAM_ReadoutTimeCalculationRelevant,
+            PicamParameter_ReadoutTimeCalculation);
+    piCreateAndIndexPIParam(PICAM_VerticalShiftRateString, asynParamInt32,
+            PICAM_VerticalShiftRate, PICAM_VerticalShiftRateExists,
+            PICAM_VerticalShiftRateRelevant, PicamParameter_VerticalShiftRate);
 
     // Data Acquisition
-    createParam(PICAM_DisableDataFormattingString, asynParamInt32,
-            &PICAM_DisableDataFormatting);
-    createParam(PICAM_ExactReadoutCountMaxString, asynParamInt32,
-            &PICAM_ExactReadoutCountMax);
-    createParam(PICAM_FrameRateCalcString, asynParamFloat64,
-            &PICAM_FrameRateCalc);
-    createParam(PICAM_FramesPerReadoutString, asynParamInt32,
-            &PICAM_FramesPerReadout);
-    createParam(PICAM_FrameStrideString, asynParamInt32,
-            &PICAM_FrameStride);
-    createParam(PICAM_FrameTrackingBitDepthString, asynParamInt32,
-            &PICAM_FrameTrackingBitDepth);
-    createParam(PICAM_GateTrackingString, asynParamInt32,
-            &PICAM_GateTracking);
-    createParam(PICAM_GateTrackingBitDepthString, asynParamInt32,
-            &PICAM_GateTrackingBitDepth);
-    createParam(PICAM_ModulationTrackingString, asynParamInt32,
-            &PICAM_ModulationTracking);
-    createParam(PICAM_ModulationTrackingBitDepthString, asynParamInt32,
-            &PICAM_ModulationTrackingBitDepth);
-    createParam(PICAM_NormalizeOrientationString, asynParamInt32,
-            &PICAM_NormalizeOrientation);
-    createParam(PICAM_OnlineReadoutRateCalcString, asynParamFloat64,
-            &PICAM_OnlineReadoutRateCalc);
-    createParam(PICAM_OrientationString, asynParamOctet,
-            &PICAM_Orientation);
-    createParam(PICAM_PhotonDetectionModeString, asynParamInt32,
-            &PICAM_PhotonDetectionMode);
-    createParam(PICAM_PhotonDetectionThresholdString, asynParamFloat64,
-            &PICAM_PhotonDetectionThreshold);
-    createParam(PICAM_PixelBitDepthString, asynParamInt32,
-            &PICAM_PixelBitDepth);
-    createParam(PICAM_PixelFormatString, asynParamInt32,
-            &PICAM_PixelFormat);
-    createParam(PICAM_ReadoutCountString, asynParamInt32,
-            &PICAM_ReadoutCount);
-    createParam(PICAM_ReadoutRateCalcString, asynParamFloat64,
-            &PICAM_ReadoutRateCalc);
-    createParam(PICAM_ReadoutStrideString, asynParamInt32,
-            &PICAM_ReadoutStride);
-    createParam(PICAM_TimeStampBitDepthString, asynParamInt32,
-            &PICAM_TimeStampBitDepth);
-    createParam(PICAM_TimeStampResolutionString, asynParamInt32,
-            &PICAM_TimeStampResolution);
-    createParam(PICAM_TimeStampsString, asynParamInt32,
-            &PICAM_TimeStamps);
-    createParam(PICAM_TrackFramesString, asynParamInt32,
-            &PICAM_TrackFrames);
+    piCreateAndIndexPIParam(PICAM_DisableDataFormattingString, asynParamInt32,
+            PICAM_DisableDataFormatting, PICAM_DisableDataFormattingExists,
+            PICAM_DisableDataFormattingRelevant,
+            PicamParameter_DisableDataFormatting);
+    piCreateAndIndexPIParam(PICAM_ExactReadoutCountMaxString, asynParamInt32,
+            PICAM_ExactReadoutCountMax, PICAM_ExactReadoutCountMaximumExists,
+            PICAM_ExactReadoutCountMaximumRelevant,
+            PicamParameter_ExactReadoutCountMaximum);
+    piCreateAndIndexPIParam(PICAM_FrameRateCalcString, asynParamFloat64,
+            PICAM_FrameRateCalc, PICAM_FrameRateCalculationExists,
+            PICAM_FrameRateCalculationRelevant,
+            PicamParameter_FrameRateCalculation);
+    piCreateAndIndexPIParam(PICAM_FramesPerReadoutString, asynParamInt32,
+            PICAM_FramesPerReadout, PICAM_FramesPerReadoutExists,
+            PICAM_FramesPerReadoutRelevant, PicamParameter_FramesPerReadout);
+    piCreateAndIndexADParam(PICAM_FrameSizeString, NDArraySize,
+            PICAM_FrameSizeExists,
+            PICAM_FrameSizeRelevant,
+            PicamParameter_FrameSize);
+    piCreateAndIndexPIParam(PICAM_FrameStrideString, asynParamInt32,
+            PICAM_FrameStride, PICAM_FrameStrideExists,
+            PICAM_FrameStrideRelevant, PicamParameter_FrameStride);
+    piCreateAndIndexPIParam(PICAM_FrameTrackingBitDepthString, asynParamInt32,
+            PICAM_FrameTrackingBitDepth, PICAM_FrameTrackingBitDepthExists,
+            PICAM_FrameTrackingBitDepthRelevant,
+            PicamParameter_FrameTrackingBitDepth);
+    piCreateAndIndexPIParam(PICAM_GateTrackingString, asynParamInt32,
+            PICAM_GateTracking, PICAM_GateTrackingExists,
+            PICAM_GateTrackingExists,
+            PicamParameter_GateTracking);
+    piCreateAndIndexPIParam(PICAM_GateTrackingBitDepthString, asynParamInt32,
+            PICAM_GateTrackingBitDepth,
+            PICAM_GateTrackingBitDepthExists,
+            PICAM_GateTrackingBitDepthRelevant,
+            PicamParameter_GateTrackingBitDepth);
+    piCreateAndIndexPIParam(PICAM_ModulationTrackingString, asynParamInt32,
+            PICAM_ModulationTracking,
+            PICAM_ModulationTrackingExists,
+            PICAM_ModulationTrackingRelevant,
+            PicamParameter_ModulationTracking);
+    piCreateAndIndexPIParam(PICAM_ModulationTrackingBitDepthString,
+            asynParamInt32,
+            PICAM_ModulationTrackingBitDepth,
+            PICAM_ModulationTrackingBitDepthExists,
+            PICAM_ModulationTrackingBitDepthRelevant,
+            PicamParameter_ModulationTrackingBitDepth);
+    piCreateAndIndexPIParam(PICAM_NormalizeOrientationString, asynParamInt32,
+            PICAM_NormalizeOrientation,
+            PICAM_NormalizeOrientationExists,
+            PICAM_NormalizeOrientationRelevant,
+            PicamParameter_NormalizeOrientation);
+    piCreateAndIndexPIParam(PICAM_OnlineReadoutRateCalcString, asynParamFloat64,
+            PICAM_OnlineReadoutRateCalc,
+            PICAM_OnlineReadoutRateCalculationExists,
+            PICAM_OnlineReadoutRateCalculationRelevant,
+            PicamParameter_OnlineReadoutRateCalculation);
+    piCreateAndIndexPIParam(PICAM_OrientationString, asynParamOctet,
+            PICAM_Orientation,
+            PICAM_OrientationExists,
+            PICAM_OrientationRelevant,
+            PicamParameter_Orientation);
+    piCreateAndIndexPIParam(PICAM_PhotonDetectionModeString, asynParamInt32,
+            PICAM_PhotonDetectionMode,
+            PICAM_PhotonDetectionModeExists,
+            PICAM_PhotonDetectionModeRelevant,
+            PicamParameter_PhotonDetectionMode);
+    piCreateAndIndexPIParam(PICAM_PhotonDetectionThresholdString,
+            asynParamFloat64, PICAM_PhotonDetectionThreshold,
+            PICAM_PhotonDetectionThresholdExists,
+            PICAM_PhotonDetectionThresholdRelevant,
+            PicamParameter_PhotonDetectionThreshold);
+    piCreateAndIndexPIParam(PICAM_PixelBitDepthString, asynParamInt32,
+            PICAM_PixelBitDepth,
+            PICAM_PixelBitDepthExists,
+            PICAM_PixelBitDepthRelevant,
+            PicamParameter_PixelBitDepth);
+    piCreateAndIndexPIParam(PICAM_PixelFormatString, asynParamInt32,
+            PICAM_PixelFormat,
+            PICAM_PixelFormatExists,
+            PICAM_PixelFormatRelevant,
+            PicamParameter_PixelFormat);
+    piCreateAndIndexPIParam(PICAM_ReadoutCountString, asynParamInt32,
+            PICAM_ReadoutCount,
+            PICAM_ReadoutCountExists,
+            PICAM_ReadoutCountRelevant,
+            PicamParameter_ReadoutCount);
+    piCreateAndIndexPIParam(PICAM_ReadoutRateCalcString, asynParamFloat64,
+            PICAM_ReadoutRateCalc,
+            PICAM_ReadoutRateCalculationExists,
+            PICAM_ReadoutRateCalculationRelevant,
+            PicamParameter_ReadoutRateCalculation);
+    piCreateAndIndexPIParam(PICAM_ReadoutStrideString, asynParamInt32,
+            PICAM_ReadoutStride,
+            PICAM_ReadoutStrideExists,
+            PICAM_ReadoutStrideRelevant,
+            PicamParameter_ReadoutStride);
+    piCreateAndIndexPIRoisParam(PICAM_RoisString,
+            PICAM_RoisExists,
+            PICAM_RoisRelevant,
+            PicamParameter_Rois);
+    piCreateAndIndexPIParam(PICAM_TimeStampBitDepthString, asynParamInt32,
+            PICAM_TimeStampBitDepth,
+            PICAM_TimeStampBitDepthExists,
+            PICAM_TimeStampBitDepthRelevant,
+            PicamParameter_TimeStampBitDepth);
+    piCreateAndIndexPIParam(PICAM_TimeStampResolutionString, asynParamInt32,
+            PICAM_TimeStampResolution,
+            PICAM_TimeStampResolutionExists,
+            PICAM_TimeStampResolutionRelevant,
+            PicamParameter_TimeStampResolution);
+    piCreateAndIndexPIParam(PICAM_TimeStampsString, asynParamInt32,
+            PICAM_TimeStamps,
+            PICAM_TimeStampsExists,
+            PICAM_TimeStampsRelevant,
+            PicamParameter_TimeStamps);
+    piCreateAndIndexPIParam(PICAM_TrackFramesString, asynParamInt32,
+            PICAM_TrackFrames,
+            PICAM_TrackFramesExists,
+            PICAM_TrackFramesRelevant,
+            PicamParameter_TrackFrames);
 
-    createParam(PICAM_CcdCharacteristicsString, asynParamOctet,
-    		&PICAM_CcdCharacteristics);
-    createParam(PICAM_PixelGapHeightString, asynParamFloat64,
-    		&PICAM_PixelGapHeight);
-    createParam(PICAM_PixelGapWidthString, asynParamFloat64,
-    		&PICAM_PixelGapWidth);
-    createParam(PICAM_PixelHeightString, asynParamFloat64,
-    		&PICAM_PixelHeight);
-    createParam(PICAM_PixelWidthString, asynParamFloat64,
-    		&PICAM_PixelWidth);
-    createParam(PICAM_SensorActiveBottomMarginString, asynParamInt32,
-    		&PICAM_SensorActiveBottomMargin);
-    createParam(PICAM_SensorActiveHeightString, asynParamInt32,
-    		&PICAM_SensorActiveHeight);
-    createParam(PICAM_SensorActiveLeftMarginString, asynParamInt32,
-    		&PICAM_SensorActiveLeftMargin);
-    createParam(PICAM_SensorActiveRightMarginString, asynParamInt32,
-    		&PICAM_SensorActiveRightMargin);
-    createParam(PICAM_SensorActiveTopMarginString, asynParamInt32,
-    		&PICAM_SensorActiveTopMargin);
-    createParam(PICAM_SensorActiveWidthString, asynParamInt32,
-    		&PICAM_SensorActiveWidth);
-    createParam(PICAM_SensorMaskedBottomMarginString, asynParamInt32,
-    		&PICAM_SensorMaskedBottomMargin);
-    createParam(PICAM_SensorMaskedHeightString, asynParamInt32,
-    		&PICAM_SensorMaskedHeight);
-    createParam(PICAM_SensorMaskedTopMarginString, asynParamInt32,
-    		&PICAM_SensorMaskedTopMargin);
-    createParam(PICAM_SensorSecondaryActiveHeightString, asynParamInt32,
-    		&PICAM_SensorSecondaryActiveHeight);
-    createParam(PICAM_SensorSecondaryMaskedHeightString, asynParamInt32,
-    		&PICAM_SensorSecondaryMaskedHeight);
-    createParam(PICAM_SensorTypeString, asynParamOctet,
-    		&PICAM_SensorType);
+    piCreateAndIndexPIParam(PICAM_CcdCharacteristicsString, asynParamOctet,
+            PICAM_CcdCharacteristics,
+            PICAM_CcdCharacteristicsExists,
+            PICAM_CcdCharacteristicsRelevant,
+            PicamParameter_CcdCharacteristics);
+    piCreateAndIndexPIParam(PICAM_PixelGapHeightString, asynParamFloat64,
+            PICAM_PixelGapHeight,
+            PICAM_PixelGapHeightExists,
+            PICAM_PixelGapHeightRelevant,
+            PicamParameter_PixelGapHeight);
+    piCreateAndIndexPIParam(PICAM_PixelGapWidthString, asynParamFloat64,
+            PICAM_PixelGapWidth,
+            PICAM_PixelGapWidthExists,
+            PICAM_PixelGapHeightRelevant,
+            PicamParameter_PixelGapWidth);
+    piCreateAndIndexPIParam(PICAM_PixelHeightString, asynParamFloat64,
+            PICAM_PixelHeight,
+            PICAM_PixelHeightExists,
+            PICAM_PixelGapHeightRelevant,
+            PicamParameter_PixelHeight);
+    piCreateAndIndexPIParam(PICAM_PixelWidthString, asynParamFloat64,
+            PICAM_PixelWidth,
+            PICAM_PixelWidthExists,
+            PICAM_PixelWidthRelevant,
+            PicamParameter_PixelWidth);
+    piCreateAndIndexPIParam(PICAM_SensorActiveBottomMarginString, asynParamInt32,
+            PICAM_SensorActiveBottomMargin,
+            PICAM_SensorActiveBottomMarginExists,
+            PICAM_SensorActiveBottomMarginRelevant,
+            PicamParameter_SensorActiveBottomMargin);
+    piCreateAndIndexADParam(PICAM_SensorActiveHeightString,
+            ADMaxSizeY,
+            PICAM_SensorActiveHeightExists,
+            PICAM_SensorActiveHeightRelevant,
+            PicamParameter_SensorActiveHeight);
+    piCreateAndIndexPIParam(PICAM_SensorActiveLeftMarginString, asynParamInt32,
+            PICAM_SensorActiveLeftMargin,
+            PICAM_SensorActiveLeftMarginExists,
+            PICAM_SensorActiveLeftMarginRelevant,
+            PicamParameter_SensorActiveLeftMargin);
+    piCreateAndIndexPIParam(PICAM_SensorActiveRightMarginString, asynParamInt32,
+            PICAM_SensorActiveRightMargin,
+            PICAM_SensorActiveRightMarginExists,
+            PICAM_SensorActiveRightMarginRelevant,
+            PicamParameter_SensorActiveRightMargin);
+    piCreateAndIndexPIParam(PICAM_SensorActiveTopMarginString, asynParamInt32,
+            PICAM_SensorActiveTopMargin,
+            PICAM_SensorActiveTopMarginExists,
+            PICAM_SensorActiveTopMarginRelevant,
+            PicamParameter_SensorActiveTopMargin);
+    piCreateAndIndexADParam(PICAM_SensorActiveWidthString,
+            ADMaxSizeX,
+            PICAM_SensorActiveWidthExists,
+            PICAM_SensorActiveWidthRelevant,
+            PicamParameter_SensorActiveWidth);
+    piCreateAndIndexPIParam(PICAM_SensorMaskedBottomMarginString, asynParamInt32,
+            PICAM_SensorMaskedBottomMargin,
+            PICAM_SensorMaskedBottomMarginExists,
+            PICAM_SensorMaskedBottomMarginRelevant,
+            PicamParameter_SensorMaskedBottomMargin);
+    piCreateAndIndexPIParam(PICAM_SensorMaskedHeightString, asynParamInt32,
+            PICAM_SensorMaskedHeight,
+            PICAM_SensorMaskedHeightExists,
+            PICAM_SensorMaskedHeightRelevant,
+            PicamParameter_SensorMaskedHeight);
+    piCreateAndIndexPIParam(PICAM_SensorMaskedTopMarginString, asynParamInt32,
+            PICAM_SensorMaskedTopMargin,
+            PICAM_SensorMaskedTopMarginExists,
+            PICAM_SensorMaskedTopMarginRelevant,
+            PicamParameter_SensorMaskedTopMargin);
+    piCreateAndIndexPIParam(PICAM_SensorSecondaryActiveHeightString,
+            asynParamInt32,
+            PICAM_SensorSecondaryActiveHeight,
+            PICAM_SensorSecondaryActiveHeightExists,
+            PICAM_SensorSecondaryActiveHeightRelevant,
+            PicamParameter_SensorSecondaryActiveHeight);
+    piCreateAndIndexPIParam(PICAM_SensorSecondaryMaskedHeightString,
+            asynParamInt32,
+            PICAM_SensorSecondaryMaskedHeight,
+            PICAM_SensorSecondaryMaskedHeightExists,
+            PICAM_SensorSecondaryMaskedHeightRelevant,
+            PicamParameter_SensorSecondaryMaskedHeight);
+    piCreateAndIndexPIParam(PICAM_SensorTypeString, asynParamOctet,
+            PICAM_SensorType,
+            PICAM_SensorTypeExists,
+            PICAM_SensorTypeRelevant,
+            PicamParameter_SensorType);
     //Sensor Layout
-    createParam(PICAM_ActiveBottomMarginString, asynParamInt32,
-    		&PICAM_ActiveBottomMargin);
-    createParam(PICAM_ActiveHeightString, asynParamInt32,
-    		&PICAM_ActiveHeight);
-    createParam(PICAM_ActiveLeftMarginString, asynParamInt32,
-    		&PICAM_ActiveLeftMargin);
-    createParam(PICAM_ActiveRightMarginString, asynParamInt32,
-    		&PICAM_ActiveRightMargin);
-    createParam(PICAM_ActiveTopMarginString, asynParamInt32,
-    		&PICAM_ActiveTopMargin);
-    createParam(PICAM_ActiveWidthString, asynParamInt32,
-    		&PICAM_ActiveWidth);
-    createParam(PICAM_MaskedBottomMarginString, asynParamInt32,
-    		&PICAM_MaskedBottomMargin);
-    createParam(PICAM_MaskedHeightString, asynParamInt32,
-    		&PICAM_MaskedHeight);
-    createParam(PICAM_MaskedTopMarginString, asynParamInt32,
-    		&PICAM_MaskedTopMargin);
-    createParam(PICAM_SecondaryActiveHeightString, asynParamInt32,
-    		&PICAM_SecondaryActiveHeight);
-    createParam(PICAM_SecondaryMaskedHeightString, asynParamInt32,
-    		&PICAM_SecondaryMaskedHeight);
+    piCreateAndIndexPIParam(PICAM_ActiveBottomMarginString, asynParamInt32,
+    		PICAM_ActiveBottomMargin,
+            PICAM_ActiveBottomMarginExists,
+            PICAM_ActiveBottomMarginRelevant,
+            PicamParameter_ActiveBottomMargin);
+    piCreateAndIndexPIParam(PICAM_ActiveHeightString, asynParamInt32,
+    		PICAM_ActiveHeight,
+            PICAM_ActiveHeightExists,
+            PICAM_ActiveHeightRelevant,
+            PicamParameter_ActiveHeight);
+    piCreateAndIndexPIParam(PICAM_ActiveLeftMarginString, asynParamInt32,
+    		PICAM_ActiveLeftMargin,
+            PICAM_ActiveLeftMarginExists,
+            PICAM_ActiveLeftMarginRelevant,
+            PicamParameter_ActiveLeftMargin);
+    piCreateAndIndexPIParam(PICAM_ActiveRightMarginString, asynParamInt32,
+    		PICAM_ActiveRightMargin,
+            PICAM_ActiveRightMarginExists,
+            PICAM_ActiveRightMarginRelevant,
+            PicamParameter_ActiveRightMargin);
+    piCreateAndIndexPIParam(PICAM_ActiveTopMarginString, asynParamInt32,
+    		PICAM_ActiveTopMargin,
+            PICAM_ActiveTopMarginExists,
+            PICAM_ActiveTopMarginRelevant,
+            PicamParameter_ActiveTopMargin);
+    piCreateAndIndexPIParam(PICAM_ActiveWidthString, asynParamInt32,
+    		PICAM_ActiveWidth,
+            PICAM_ActiveWidthExists,
+            PICAM_ActiveWidthRelevant,
+            PicamParameter_ActiveWidth);
+    piCreateAndIndexPIParam(PICAM_MaskedBottomMarginString, asynParamInt32,
+    		PICAM_MaskedBottomMargin,
+            PICAM_MaskedBottomMarginExists,
+            PICAM_MaskedBottomMarginRelevant,
+            PicamParameter_MaskedBottomMargin);
+    piCreateAndIndexPIParam(PICAM_MaskedHeightString, asynParamInt32,
+    		PICAM_MaskedHeight,
+            PICAM_MaskedHeightExists,
+            PICAM_MaskedHeightRelevant,
+            PicamParameter_MaskedHeight);
+    piCreateAndIndexPIParam(PICAM_MaskedTopMarginString, asynParamInt32,
+    		PICAM_MaskedTopMargin,
+            PICAM_MaskedTopMarginExists,
+            PICAM_MaskedTopMarginRelevant,
+            PicamParameter_MaskedTopMargin);
+    piCreateAndIndexPIParam(PICAM_SecondaryActiveHeightString, asynParamInt32,
+    		PICAM_SecondaryActiveHeight,
+            PICAM_SecondaryActiveHeightExists,
+            PICAM_SecondaryActiveHeightRelevant,
+            PicamParameter_SecondaryActiveHeight);
+    piCreateAndIndexPIParam(PICAM_SecondaryMaskedHeightString, asynParamInt32,
+    		PICAM_SecondaryMaskedHeight,
+            PICAM_SecondaryMaskedHeightExists,
+            PICAM_SecondaryMaskedHeightRelevant,
+            PicamParameter_SecondaryMaskedHeight);
     //Sensor Cleaning
-    createParam(PICAM_CleanBeforeExposureString, asynParamInt32,
-    		&PICAM_CleanBeforeExposure);
-    createParam(PICAM_CleanCycleCountString, asynParamInt32,
-    		&PICAM_CleanCycleCount);
-    createParam(PICAM_CleanCycleHeightString, asynParamInt32,
-    		&PICAM_CleanCycleHeight);
-    createParam(PICAM_CleanSectionFinalHeightString, asynParamInt32,
-    		&PICAM_CleanSectionFinalHeight);
-    createParam(PICAM_CleanSectionFinalHeightCountString, asynParamInt32,
-    		&PICAM_CleanSectionFinalHeightCount);
-    createParam(PICAM_CleanSerialRegisterString, asynParamInt32,
-    		&PICAM_CleanSerialRegister);
-    createParam(PICAM_CleanUntilTriggerString, asynParamInt32,
-    		&PICAM_CleanUntilTrigger);
+    piCreateAndIndexPIParam(PICAM_CleanBeforeExposureString, asynParamInt32,
+    		PICAM_CleanBeforeExposure,
+            PICAM_CleanBeforeExposureExists,
+            PICAM_CleanBeforeExposureRelevant,
+            PicamParameter_CleanBeforeExposure);
+    piCreateAndIndexPIParam(PICAM_CleanCycleCountString, asynParamInt32,
+    		PICAM_CleanCycleCount,
+            PICAM_CleanCycleCountExists,
+            PICAM_CleanCycleCountRelevant,
+            PicamParameter_CleanCycleCount);
+    piCreateAndIndexPIParam(PICAM_CleanCycleHeightString, asynParamInt32,
+    		PICAM_CleanCycleHeight,
+            PICAM_CleanCycleHeightExists,
+            PICAM_CleanCycleHeightRelevant,
+            PicamParameter_CleanCycleHeight);
+    piCreateAndIndexPIParam(PICAM_CleanSectionFinalHeightString, asynParamInt32,
+    		PICAM_CleanSectionFinalHeight,
+            PICAM_CleanSectionFinalHeightExists,
+            PICAM_CleanSectionFinalHeightRelevant,
+            PicamParameter_CleanSectionFinalHeight);
+    piCreateAndIndexPIParam(PICAM_CleanSectionFinalHeightCountString, asynParamInt32,
+    		PICAM_CleanSectionFinalHeightCount,
+            PICAM_CleanSectionFinalHeightCountExists,
+            PICAM_CleanSectionFinalHeightCountRelevant,
+            PicamParameter_CleanSectionFinalHeightCount);
+    piCreateAndIndexPIParam(PICAM_CleanSerialRegisterString, asynParamInt32,
+    		PICAM_CleanSerialRegister,
+            PICAM_CleanSerialRegisterExists,
+            PICAM_CleanSerialRegisterRelevant,
+            PicamParameter_CleanSerialRegister);
+    piCreateAndIndexPIParam(PICAM_CleanUntilTriggerString, asynParamInt32,
+    		PICAM_CleanUntilTrigger,
+            PICAM_CleanUntilTriggerExists,
+            PICAM_CleanUntilTriggerRelevant,
+            PicamParameter_CleanUntilTrigger);
 
     //Sensor Temperature
-    createParam(PICAM_DisableCoolingFanString, asynParamInt32,
-            &PICAM_DisableCoolingFan);
-    createParam(PICAM_EnableSensorWindowHeaterString, asynParamInt32,
-            &PICAM_EnableSensorWindowHeater);
-    createParam(PICAM_SensorTemperatureStatusString, asynParamOctet,
-            &PICAM_SensorTemperatureStatus);
+    piCreateAndIndexPIParam(PICAM_DisableCoolingFanString, asynParamInt32,
+            PICAM_DisableCoolingFan,
+            PICAM_DisableCoolingFanExists,
+            PICAM_DisableCoolingFanRelevant,
+            PicamParameter_DisableCoolingFan);
+    piCreateAndIndexPIParam(PICAM_EnableSensorWindowHeaterString, asynParamInt32,
+            PICAM_EnableSensorWindowHeater,
+            PICAM_EnableSensorWindowHeaterExists,
+            PICAM_EnableSensorWindowHeaterRelevant,
+            PicamParameter_EnableSensorWindowHeater);
+    piCreateAndIndexADParam(PICAM_SensorTemperatureReadingString,
+            ADTemperatureActual, PICAM_SensorTemperatureReadingExists,
+            PICAM_SensorTemperatureReadingRelevant,
+            PicamParameter_SensorTemperatureReading);
+    piCreateAndIndexADParam(PICAM_SensorTemperatureSetPointString,
+            ADTemperature,
+            PICAM_SensorTemperatureSetPointExists,
+            PICAM_SensorTemperatureSetPointRelevant,
+            PicamParameter_SensorTemperatureSetPoint);
+    piCreateAndIndexPIParam(PICAM_SensorTemperatureStatusString, asynParamOctet,
+            PICAM_SensorTemperatureStatus,
+            PICAM_SensorTemperatureStatusExists,
+            PICAM_SensorTemperatureStatusRelevant,
+            PicamParameter_SensorTemperatureStatus);
 
     // Display aids
     createParam(PICAM_EnableROIMinXInputString, asynParamInt32,
@@ -500,527 +850,6 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
     createParam(PICAM_EnableROISizeYInputString, asynParamInt32,
     		&PICAM_EnableROISizeYInput);
 
-    // Camera Parameter Exists for detector
-    createParam(PICAM_ExposureTimeExistsString, asynParamInt32,
-            &PICAM_ExposureTimeExists);
-    createParam(PICAM_ShutterClosingDelayExistsString, asynParamInt32,
-            &PICAM_ShutterClosingDelayExists);
-    createParam(PICAM_ShutterDelayResolutionExistsString, asynParamInt32,
-            &PICAM_ShutterDelayResolutionExists);
-    createParam(PICAM_ShutterOpeningDelayExistsString, asynParamInt32,
-            &PICAM_ShutterOpeningDelayExists);
-    createParam(PICAM_ShutterTimingModeExistsString, asynParamInt32,
-            &PICAM_ShutterTimingModeExists);
-    createParam(PICAM_BracketGatingExistsString, asynParamInt32,
-            &PICAM_BracketGatingExists);
-    createParam(PICAM_CustomModulationSequenceExistsString, asynParamInt32,
-            &PICAM_CustomModulationSequenceExists);
-    createParam(PICAM_DifEndingGateExistsString, asynParamInt32,
-            &PICAM_DifEndingGateExists);
-    createParam(PICAM_DifStartingGateExistsString, asynParamInt32,
-            &PICAM_DifStartingGateExists);
-    createParam(PICAM_EMIccdGainExistsString, asynParamInt32,
-            &PICAM_EMIccdGainExists);
-    createParam(PICAM_EMIccdGainControlModeExistsString, asynParamInt32,
-            &PICAM_EMIccdGainControlModeExists);
-    createParam(PICAM_EnableIntensifierExistsString, asynParamInt32,
-            &PICAM_EnableIntensifierExists);
-    createParam(PICAM_EnableModulationExistsString, asynParamInt32,
-            &PICAM_EnableModulationExists);
-    createParam(PICAM_GatingModeExistsString, asynParamInt32,
-            &PICAM_GatingModeExists);
-    createParam(PICAM_GatingSpeedExistsString, asynParamInt32,
-            &PICAM_GatingSpeedExists);
-    createParam(PICAM_IntensifierDiameterExistsString, asynParamInt32,
-            &PICAM_IntensifierDiameterExists);
-    createParam(PICAM_IntensifierGainExistsString, asynParamInt32,
-            &PICAM_IntensifierGainExists);
-    createParam(PICAM_IntensifierOptionsExistsString, asynParamInt32,
-            &PICAM_IntensifierOptionsExists);
-    createParam(PICAM_IntensifierStatusExistsString, asynParamInt32,
-            &PICAM_IntensifierStatusExists);
-    createParam(PICAM_ModulationDurationExistsString, asynParamInt32,
-            &PICAM_ModulationDurationExists);
-    createParam(PICAM_ModulationFrequencyExistsString, asynParamInt32,
-            &PICAM_ModulationFrequencyExists);
-    createParam(PICAM_PhosphorDecayDelayExistsString, asynParamInt32,
-            &PICAM_PhosphorDecayDelayExists);
-    createParam(PICAM_PhosphorDecayDelayResolutionExistsString, asynParamInt32,
-            &PICAM_PhosphorDecayDelayResolutionExists);
-    createParam(PICAM_PhosphorTypeExistsString, asynParamInt32,
-            &PICAM_PhosphorTypeExists);
-    createParam(PICAM_PhotocathodeSensitivityExistsString, asynParamInt32,
-            &PICAM_PhotocathodeSensitivityExists);
-    createParam(PICAM_RepetitiveGateExistsString, asynParamInt32,
-            &PICAM_RepetitiveGateExists);
-    createParam(PICAM_RepetitiveModulationPhaseExistsString, asynParamInt32,
-            &PICAM_RepetitiveModulationPhaseExists);
-    createParam(PICAM_SequentialStartingModulationPhaseExistsString,
-            asynParamInt32, &PICAM_SequentialStartingModulationPhaseExists);
-    createParam(PICAM_SequentialEndingModulationPhaseExistsString,
-    		asynParamInt32,
-            &PICAM_SequentialEndingModulationPhaseExists);
-    createParam(PICAM_SequentialEndingGateExistsString, asynParamInt32,
-            &PICAM_SequentialEndingGateExists);
-    createParam(PICAM_SequentialGateStepCountExistsString, asynParamInt32,
-            &PICAM_SequentialGateStepCountExists);
-    createParam(PICAM_SequentialGateStepIterationsExistsString, asynParamInt32,
-            &PICAM_SequentialGateStepIterationsExists);
-    createParam(PICAM_SequentialStartingGateExistsString, asynParamInt32,
-            &PICAM_SequentialStartingGateExists);
-    createParam(PICAM_AdcAnalogGainExistsString, asynParamInt32,
-            &PICAM_AdcAnalogGainExists);
-    createParam(PICAM_AdcBitDepthExistsString, asynParamInt32,
-            &PICAM_AdcBitDepthExists);
-    createParam(PICAM_AdcEMGainExistsString, asynParamInt32,
-            &PICAM_AdcEMGainExists);
-    createParam(PICAM_AdcQualityExistsString, asynParamInt32,
-            &PICAM_AdcQualityExists);
-    createParam(PICAM_AdcSpeedExistsString, asynParamInt32,
-            &PICAM_AdcSpeedExists);
-    createParam(PICAM_CorrectPixelBiasExistsString, asynParamInt32,
-            &PICAM_CorrectPixelBiasExists);
-    createParam(PICAM_AuxOutputExistsString, asynParamInt32,
-            &PICAM_AuxOutputExists);
-    createParam(PICAM_EnableModulationOutputSignalExistsString, asynParamInt32,
-            &PICAM_EnableModulationOutputSignalExists);
-    createParam(PICAM_ModulationOutputSignalFrequencyExistsString,
-            asynParamInt32,
-            &PICAM_EnableModulationOutputSignalFrequencyExists);
-    createParam(PICAM_ModulationOutputSignalAmplitudeExistsString,
-            asynParamInt32,
-            &PICAM_EnableModulationOutputSignalAmplitudeExists);
-    createParam(PICAM_EnableSyncMasterExistsString, asynParamInt32,
-            &PICAM_EnableSyncMasterExists);
-    createParam(PICAM_InvertOutputSignalExistsString, asynParamInt32,
-            &PICAM_InvertOutputSignalExists);
-    createParam(PICAM_OutputSignalExistsString, asynParamInt32,
-            &PICAM_OutputSignalExists);
-    createParam(PICAM_SyncMaster2DelayExistsString, asynParamInt32,
-            &PICAM_SyncMaster2DelayExists);
-    createParam(PICAM_TriggerCouplingExistsString, asynParamInt32,
-            &PICAM_TriggerCouplingExists);
-    createParam(PICAM_TriggerDeterminationExistsString, asynParamInt32,
-            &PICAM_TriggerDeterminationExists);
-    createParam(PICAM_TriggerFrequencyExistsString, asynParamInt32,
-            &PICAM_TriggerFrequencyExists);
-    createParam(PICAM_TriggerResponseExistsString, asynParamInt32,
-            &PICAM_TriggerResponseExists);
-    createParam(PICAM_TriggerSourceExistsString, asynParamInt32,
-            &PICAM_TriggerSourceExists);
-    createParam(PICAM_TriggerTerminationExistsString, asynParamInt32,
-            &PICAM_TriggerTerminationExists);
-    createParam(PICAM_TriggerThresholdExistsString, asynParamInt32,
-            &PICAM_TriggerThresholdExists);
-    createParam(PICAM_AccumulationsExistsString, asynParamInt32,
-            &PICAM_AccumulationsExists);
-    createParam(PICAM_EnableNondestructiveReadoutExistsString, asynParamInt32,
-            &PICAM_EnableNondestructiveReadoutExists);
-    createParam(PICAM_KineticsWindowHeightExistsString, asynParamInt32,
-            &PICAM_KineticsWindowHeightExists);
-    createParam(PICAM_NondestructiveReadoutPeriodExistsString, asynParamInt32,
-            &PICAM_NondestructiveReadoutPeriodExists);
-    createParam(PICAM_ReadoutControlModeExistsString, asynParamInt32,
-            &PICAM_ReadoutControlModeExists);
-    createParam(PICAM_ReadoutOrientationExistsString, asynParamInt32,
-            &PICAM_ReadoutOrientationExists);
-    createParam(PICAM_ReadoutPortCountExistsString, asynParamInt32,
-            &PICAM_ReadoutPortCountExists);
-    createParam(PICAM_ReadoutTimeCalculationExistsString, asynParamInt32,
-            &PICAM_ReadoutTimeCalculationExists);
-    createParam(PICAM_VerticalShiftRateExistsString, asynParamInt32,
-            &PICAM_VerticalShiftRateExists);
-    createParam(PICAM_DisableDataFormattingExistsString, asynParamInt32,
-            &PICAM_DisableDataFormattingExists);
-    createParam(PICAM_ExactReadoutCountMaximumExistsString, asynParamInt32,
-            &PICAM_ExactReadoutCountMaximumExists);
-    createParam(PICAM_FrameRateCalculationExistsString, asynParamInt32,
-            &PICAM_FrameRateCalculationExists);
-    createParam(PICAM_FrameSizeExistsString, asynParamInt32,
-            &PICAM_FrameSizeExists);
-    createParam(PICAM_FramesPerReadoutExistsString, asynParamInt32,
-            &PICAM_FramesPerReadoutExists);
-    createParam(PICAM_FrameStrideExistsString, asynParamInt32,
-            &PICAM_FrameStrideExists);
-    createParam(PICAM_FrameTrackingBitDepthExistsString, asynParamInt32,
-            &PICAM_FrameTrackingBitDepthExists);
-    createParam(PICAM_GateTrackingExistsString, asynParamInt32,
-            &PICAM_GateTrackingExists);
-    createParam(PICAM_GateTrackingBitDepthExistsString, asynParamInt32,
-            &PICAM_GateTrackingBitDepthExists);
-    createParam(PICAM_ModulationTrackingExistsString, asynParamInt32,
-            &PICAM_ModulationTrackingExists);
-    createParam(PICAM_ModulationTrackingBitDepthExistsString, asynParamInt32,
-            &PICAM_ModulationTrackingBitDepthExists);
-    createParam(PICAM_NormalizeOrientationExistsString, asynParamInt32,
-            &PICAM_NormalizeOrientationExists);
-    createParam(PICAM_OnlineReadoutRateCalculationExistsString, asynParamInt32,
-            &PICAM_OnlineReadoutRateCalculationExists);
-    createParam(PICAM_OrientationExistsString, asynParamInt32,
-            &PICAM_OrientationExists);
-    createParam(PICAM_PhotonDetectionModeExistsString, asynParamInt32,
-            &PICAM_PhotonDetectionModeExists);
-    createParam(PICAM_PhotonDetectionThresholdExistsString, asynParamInt32,
-            &PICAM_PhotonDetectionThresholdExists);
-    createParam(PICAM_PixelBitDepthExistsString, asynParamInt32,
-            &PICAM_PixelBitDepthExists);
-    createParam(PICAM_PixelFormatExistsString, asynParamInt32,
-            &PICAM_PixelFormatExists);
-    createParam(PICAM_ReadoutCountExistsString, asynParamInt32,
-            &PICAM_ReadoutCountExists);
-    createParam(PICAM_ReadoutRateCalculationExistsString, asynParamInt32,
-            &PICAM_ReadoutRateCalculationExists);
-    createParam(PICAM_ReadoutStrideExistsString, asynParamInt32,
-            &PICAM_ReadoutStrideExists);
-    createParam(PICAM_RoisExistsString, asynParamInt32, &PICAM_RoisExists);
-    createParam(PICAM_TimeStampBitDepthExistsString, asynParamInt32,
-            &PICAM_TimeStampBitDepthExists);
-    createParam(PICAM_TimeStampResolutionExistsString, asynParamInt32,
-            &PICAM_TimeStampResolutionExists);
-    createParam(PICAM_TimeStampsExistsString, asynParamInt32,
-            &PICAM_TimeStampsExists);
-    createParam(PICAM_TrackFramesExistsString, asynParamInt32,
-            &PICAM_TrackFramesExists);
-    createParam(PICAM_CcdCharacteristicsExistsString, asynParamInt32,
-            &PICAM_CcdCharacteristicsExists);
-    createParam(PICAM_PixelGapHeightExistsString, asynParamInt32,
-            &PICAM_PixelGapHeightExists);
-    createParam(PICAM_PixelGapWidthExistsString, asynParamInt32,
-            &PICAM_PixelGapWidthExists);
-    createParam(PICAM_PixelHeightExistsString, asynParamInt32,
-            &PICAM_PixelHeightExists);
-    createParam(PICAM_PixelWidthExistsString, asynParamInt32,
-            &PICAM_PixelWidthExists);
-    createParam(PICAM_SensorActiveBottomMarginExistsString, asynParamInt32,
-            &PICAM_SensorActiveBottomMarginExists);
-    createParam(PICAM_SensorActiveHeightExistsString, asynParamInt32,
-            &PICAM_SensorActiveHeightExists);
-    createParam(PICAM_SensorActiveLeftMarginExistsString, asynParamInt32,
-            &PICAM_SensorActiveLeftMarginExists);
-    createParam(PICAM_SensorActiveRightMarginExistsString, asynParamInt32,
-            &PICAM_SensorActiveRightMarginExists);
-    createParam(PICAM_SensorActiveTopMarginExistsString, asynParamInt32,
-            &PICAM_SensorActiveTopMarginExists);
-    createParam(PICAM_SensorActiveWidthExistsString, asynParamInt32,
-            &PICAM_SensorActiveWidthExists);
-    createParam(PICAM_SensorMaskedBottomMarginExistsString, asynParamInt32,
-            &PICAM_SensorMaskedBottomMarginExists);
-    createParam(PICAM_SensorMaskedHeightExistsString, asynParamInt32,
-            &PICAM_SensorMaskedHeightExists);
-    createParam(PICAM_SensorMaskedTopMarginExistsString, asynParamInt32,
-            &PICAM_SensorMaskedTopMarginExists);
-    createParam(PICAM_SensorSecondaryActiveHeightExistsString, asynParamInt32,
-            &PICAM_SensorSecondaryActiveHeightExists);
-    createParam(PICAM_SensorSecondaryMaskedHeightExistsString, asynParamInt32,
-            &PICAM_SensorSecondaryMaskedHeightExists);
-    createParam(PICAM_SensorTypeExistsString, asynParamInt32,
-            &PICAM_SensorTypeExists);
-    createParam(PICAM_ActiveBottomMarginExistsString, asynParamInt32,
-            &PICAM_ActiveBottomMarginExists);
-    createParam(PICAM_ActiveHeightExistsString, asynParamInt32,
-            &PICAM_ActiveHeightExists);
-    createParam(PICAM_ActiveLeftMarginExistsString, asynParamInt32,
-            &PICAM_ActiveLeftMarginExists);
-    createParam(PICAM_ActiveRightMarginExistsString, asynParamInt32,
-            &PICAM_ActiveRightMarginExists);
-    createParam(PICAM_ActiveTopMarginExistsString, asynParamInt32,
-            &PICAM_ActiveTopMarginExists);
-    createParam(PICAM_ActiveWidthExistsString, asynParamInt32,
-            &PICAM_ActiveWidthExists);
-    createParam(PICAM_MaskedBottomMarginExistsString, asynParamInt32,
-            &PICAM_MaskedBottomMarginExists);
-    createParam(PICAM_MaskedHeightExistsString, asynParamInt32,
-            &PICAM_MaskedHeightExists);
-    createParam(PICAM_MaskedTopMarginExistsString, asynParamInt32,
-            &PICAM_MaskedTopMarginExists);
-    createParam(PICAM_SecondaryActiveHeightExistsString, asynParamInt32,
-            &PICAM_SecondaryActiveHeightExists);
-    createParam(PICAM_SecondaryMaskedHeightExistsString, asynParamInt32,
-            &PICAM_SecondaryMaskedHeightExists);
-    createParam(PICAM_CleanBeforeExposureExistsString, asynParamInt32,
-            &PICAM_CleanBeforeExposureExists);
-    createParam(PICAM_CleanCycleCountExistsString, asynParamInt32,
-            &PICAM_CleanCycleCountExists);
-    createParam(PICAM_CleanCycleHeightExistsString, asynParamInt32,
-            &PICAM_CleanCycleHeightExists);
-    createParam(PICAM_CleanSectionFinalHeightExistsString, asynParamInt32,
-            &PICAM_CleanSectionFinalHeightExists);
-    createParam(PICAM_CleanSectionFinalHeightCountExistsString, asynParamInt32,
-            &PICAM_CleanSectionFinalHeightCountExists);
-    createParam(PICAM_CleanSerialRegisterExistsString, asynParamInt32,
-            &PICAM_CleanSerialRegisterExists);
-    createParam(PICAM_CleanUntilTriggerExistsString, asynParamInt32,
-            &PICAM_CleanUntilTriggerExists);
-    createParam(PICAM_DisableCoolingFanExistsString, asynParamInt32,
-            &PICAM_DisableCoolingFanExists);
-    createParam(PICAM_EnableSensorWindowHeaterExistsString, asynParamInt32,
-            &PICAM_EnableSensorWindowHeaterExists);
-    createParam(PICAM_SensorTemperatureReadingExistsString, asynParamInt32,
-            &PICAM_SensorTemperatureReadingExists);
-    createParam(PICAM_SensorTemperatureSetPointExistsString, asynParamInt32,
-            &PICAM_SensorTemperatureSetPointExists);
-    createParam(PICAM_SensorTemperatureStatusExistsString, asynParamInt32,
-            &PICAM_SensorTemperatureStatusExists);
-    // Camera Parameter Relevance
-    createParam(PICAM_ExposureTimeRelString, asynParamInt32,
-            &PICAM_ExposureTimeRelevant);
-    createParam(PICAM_ShutterClosingDelayRelString, asynParamInt32,
-            &PICAM_ShutterClosingDelayRelevant);
-    createParam(PICAM_ShutterDelayResolutionRelString, asynParamInt32,
-            &PICAM_ShutterDelayResolutionRelevant);
-    createParam(PICAM_ShutterOpeningDelayRelString, asynParamInt32,
-            &PICAM_ShutterOpeningDelayRelevant);
-    createParam(PICAM_ShutterTimingModeRelString, asynParamInt32,
-            &PICAM_ShutterTimingModeRelevant);
-    createParam(PICAM_BracketGatingRelString, asynParamInt32,
-            &PICAM_BracketGatingRelevant);
-    createParam(PICAM_CustomModulationSequenceRelString, asynParamInt32,
-            &PICAM_CustomModulationSequenceRelevant);
-    createParam(PICAM_DifEndingGateRelString, asynParamInt32,
-            &PICAM_DifEndingGateRelevant);
-    createParam(PICAM_DifStartingGateRelString, asynParamInt32,
-            &PICAM_DifStartingGateRelevant);
-    createParam(PICAM_EMIccdGainRelString, asynParamInt32,
-            &PICAM_EMIccdGainRelevant);
-    createParam(PICAM_EMIccdGainControlModeRelString, asynParamInt32,
-            &PICAM_EMIccdGainControlModeRelevant);
-    createParam(PICAM_EnableIntensifierRelString, asynParamInt32,
-            &PICAM_EnableIntensifierRelevant);
-    createParam(PICAM_EnableModulationRelString, asynParamInt32,
-            &PICAM_EnableModulationRelevant);
-    createParam(PICAM_GatingModeRelString, asynParamInt32,
-            &PICAM_GatingModeRelevant);
-    createParam(PICAM_GatingSpeedRelString, asynParamInt32,
-            &PICAM_GatingSpeedRelevant);
-    createParam(PICAM_IntensifierDiameterRelString, asynParamInt32,
-            &PICAM_IntensifierDiameterRelevant);
-    createParam(PICAM_IntensifierGainRelString, asynParamInt32,
-            &PICAM_IntensifierGainRelevant);
-    createParam(PICAM_IntensifierOptionsRelString, asynParamInt32,
-            &PICAM_IntensifierOptionsRelevant);
-    createParam(PICAM_IntensifierStatusRelString, asynParamInt32,
-            &PICAM_IntensifierStatusRelevant);
-    createParam(PICAM_ModulationDurationRelString, asynParamInt32,
-            &PICAM_ModulationDurationRelevant);
-    createParam(PICAM_ModulationFrequencyRelString, asynParamInt32,
-            &PICAM_ModulationFrequencyRelevant);
-    createParam(PICAM_PhosphorDecayDelayRelString, asynParamInt32,
-            &PICAM_PhosphorDecayDelayRelevant);
-    createParam(PICAM_PhosphorDecayDelayResolutionRelString, asynParamInt32,
-            &PICAM_PhosphorDecayDelayResolutionRelevant);
-    createParam(PICAM_PhosphorTypeRelString, asynParamInt32,
-            &PICAM_PhosphorTypeRelevant);
-    createParam(PICAM_PhotocathodeSensitivityRelString, asynParamInt32,
-            &PICAM_PhotocathodeSensitivityRelevant);
-    createParam(PICAM_RepetitiveGateRelString, asynParamInt32,
-            &PICAM_RepetitiveGateRelevant);
-    createParam(PICAM_RepetitiveModulationPhaseRelString, asynParamInt32,
-            &PICAM_RepetitiveModulationPhaseRelevant);
-    createParam(PICAM_SequentialStartingModulationPhaseRelString,
-            asynParamInt32, &PICAM_SequentialStartingModulationPhaseRelevant);
-    createParam(PICAM_SequentialEndingModulationPhaseRelString, asynParamInt32,
-            &PICAM_SequentialEndingModulationPhaseRelevant);
-    createParam(PICAM_SequentialEndingGateRelString, asynParamInt32,
-            &PICAM_SequentialEndingGateRelevant);
-    createParam(PICAM_SequentialGateStepCountRelString, asynParamInt32,
-            &PICAM_SequentialGateStepCountRelevant);
-    createParam(PICAM_SequentialGateStepIterationsRelString, asynParamInt32,
-            &PICAM_SequentialGateStepIterationsRelevant);
-    createParam(PICAM_SequentialStartingGateRelString, asynParamInt32,
-            &PICAM_SequentialStartingGateRelevant);
-    createParam(PICAM_AdcAnalogGainRelString, asynParamInt32,
-            &PICAM_AdcAnalogGainRelevant);
-    createParam(PICAM_AdcBitDepthRelString, asynParamInt32,
-            &PICAM_AdcBitDepthRelevant);
-    createParam(PICAM_AdcEMGainRelString, asynParamInt32,
-            &PICAM_AdcEMGainRelevant);
-    createParam(PICAM_AdcQualityRelString, asynParamInt32,
-            &PICAM_AdcQualityRelevant);
-    createParam(PICAM_AdcSpeedRelString, asynParamInt32,
-            &PICAM_AdcSpeedRelevant);
-    createParam(PICAM_CorrectPixelBiasRelString, asynParamInt32,
-            &PICAM_CorrectPixelBiasRelevant);
-    createParam(PICAM_AuxOutputRelString, asynParamInt32,
-            &PICAM_AuxOutputRelevant);
-    createParam(PICAM_EnableModulationOutputSignalRelString, asynParamInt32,
-            &PICAM_EnableModulationOutputSignalRelevant);
-    createParam(PICAM_ModulationOutputSignalFrequencyRelString,
-            asynParamInt32,
-            &PICAM_EnableModulationOutputSignalFrequencyRelevant);
-    createParam(PICAM_ModulationOutputSignalAmplitudeRelString,
-            asynParamInt32,
-            &PICAM_EnableModulationOutputSignalAmplitudeRelevant);
-    createParam(PICAM_EnableSyncMasterRelString, asynParamInt32,
-            &PICAM_EnableSyncMasterRelevant);
-    createParam(PICAM_InvertOutputSignalRelString, asynParamInt32,
-            &PICAM_InvertOutputSignalRelevant);
-    createParam(PICAM_OutputSignalRelString, asynParamInt32,
-            &PICAM_OutputSignalRelevant);
-    createParam(PICAM_SyncMaster2DelayRelString, asynParamInt32,
-            &PICAM_SyncMaster2DelayRelevant);
-    createParam(PICAM_TriggerCouplingRelString, asynParamInt32,
-            &PICAM_TriggerCouplingRelevant);
-    createParam(PICAM_TriggerDeterminationRelString, asynParamInt32,
-            &PICAM_TriggerDeterminationRelevant);
-    createParam(PICAM_TriggerFrequencyRelString, asynParamInt32,
-            &PICAM_TriggerFrequencyRelevant);
-    createParam(PICAM_TriggerResponseRelString, asynParamInt32,
-            &PICAM_TriggerResponseRelevant);
-    createParam(PICAM_TriggerSourceRelString, asynParamInt32,
-            &PICAM_TriggerSourceRelevant);
-    createParam(PICAM_TriggerTerminationRelString, asynParamInt32,
-            &PICAM_TriggerTerminationRelevant);
-    createParam(PICAM_TriggerThresholdRelString, asynParamInt32,
-            &PICAM_TriggerThresholdRelevant);
-    createParam(PICAM_AccumulationsRelString, asynParamInt32,
-            &PICAM_AccumulationsRelevant);
-    createParam(PICAM_EnableNondestructiveReadoutRelString, asynParamInt32,
-            &PICAM_EnableNondestructiveReadoutRelevant);
-    createParam(PICAM_KineticsWindowHeightRelString, asynParamInt32,
-            &PICAM_KineticsWindowHeightRelevant);
-    createParam(PICAM_NondestructiveReadoutPeriodRelString, asynParamInt32,
-            &PICAM_NondestructiveReadoutPeriodRelevant);
-    createParam(PICAM_ReadoutControlModeRelString, asynParamInt32,
-            &PICAM_ReadoutControlModeRelevant);
-    createParam(PICAM_ReadoutOrientationRelString, asynParamInt32,
-            &PICAM_ReadoutOrientationRelevant);
-    createParam(PICAM_ReadoutPortCountRelString, asynParamInt32,
-            &PICAM_ReadoutPortCountRelevant);
-    createParam(PICAM_ReadoutTimeCalculationRelString, asynParamInt32,
-            &PICAM_ReadoutTimeCalculationRelevant);
-    createParam(PICAM_VerticalShiftRateRelString, asynParamInt32,
-            &PICAM_VerticalShiftRateRelevant);
-    createParam(PICAM_DisableDataFormattingRelString, asynParamInt32,
-            &PICAM_DisableDataFormattingRelevant);
-    createParam(PICAM_ExactReadoutCountMaximumRelString, asynParamInt32,
-            &PICAM_ExactReadoutCountMaximumRelevant);
-    createParam(PICAM_FrameRateCalculationRelString, asynParamInt32,
-            &PICAM_FrameRateCalculationRelevant);
-    createParam(PICAM_FrameSizeRelString, asynParamInt32,
-            &PICAM_FrameSizeRelevant);
-    createParam(PICAM_FramesPerReadoutRelString, asynParamInt32,
-            &PICAM_FramesPerReadoutRelevant);
-    createParam(PICAM_FrameStrideRelString, asynParamInt32,
-            &PICAM_FrameStrideRelevant);
-    createParam(PICAM_FrameTrackingBitDepthRelString, asynParamInt32,
-            &PICAM_FrameTrackingBitDepthRelevant);
-    createParam(PICAM_GateTrackingRelString, asynParamInt32,
-            &PICAM_GateTrackingRelevant);
-    createParam(PICAM_GateTrackingBitDepthRelString, asynParamInt32,
-            &PICAM_GateTrackingBitDepthRelevant);
-    createParam(PICAM_ModulationTrackingRelString, asynParamInt32,
-            &PICAM_ModulationTrackingRelevant);
-    createParam(PICAM_ModulationTrackingBitDepthRelString, asynParamInt32,
-            &PICAM_ModulationTrackingBitDepthRelevant);
-    createParam(PICAM_NormalizeOrientationRelString, asynParamInt32,
-            &PICAM_NormalizeOrientationRelevant);
-    createParam(PICAM_OnlineReadoutRateCalculationRelString, asynParamInt32,
-            &PICAM_OnlineReadoutRateCalculationRelevant);
-    createParam(PICAM_OrientationRelString, asynParamInt32,
-            &PICAM_OrientationRelevant);
-    createParam(PICAM_PhotonDetectionModeRelString, asynParamInt32,
-            &PICAM_PhotonDetectionModeRelevant);
-    createParam(PICAM_PhotonDetectionThresholdRelString, asynParamInt32,
-            &PICAM_PhotonDetectionThresholdRelevant);
-    createParam(PICAM_PixelBitDepthRelString, asynParamInt32,
-            &PICAM_PixelBitDepthRelevant);
-    createParam(PICAM_PixelFormatRelString, asynParamInt32,
-            &PICAM_PixelFormatRelevant);
-    createParam(PICAM_ReadoutCountRelString, asynParamInt32,
-            &PICAM_ReadoutCountRelevant);
-    createParam(PICAM_ReadoutRateCalculationRelString, asynParamInt32,
-            &PICAM_ReadoutRateCalculationRelevant);
-    createParam(PICAM_ReadoutStrideRelString, asynParamInt32,
-            &PICAM_ReadoutStrideRelevant);
-    createParam(PICAM_RoisRelString, asynParamInt32, &PICAM_RoisRelevant);
-    createParam(PICAM_TimeStampBitDepthRelString, asynParamInt32,
-            &PICAM_TimeStampBitDepthRelevant);
-    createParam(PICAM_TimeStampResolutionRelString, asynParamInt32,
-            &PICAM_TimeStampResolutionRelevant);
-    createParam(PICAM_TimeStampsRelString, asynParamInt32,
-            &PICAM_TimeStampsRelevant);
-    createParam(PICAM_TrackFramesRelString, asynParamInt32,
-            &PICAM_TrackFramesRelevant);
-    createParam(PICAM_CcdCharacteristicsRelString, asynParamInt32,
-            &PICAM_CcdCharacteristicsRelevant);
-    createParam(PICAM_PixelGapHeightRelString, asynParamInt32,
-            &PICAM_PixelGapHeightRelevant);
-    createParam(PICAM_PixelGapWidthRelString, asynParamInt32,
-            &PICAM_PixelGapWidthRelevant);
-    createParam(PICAM_PixelHeightRelString, asynParamInt32,
-            &PICAM_PixelHeightRelevant);
-    createParam(PICAM_PixelWidthRelString, asynParamInt32,
-            &PICAM_PixelWidthRelevant);
-    createParam(PICAM_SensorActiveBottomMarginRelString, asynParamInt32,
-            &PICAM_SensorActiveBottomMarginRelevant);
-    createParam(PICAM_SensorActiveHeightRelString, asynParamInt32,
-            &PICAM_SensorActiveHeightRelevant);
-    createParam(PICAM_SensorActiveLeftMarginRelString, asynParamInt32,
-            &PICAM_SensorActiveLeftMarginRelevant);
-    createParam(PICAM_SensorActiveRightMarginRelString, asynParamInt32,
-            &PICAM_SensorActiveRightMarginRelevant);
-    createParam(PICAM_SensorActiveTopMarginRelString, asynParamInt32,
-            &PICAM_SensorActiveTopMarginRelevant);
-    createParam(PICAM_SensorActiveWidthRelString, asynParamInt32,
-            &PICAM_SensorActiveWidthRelevant);
-    createParam(PICAM_SensorMaskedBottomMarginRelString, asynParamInt32,
-            &PICAM_SensorMaskedBottomMarginRelevant);
-    createParam(PICAM_SensorMaskedHeightRelString, asynParamInt32,
-            &PICAM_SensorMaskedHeightRelevant);
-    createParam(PICAM_SensorMaskedTopMarginRelString, asynParamInt32,
-            &PICAM_SensorMaskedTopMarginRelevant);
-    createParam(PICAM_SensorSecondaryActiveHeightRelString, asynParamInt32,
-            &PICAM_SensorSecondaryActiveHeightRelevant);
-    createParam(PICAM_SensorSecondaryMaskedHeightRelString, asynParamInt32,
-            &PICAM_SensorSecondaryMaskedHeightRelevant);
-    createParam(PICAM_SensorTypeRelString, asynParamInt32,
-            &PICAM_SensorTypeRelevant);
-    createParam(PICAM_ActiveBottomMarginRelString, asynParamInt32,
-            &PICAM_ActiveBottomMarginRelevant);
-    createParam(PICAM_ActiveHeightRelString, asynParamInt32,
-            &PICAM_ActiveHeightRelevant);
-    createParam(PICAM_ActiveLeftMarginRelString, asynParamInt32,
-            &PICAM_ActiveLeftMarginRelevant);
-    createParam(PICAM_ActiveRightMarginRelString, asynParamInt32,
-            &PICAM_ActiveRightMarginRelevant);
-    createParam(PICAM_ActiveTopMarginRelString, asynParamInt32,
-            &PICAM_ActiveTopMarginRelevant);
-    createParam(PICAM_ActiveWidthRelString, asynParamInt32,
-            &PICAM_ActiveWidthRelevant);
-    createParam(PICAM_MaskedBottomMarginRelString, asynParamInt32,
-            &PICAM_MaskedBottomMarginRelevant);
-    createParam(PICAM_MaskedHeightRelString, asynParamInt32,
-            &PICAM_MaskedHeightRelevant);
-    createParam(PICAM_MaskedTopMarginRelString, asynParamInt32,
-            &PICAM_MaskedTopMarginRelevant);
-    createParam(PICAM_SecondaryActiveHeightRelString, asynParamInt32,
-            &PICAM_SecondaryActiveHeightRelevant);
-    createParam(PICAM_SecondaryMaskedHeightRelString, asynParamInt32,
-            &PICAM_SecondaryMaskedHeightRelevant);
-    createParam(PICAM_CleanBeforeExposureRelString, asynParamInt32,
-            &PICAM_CleanBeforeExposureRelevant);
-    createParam(PICAM_CleanCycleCountRelString, asynParamInt32,
-            &PICAM_CleanCycleCountRelevant);
-    createParam(PICAM_CleanCycleHeightRelString, asynParamInt32,
-            &PICAM_CleanCycleHeightRelevant);
-    createParam(PICAM_CleanSectionFinalHeightRelString, asynParamInt32,
-            &PICAM_CleanSectionFinalHeightRelevant);
-    createParam(PICAM_CleanSectionFinalHeightCountRelString, asynParamInt32,
-            &PICAM_CleanSectionFinalHeightCountRelevant);
-    createParam(PICAM_CleanSerialRegisterRelString, asynParamInt32,
-            &PICAM_CleanSerialRegisterRelevant);
-    createParam(PICAM_CleanUntilTriggerRelString, asynParamInt32,
-            &PICAM_CleanUntilTriggerRelevant);
-    createParam(PICAM_DisableCoolingFanRelString, asynParamInt32,
-            &PICAM_DisableCoolingFanRelevant);
-    createParam(PICAM_EnableSensorWindowHeaterRelString, asynParamInt32,
-            &PICAM_EnableSensorWindowHeaterRelevant);
-    createParam(PICAM_SensorTemperatureReadingRelString, asynParamInt32,
-            &PICAM_SensorTemperatureReadingRelevant);
-    createParam(PICAM_SensorTemperatureSetPointRelString, asynParamInt32,
-            &PICAM_SensorTemperatureSetPointRelevant);
-    createParam(PICAM_SensorTemperatureStatusRelString, asynParamInt32,
-            &PICAM_SensorTemperatureStatusRelevant);
     status = setStringParam(ADManufacturer, "Princeton Instruments");
     status |= setStringParam(ADModel, "Not Connected");
     status |= setIntegerParam(NDArraySize, 0);
@@ -1127,7 +956,8 @@ asynStatus ADPICam::initializeDetector() {
     // Register callback for Camera Discovery
     error = PicamAdvanced_RegisterForDiscovery(piCameraDiscovered);
     if (error != PicamError_None) {
-
+        Picam_GetEnumerationString(PicamEnumeratedType_Error, error,
+                &errorString);
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
                 "%s:%s Fail to Register for Camera Discovery :%s\n", driverName,
                 functionName, errorString);
@@ -1420,7 +1250,7 @@ asynStatus ADPICam::readOctet(asynUser *pasynUser, char *value,
                                     size_t nChars, size_t *nActual,
 									int *eomReason)
 {
-	static const char *functionName = "writeOctet";
+	static const char *functionName = "readOctet";
 	int status = asynSuccess;
 	pibln parameterDoesExist;
 	pibln parameterRelevant;
@@ -1441,6 +1271,13 @@ asynStatus ADPICam::readOctet(asynUser *pasynUser, char *value,
 			error = Picam_IsParameterRelevant(currentCameraHandle,
 					picamParameter,
 					&parameterRelevant);
+		}
+		else{
+            strncpy (value, "", 1);
+            value[nChars-1] = '\0';
+            *nActual = strlen(value);
+            return asynSuccess;
+
 		}
 		if (error != PicamError_None){
 			Picam_GetEnumerationString(PicamEnumeratedType_Error,
@@ -1961,8 +1798,6 @@ asynStatus ADPICam::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     } else if (function == ADAcquire) {
         int adStatus;
         getIntegerParam(ADStatus, &adStatus);
-        printf ("Caught acquire value %d, status = %d\n",
-                value, adStatus);
         if (value && (adStatus == ADStatusIdle)){
             piAcquireStart();
         }
@@ -2137,23 +1972,26 @@ asynStatus ADPICam::piAcquireStart(){
  * Internal method called when stop acquire is pressed.
  */
 asynStatus ADPICam::piAcquireStop(){
-    const char *functionName = "piAcquireStop";
     int status = asynSuccess;
+    int acquire = 0;
 
-    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "Stop acquisition\n");
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+            "%s:%s Enter\n",
+            driverName, __func__);
 
     pibln isRunning = false;
     Picam_IsAcquisitionRunning(currentCameraHandle, &isRunning);
     if (isRunning) {
         Picam_StopAcquisition(currentDeviceHandle);
     }
-    lock();
-    setIntegerParam(ADAcquire, 0);
     setIntegerParam(ADStatus, ADStatusIdle);
     callParamCallbacks();
-    unlock();
+    setIntegerParam(ADAcquire, acquire);
+    callParamCallbacks();
 
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+            "%s:%s Exit\n",
+            driverName, __func__);
     return (asynStatus)status;
 
 }
@@ -2267,31 +2105,144 @@ PicamError PIL_CALL ADPICam::piCameraDiscovered(const PicamCameraID *id,
 }
 
 /**
- * Set all PICAM parameter relevance parameters to false
+ * Set all PICAM parameter exists parameters to false
  */
 asynStatus ADPICam::piClearParameterExists() {
-    int iParam;
     int status = asynSuccess;
 
-    for (iParam = PICAM_ExposureTimeExists;
-            iParam <= PICAM_SensorTemperatureStatusExists; iParam++) {
-        status |= setIntegerParam(iParam, 0);
+    for (std::unordered_map<PicamParameter, int>::value_type iParam :
+            parameterExistsMap) {
+        status |= setIntegerParam(iParam.second, 0);
     }
     return (asynStatus) status;
 }
 
 /**
- Set all PICAM parameter relevance parameters to false
+ * Set all PICAM parameter relevance parameters to false
  */
 asynStatus ADPICam::piClearParameterRelevance() {
-    int iParam;
     int status = asynSuccess;
 
-    for (iParam = PICAM_ExposureTimeRelevant;
-            iParam <= PICAM_SensorTemperatureStatusRelevant; iParam++) {
-        status |= setIntegerParam(iParam, 0);
+    for (std::unordered_map<PicamParameter, int>::value_type iParam :
+            parameterRelevantMap) {
+        status |= setIntegerParam(iParam.second, 0);
     }
     return (asynStatus) status;
+}
+
+/**
+ * Create and Index parameters associated (exists and relevant) with PI
+ * parameter that is mapped to an existing AD parameter (from ADDriver
+ * base class)
+ */
+asynStatus ADPICam::piCreateAndIndexADParam(const char * name,
+        int adIndex, int &existsIndex,
+        int &relevantIndex, PicamParameter picamParameter){
+    int status = asynSuccess;
+
+    parameterValueMap.emplace(picamParameter, adIndex);
+    picamParameterMap.emplace(adIndex, picamParameter);
+    status |= piCreateAndIndexPIAwarenessParam(name, existsIndex,
+            relevantIndex, picamParameter);
+    return (asynStatus)status;
+}
+
+/**
+ * Create and Index parameters associated with awareness (exists and relevant)
+ */
+asynStatus ADPICam::piCreateAndIndexPIAwarenessParam(const char * name,
+        int &existsIndex, int &relevantIndex,
+        PicamParameter picamParameter){
+    int status = asynSuccess;
+
+    char existsName[256];
+    char relevantName[256];
+
+    strcpy(existsName, name);
+    strcat(existsName, "_EX");
+    strcpy(relevantName, name);
+    strcat(relevantName, "_PR");
+    status |= ADDriver::createParam(existsName, asynParamInt32, &existsIndex);
+    status |= ADDriver::createParam(relevantName, asynParamInt32, &relevantIndex);
+    parameterExistsMap.emplace(picamParameter, existsIndex);
+    parameterRelevantMap.emplace(picamParameter, relevantIndex);
+
+    return (asynStatus)status;
+}
+
+/**
+ * Create and Index parameters associated (exists and relevant) with PI
+ * parameter that is mapped to an parameter defined by this class (ADPICam)
+ */
+asynStatus ADPICam::piCreateAndIndexPIParam(const char * name, asynParamType type,
+        int &index, int &existsIndex, int &relevantIndex,
+        PicamParameter picamParameter){
+    int status = asynSuccess;
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s,%s creating parameter %s type %d\n",
+            driverName,
+            __func__,
+            name,
+            type);
+    status |= ADDriver::createParam(name, type, &index);
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s,%s creating parameter %s type %d index %d PICAM param %d\n",
+            driverName,
+            __func__,
+            name,
+            type,
+            index,
+            picamParameter);
+    parameterValueMap.emplace(picamParameter, index);
+    picamParameterMap.emplace(index, picamParameter);
+    status |= piCreateAndIndexPIAwarenessParam(name, existsIndex,
+            relevantIndex, picamParameter);
+
+    return (asynStatus)status;
+}
+
+/**
+ * Create and Index parameters associated (exists and relevant) with PI
+ * parameter that is mapped to an parameter defined by this class (ADPICam)
+ */
+asynStatus ADPICam::piCreateAndIndexPIModulationsParam(const char * name,
+        int &existsIndex, int &relevantIndex,
+        PicamParameter picamParameter){
+    int status = asynSuccess;
+    status |= piCreateAndIndexPIAwarenessParam(name, existsIndex,
+            relevantIndex, picamParameter);
+
+    return (asynStatus)status;
+}
+
+/**
+ * Create and Index parameters associated (exists and relevant) with PI
+ * parameter that is mapped to an parameter defined by this class (ADPICam)
+ */
+asynStatus ADPICam::piCreateAndIndexPIPulseParam(const char * name,
+        int &existsIndex, int &relevantIndex,
+        PicamParameter picamParameter){
+    int status = asynSuccess;
+
+    status |= piCreateAndIndexPIAwarenessParam(name, existsIndex,
+            relevantIndex, picamParameter);
+
+    return (asynStatus)status;
+}
+
+/**
+ * Create and Index parameters associated (exists and relevant) with PI
+ * parameter that is mapped to an parameter defined by this class (ADPICam)
+ */
+asynStatus ADPICam::piCreateAndIndexPIRoisParam(const char * name,
+        int &existsIndex, int &relevantIndex,
+        PicamParameter picamParameter){
+    int status = asynSuccess;
+
+    status |= piCreateAndIndexPIAwarenessParam(name, existsIndex,
+            relevantIndex, picamParameter);
+
+    return (asynStatus)status;
 }
 
 /**
@@ -2372,373 +2323,17 @@ int ADPICam::piLookupDriverParameter(PicamParameter parameter) {
     int driverParameter = -1;
     const char *paramString;
 
-    switch (parameter) {
-    case PicamParameter_Accumulations:
-        driverParameter = ADNumExposures;
-        break;
-    case PicamParameter_ActiveBottomMargin:
-    	driverParameter = PICAM_ActiveBottomMargin;
-        break;
-    case PicamParameter_ActiveHeight:
-    	driverParameter = PICAM_ActiveHeight;
-        break;
-    case PicamParameter_ActiveLeftMargin:
-    	driverParameter = PICAM_ActiveLeftMargin;
-        break;
-    case PicamParameter_ActiveRightMargin:
-    	driverParameter = PICAM_ActiveRightMargin;
-        break;
-    case PicamParameter_ActiveTopMargin:
-    	driverParameter = PICAM_ActiveTopMargin;
-        break;
-    case PicamParameter_ActiveWidth:
-    	driverParameter = PICAM_ActiveWidth;
-        break;
-    case PicamParameter_AdcAnalogGain:
-        driverParameter = PICAM_AdcAnalogGain;
-        break;
-    case PicamParameter_AdcBitDepth:
-        driverParameter = PICAM_AdcBitDepth;
-        break;
-    case PicamParameter_AdcEMGain:
-    	driverParameter = PICAM_AdcEMGain;
-        break;
-    case PicamParameter_AdcQuality:
-        driverParameter = PICAM_AdcQuality;
-        break;
-    case PicamParameter_AdcSpeed:
-        driverParameter = PICAM_AdcSpeed;
-        break;
-    case PicamParameter_AuxOutput:
-    	driverParameter = PICAM_AuxOutput;
-        break;
-    case PicamParameter_BracketGating:
-        break;
-    case PicamParameter_CcdCharacteristics:
-    	driverParameter = PICAM_CcdCharacteristics;
-        break;
-    case PicamParameter_CleanBeforeExposure:
-    	driverParameter = PICAM_CleanBeforeExposure;
-        break;
-    case PicamParameter_CleanCycleCount:
-        driverParameter = PICAM_CleanCycleCount;
-    	break;
-    case PicamParameter_CleanCycleHeight:
-        driverParameter = PICAM_CleanCycleCount;
-    	break;
-    case PicamParameter_CleanSectionFinalHeight:
-        driverParameter = PICAM_CleanSectionFinalHeight;
-    	break;
-    case PicamParameter_CleanSectionFinalHeightCount:
-        driverParameter = PICAM_CleanSectionFinalHeightCount;
-    	break;
-    case PicamParameter_CleanSerialRegister:
-    	driverParameter = PICAM_CleanSerialRegister;
-        break;
-    case PicamParameter_CleanUntilTrigger:
-    	driverParameter = PICAM_CleanUntilTrigger;
-        break;
-    case PicamParameter_CorrectPixelBias:
-        break;
-    case PicamParameter_CustomModulationSequence:
-        break;
-    case PicamParameter_DifEndingGate:
-        break;
-    case PicamParameter_DifStartingGate:
-        break;
-    case PicamParameter_DisableCoolingFan:
-    	driverParameter = PICAM_DisableCoolingFan;
-    	break;
-    case PicamParameter_DisableDataFormatting:
-        driverParameter = PICAM_DisableDataFormatting;
-        break;
-    case PicamParameter_EMIccdGain:
-        break;
-    case PicamParameter_EMIccdGainControlMode:
-        break;
-    case PicamParameter_EnableIntensifier:
-        break;
-    case PicamParameter_EnableModulation:
-        break;
-    case PicamParameter_EnableModulationOutputSignal:
-    	driverParameter = PICAM_EnableModulationOutputSignal;
-        break;
-    case PicamParameter_ModulationOutputSignalFrequency:
-    	driverParameter = PICAM_ModulationOutputSignalFrequency;
-        break;
-    case PicamParameter_ModulationOutputSignalAmplitude:
-    	driverParameter = PICAM_ModulationOutputSignalAmplitude;
-        break;
-    case PicamParameter_EnableNondestructiveReadout:
-    	driverParameter = PICAM_EnableNondestructiveReadout;
-        break;
-    case PicamParameter_EnableSensorWindowHeater:
-    	driverParameter = PICAM_EnableSensorWindowHeater;
-        break;
-    case PicamParameter_EnableSyncMaster:
-    	driverParameter = PICAM_EnableSyncMaster;
-    	break;
-    case PicamParameter_ExactReadoutCountMaximum:
-        driverParameter = PICAM_ExactReadoutCountMax;
-        break;
-    case PicamParameter_ExposureTime:
-        driverParameter = ADAcquireTime;
-        break;
-    case PicamParameter_FrameRateCalculation:
-        driverParameter = PICAM_FrameRateCalc;
-        break;
-    case PicamParameter_FrameSize:
-        driverParameter = NDArraySize;
-        break;
-    case PicamParameter_FramesPerReadout:
-        driverParameter = PICAM_FramesPerReadout;
-        break;
-    case PicamParameter_FrameStride:
-        driverParameter = PICAM_FrameStride;
-        break;
-    case PicamParameter_FrameTrackingBitDepth:
-        driverParameter = PICAM_FrameTrackingBitDepth;
-        break;
-    case PicamParameter_GateTracking:
-        driverParameter = PICAM_GateTracking;
-        break;
-    case PicamParameter_GateTrackingBitDepth:
-        driverParameter = PICAM_GateTrackingBitDepth;
-        break;
-    case PicamParameter_GatingMode:
-        break;
-    case PicamParameter_GatingSpeed:
-        break;
-    case PicamParameter_IntensifierDiameter:
-        break;
-    case PicamParameter_IntensifierGain:
-        break;
-    case PicamParameter_IntensifierOptions:
-        break;
-    case PicamParameter_IntensifierStatus:
-        break;
-    case PicamParameter_InvertOutputSignal:
-        break;
-    case PicamParameter_KineticsWindowHeight:
-    	driverParameter = PICAM_KineticsWindowHeight;
-        break;
-    case PicamParameter_MaskedBottomMargin:
-    	driverParameter = PICAM_MaskedBottomMargin;
-        break;
-    case PicamParameter_MaskedHeight:
-    	driverParameter = PICAM_MaskedHeight;
-        break;
-    case PicamParameter_MaskedTopMargin:
-        driverParameter = PICAM_MaskedTopMargin;
-    	break;
-    case PicamParameter_ModulationDuration:
-    	break;
-    case PicamParameter_ModulationFrequency:
-        break;
-    case PicamParameter_ModulationTracking:
-        driverParameter = PICAM_ModulationTracking;
-        break;
-    case PicamParameter_ModulationTrackingBitDepth:
-        driverParameter = PICAM_ModulationTrackingBitDepth;
-        break;
-    case PicamParameter_NondestructiveReadoutPeriod:
-    	driverParameter = PICAM_NondestructiveReadoutPeriod;
-    	break;
-    case PicamParameter_NormalizeOrientation:
-        driverParameter = PICAM_NormalizeOrientation;
-        break;
-    case PicamParameter_OnlineReadoutRateCalculation:
-        driverParameter = PICAM_OnlineReadoutRateCalc;
-        break;
-    case PicamParameter_Orientation:
-        driverParameter = PICAM_Orientation;
-        break;
-    case PicamParameter_OutputSignal:
-        driverParameter = PICAM_OutputSignal;
-    	break;
-    case PicamParameter_PhosphorDecayDelay:
-        break;
-    case PicamParameter_PhosphorDecayDelayResolution:
-    	driverParameter = PICAM_PhosphorDecayDelayResolution;
-        break;
-    case PicamParameter_PhosphorType:
-    	driverParameter = PICAM_PhosphorType;
-        break;
-    case PicamParameter_PhotocathodeSensitivity:
-        break;
-    case PicamParameter_PhotonDetectionMode:
-        driverParameter = PICAM_PhotonDetectionMode;
-        break;
-    case PicamParameter_PhotonDetectionThreshold:
-        driverParameter = PICAM_PhotonDetectionThreshold;
-        break;
-    case PicamParameter_PixelBitDepth:
-        driverParameter = PICAM_PixelBitDepth;
-        break;
-    case PicamParameter_PixelFormat:
-        driverParameter = PICAM_PixelFormat;
-        break;
-    case PicamParameter_PixelGapHeight:
-    	driverParameter = PICAM_PixelGapHeight;
-        break;
-    case PicamParameter_PixelGapWidth:
-    	driverParameter = PICAM_PixelGapWidth;
-        break;
-    case PicamParameter_PixelHeight:
-    	driverParameter = PICAM_PixelHeight;
-        break;
-    case PicamParameter_PixelWidth:
-        driverParameter = PICAM_PixelWidth;
-    	break;
-    case PicamParameter_ReadoutControlMode:
-        driverParameter = PICAM_ReadoutControlMode;
-        break;
-    case PicamParameter_ReadoutCount:
-        driverParameter = PICAM_ReadoutCount;
-        break;
-    case PicamParameter_ReadoutOrientation:
-    	driverParameter = PICAM_ReadoutOrientation;
-        break;
-    case PicamParameter_ReadoutPortCount:
-        driverParameter = PICAM_ReadoutPortCount;
-    	break;
-    case PicamParameter_ReadoutRateCalculation:
-        driverParameter = PICAM_ReadoutRateCalc;
-        break;
-    case PicamParameter_ReadoutStride:
-        driverParameter = PICAM_ReadoutStride;
-        break;
-    case PicamParameter_ReadoutTimeCalculation:
-        driverParameter = PICAM_ReadoutTimeCalc;
-        break;
-    case PicamParameter_RepetitiveGate:
-        break;
-    case PicamParameter_RepetitiveModulationPhase:
-        break;
-    case PicamParameter_Rois:
-        break;
-    case PicamParameter_SecondaryActiveHeight:
-        driverParameter = PICAM_SecondaryActiveHeight;
-    	break;
-    case PicamParameter_SecondaryMaskedHeight:
-    	driverParameter = PICAM_SecondaryMaskedHeight;
-        break;
-    case PicamParameter_SensorActiveBottomMargin:
-        driverParameter = PICAM_SensorActiveBottomMargin;
-    	break;
-    case PicamParameter_SensorActiveHeight:
-        driverParameter = ADMaxSizeY;
-        break;
-    case PicamParameter_SensorActiveLeftMargin:
-    	driverParameter = PICAM_SensorActiveLeftMargin;
-        break;
-    case PicamParameter_SensorActiveRightMargin:
-    	driverParameter = PICAM_SensorActiveRightMargin;
-        break;
-    case PicamParameter_SensorActiveTopMargin:
-    	driverParameter = PICAM_SensorActiveTopMargin;
-        break;
-    case PicamParameter_SensorActiveWidth:
-        driverParameter = ADMaxSizeX;
-        break;
-    case PicamParameter_SensorMaskedBottomMargin:
-    	driverParameter = PICAM_SensorMaskedBottomMargin;
-        break;
-    case PicamParameter_SensorMaskedHeight:
-    	driverParameter = PICAM_SensorMaskedHeight;
-        break;
-    case PicamParameter_SensorMaskedTopMargin:
-    	driverParameter = PICAM_SensorMaskedTopMargin;
-        break;
-    case PicamParameter_SensorSecondaryActiveHeight:
-        driverParameter = PICAM_SensorSecondaryActiveHeight;
-    	break;
-    case PicamParameter_SensorSecondaryMaskedHeight:
-        driverParameter = PICAM_SensorSecondaryMaskedHeight;
-        break;
-    case PicamParameter_SensorTemperatureReading:
-        driverParameter = ADTemperatureActual;
-        break;
-    case PicamParameter_SensorTemperatureSetPoint:
-        driverParameter = ADTemperature;
-        break;
-    case PicamParameter_SensorTemperatureStatus:
-        driverParameter = PICAM_SensorTemperatureStatus;
-    	break;
-    case PicamParameter_SensorType:
-    	driverParameter = PICAM_SensorType;
-        break;
-    case PicamParameter_SequentialEndingGate:
-        break;
-    case PicamParameter_SequentialEndingModulationPhase:
-        break;
-    case PicamParameter_SequentialGateStepCount:
-        break;
-    case PicamParameter_SequentialGateStepIterations:
-        break;
-    case PicamParameter_SequentialStartingGate:
-        break;
-    case PicamParameter_SequentialStartingModulationPhase:
-        break;
-    case PicamParameter_ShutterClosingDelay:
-        driverParameter = ADShutterCloseDelay;
-        break;
-    case PicamParameter_ShutterDelayResolution:
-    	driverParameter = PICAM_ShutterDelayResolution;
-        break;
-    case PicamParameter_ShutterOpeningDelay:
-        driverParameter = ADShutterOpenDelay;
-        break;
-    case PicamParameter_ShutterTimingMode:
-    	driverParameter = PICAM_ShutterTimingMode;
-        break;
-    case PicamParameter_SyncMaster2Delay:
-        break;
-    case PicamParameter_TimeStampBitDepth:
-        driverParameter = PICAM_TimeStampBitDepth;
-        break;
-    case PicamParameter_TimeStampResolution:
-        driverParameter = PICAM_TimeStampResolution;
-        break;
-    case PicamParameter_TimeStamps:
-        driverParameter = PICAM_TimeStamps;
-        break;
-    case PicamParameter_TrackFrames:
-        driverParameter = PICAM_TrackFrames;
-        break;
-    case PicamParameter_TriggerCoupling:
-    	driverParameter = PICAM_TriggerCoupling;
-        break;
-    case PicamParameter_TriggerDetermination:
-    	driverParameter = PICAM_TriggerDetermination;
-        break;
-    case PicamParameter_TriggerFrequency:
-    	driverParameter = PICAM_TriggerFrequency;
-        break;
-    case PicamParameter_TriggerResponse:
-        driverParameter = ADTriggerMode;
-        break;
-    case PicamParameter_TriggerSource:
-    	driverParameter = PICAM_TriggerSource;
-        break;
-    case PicamParameter_TriggerTermination:
-        driverParameter = PICAM_TriggerTermination;
-    	break;
-    case PicamParameter_TriggerThreshold:
-    	driverParameter = PICAM_TriggerThreshold;
-        break;
-    case PicamParameter_VerticalShiftRate:
-    	driverParameter = PICAM_VerticalShiftRate;
-        break;
-    default:
+    try {
+        driverParameter = parameterValueMap.at(parameter);
+    }
+    catch (std::out_of_range e) {
         Picam_GetEnumerationString(PicamEnumeratedType_Parameter, parameter,
                 &paramString);
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
                 "---- Can't find parameter %s\n", paramString);
         Picam_DestroyString(paramString);
-        break;
-    }
 
+    }
     return driverParameter;
 
 }
@@ -2751,297 +2346,10 @@ PicamError ADPICam::piLookupPICamParameter(int driverParameter,
         PicamParameter &parameter){
     const char *functionName = "piLookupPICamParameter";
 
-    if (driverParameter ==ADNumExposures) {
-        parameter = PicamParameter_Accumulations;
+    try {
+        parameter = picamParameterMap.at(driverParameter);
     }
-    else if (driverParameter == PICAM_ActiveBottomMargin){
-        parameter = PicamParameter_ActiveBottomMargin;
-    }
-    else if (driverParameter == PICAM_ActiveHeight){
-        parameter = PicamParameter_ActiveHeight;
-    }
-    else if (driverParameter == PICAM_ActiveLeftMargin){
-        parameter = PicamParameter_ActiveLeftMargin;
-    }
-    else if (driverParameter == PICAM_ActiveRightMargin){
-        parameter = PicamParameter_ActiveRightMargin;
-    }
-    else if (driverParameter == PICAM_ActiveTopMargin){
-        parameter = PicamParameter_ActiveTopMargin;
-    }
-    else if (driverParameter == PICAM_ActiveWidth){
-        parameter = PicamParameter_ActiveWidth;
-    }
-    else if (driverParameter == PICAM_AdcAnalogGain){
-        parameter = PicamParameter_AdcAnalogGain;
-    }
-    else if (driverParameter == PICAM_AdcBitDepth) {
-        parameter = PicamParameter_AdcBitDepth;
-    }
-    else if (driverParameter == PICAM_AdcQuality) {
-        parameter = PicamParameter_AdcQuality;
-    }
-    else if (driverParameter == PICAM_AdcSpeed) {
-        parameter = PicamParameter_AdcSpeed;
-    }
-    else if (driverParameter == PICAM_AuxOutput) {
-        parameter = PicamParameter_AuxOutput;
-    }
-    else if (driverParameter == PICAM_CleanBeforeExposure) {
-        parameter = PicamParameter_CleanBeforeExposure;
-    }
-    else if (driverParameter == PICAM_CleanCycleCount) {
-        parameter = PicamParameter_CleanCycleCount;
-    }
-    else if (driverParameter == PICAM_CleanCycleHeight) {
-        parameter = PicamParameter_CleanCycleHeight;
-    }
-    else if (driverParameter == PICAM_CleanSectionFinalHeight) {
-        parameter = PicamParameter_CleanSectionFinalHeight;
-    }
-    else if (driverParameter == PICAM_CleanSectionFinalHeightCount) {
-        parameter = PicamParameter_CleanSectionFinalHeightCount;
-    }
-    else if (driverParameter == PICAM_CleanSerialRegister) {
-        parameter = PicamParameter_CleanSerialRegister;
-    }
-    else if (driverParameter == PICAM_CleanUntilTrigger) {
-        parameter = PicamParameter_CleanUntilTrigger;
-    }
-    else if (driverParameter == PICAM_CcdCharacteristics){
-        parameter = PicamParameter_CcdCharacteristics;
-    }
-    else if (driverParameter == PICAM_DisableCoolingFan) {
-        parameter = PicamParameter_DisableCoolingFan;
-    }
-    else if (driverParameter == PICAM_DisableDataFormatting) {
-        parameter = PicamParameter_DisableDataFormatting;
-    }
-    else if (driverParameter == PICAM_EnableModulationOutputSignal) {
-        parameter = PicamParameter_EnableModulationOutputSignal;
-    }
-    else if (driverParameter == PICAM_EnableNondestructiveReadout) {
-        parameter = PicamParameter_EnableNondestructiveReadout;
-    }
-    else if (driverParameter == PICAM_EnableSensorWindowHeater) {
-        parameter = PicamParameter_EnableSensorWindowHeater;
-    }
-    else if (driverParameter == PICAM_EnableSyncMaster) {
-        parameter = PicamParameter_EnableSyncMaster;
-    }
-    else if (driverParameter == PICAM_ExactReadoutCountMax) {
-        parameter = PicamParameter_ExactReadoutCountMaximum;
-    }
-    else if (driverParameter == ADAcquireTime) {
-        parameter = PicamParameter_ExposureTime;
-    }
-    else if (driverParameter == PICAM_FrameRateCalc) {
-        parameter = PicamParameter_FrameRateCalculation;
-    }
-    else if (driverParameter == NDArraySize) {
-        parameter = PicamParameter_FrameSize;
-    }
-    else if (driverParameter == PICAM_FramesPerReadout) {
-        parameter = PicamParameter_FramesPerReadout;
-    }
-    else if (driverParameter == PICAM_FrameStride) {
-        parameter = PicamParameter_FrameStride;
-    }
-    else if (driverParameter == PICAM_FrameTrackingBitDepth) {
-        parameter = PicamParameter_FrameTrackingBitDepth;
-    }
-    else if (driverParameter == PICAM_GateTracking) {
-        parameter = PicamParameter_GateTracking;
-    }
-    else if (driverParameter == PICAM_GateTrackingBitDepth) {
-        parameter = PicamParameter_GateTrackingBitDepth;
-    }
-    else if (driverParameter == PICAM_InvertOutputSignal) {
-        parameter = PicamParameter_InvertOutputSignal;
-    }
-    else if (driverParameter == PICAM_KineticsWindowHeight) {
-        parameter = PicamParameter_KineticsWindowHeight;
-    }
-    else if (driverParameter == PICAM_MaskedBottomMargin){
-        parameter = PicamParameter_MaskedBottomMargin;
-    }
-    else if (driverParameter == PICAM_MaskedHeight){
-        parameter = PicamParameter_MaskedHeight;
-    }
-    else if (driverParameter == PICAM_MaskedTopMargin){
-        parameter = PicamParameter_MaskedTopMargin;
-    }
-    else if (driverParameter == PICAM_ModulationTracking) {
-        parameter = PicamParameter_ModulationTracking;
-    }
-    else if (driverParameter == PICAM_ModulationTrackingBitDepth) {
-        parameter = PicamParameter_ModulationTrackingBitDepth;
-    }
-    else if (driverParameter == PICAM_ModulationOutputSignalAmplitude) {
-        parameter = PicamParameter_ModulationOutputSignalAmplitude;
-    }
-    else if (driverParameter == PICAM_ModulationOutputSignalFrequency) {
-        parameter = PicamParameter_ModulationOutputSignalFrequency;
-    }
-    else if (driverParameter == PICAM_NormalizeOrientation) {
-        parameter = PicamParameter_NormalizeOrientation;
-    }
-    else if (driverParameter == PICAM_NondestructiveReadoutPeriod) {
-        parameter = PicamParameter_NondestructiveReadoutPeriod;
-    }
-    else if (driverParameter == PICAM_OnlineReadoutRateCalc) {
-        parameter = PicamParameter_OnlineReadoutRateCalculation;
-    }
-    else if (driverParameter == PICAM_Orientation) {
-        parameter = PicamParameter_Orientation;
-    }
-    else if (driverParameter == PICAM_OutputSignal) {
-        parameter = PicamParameter_OutputSignal;
-    }
-    else if (driverParameter == PICAM_PhotonDetectionMode) {
-        parameter = PicamParameter_PhotonDetectionMode;
-    }
-    else if (driverParameter == PICAM_PhotonDetectionThreshold) {
-        parameter = PicamParameter_PhotonDetectionThreshold;
-    }
-    else if (driverParameter == PICAM_PixelBitDepth) {
-        parameter = PicamParameter_PixelBitDepth;
-    }
-    else if (driverParameter == PICAM_PixelFormat) {
-        parameter = PicamParameter_PixelFormat;
-    }
-    else if (driverParameter == PICAM_PixelGapHeight) {
-        parameter = PicamParameter_PixelGapHeight;
-    }
-    else if (driverParameter == PICAM_PixelGapWidth) {
-        parameter = PicamParameter_PixelGapWidth;
-    }
-    else if (driverParameter == PICAM_PixelHeight) {
-        parameter = PicamParameter_PixelHeight;
-    }
-    else if (driverParameter == PICAM_PixelWidth) {
-        parameter = PicamParameter_PixelWidth;
-    }
-    else if (driverParameter == PICAM_ReadoutCount) {
-        parameter = PicamParameter_ReadoutCount;
-    }
-    else if (driverParameter == PICAM_ReadoutOrientation) {
-        parameter = PicamParameter_ReadoutOrientation;
-    }
-    else if (driverParameter == PICAM_ReadoutRateCalc) {
-        parameter = PicamParameter_ReadoutRateCalculation;
-    }
-    else if (driverParameter == PICAM_ReadoutStride) {
-        parameter = PicamParameter_ReadoutStride;
-    }
-    else if (driverParameter == PICAM_SecondaryActiveHeight){
-        parameter = PicamParameter_SecondaryActiveHeight;
-    }
-    else if (driverParameter == PICAM_SecondaryMaskedHeight){
-        parameter = PicamParameter_SecondaryMaskedHeight;
-    }
-    else if (driverParameter == PICAM_SensorActiveBottomMargin){
-        parameter = PicamParameter_SensorActiveBottomMargin;
-    }
-    else if (driverParameter == PICAM_SensorActiveHeight){
-        parameter = PicamParameter_SensorActiveHeight;
-    }
-    else if (driverParameter == PICAM_SensorActiveLeftMargin){
-        parameter = PicamParameter_SensorActiveLeftMargin;
-    }
-    else if (driverParameter == PICAM_SensorActiveRightMargin){
-        parameter = PicamParameter_SensorActiveRightMargin;
-    }
-    else if (driverParameter == PICAM_SensorActiveTopMargin){
-        parameter = PicamParameter_SensorActiveTopMargin;
-    }
-    else if (driverParameter == PICAM_SensorActiveWidth){
-        parameter = PicamParameter_SensorActiveWidth;
-    }
-    else if (driverParameter == PICAM_SensorMaskedBottomMargin){
-        parameter = PicamParameter_SensorMaskedBottomMargin;
-    }
-    else if (driverParameter == PICAM_SensorMaskedHeight){
-        parameter = PicamParameter_SensorMaskedHeight;
-    }
-    else if (driverParameter == PICAM_SensorMaskedTopMargin){
-        parameter = PicamParameter_SensorMaskedTopMargin;
-    }
-    else if (driverParameter == PICAM_SensorSecondaryActiveHeight){
-        parameter = PicamParameter_SensorSecondaryActiveHeight;
-    }
-    else if (driverParameter == PICAM_SensorSecondaryMaskedHeight){
-        parameter = PicamParameter_SensorSecondaryMaskedHeight;
-    }
-    else if (driverParameter == ADShutterCloseDelay){
-        parameter = PicamParameter_ShutterClosingDelay;
-    }
-    else if (driverParameter == PICAM_ShutterDelayResolution){
-        parameter = PicamParameter_ShutterDelayResolution;
-    }
-    else if (driverParameter == ADShutterOpenDelay){
-        parameter = PicamParameter_ShutterOpeningDelay;
-    }
-    else if (driverParameter == PICAM_ShutterTimingMode){
-        parameter = PicamParameter_ShutterTimingMode;
-    }
-
-    else if (driverParameter == ADTemperatureActual){
-        parameter = PicamParameter_SensorTemperatureReading;
-    }
-    else if (driverParameter == ADTemperature){
-        parameter = PicamParameter_SensorTemperatureSetPoint;
-    }
-    else if (driverParameter == PICAM_SensorTemperatureStatus){
-        parameter = PicamParameter_SensorTemperatureStatus;
-    }
-    else if (driverParameter == PICAM_SensorType){
-        parameter = PicamParameter_SensorType;
-    }
-    else if (driverParameter == PICAM_TimeStampBitDepth) {
-        parameter = PicamParameter_TimeStampBitDepth;
-    }
-    else if (driverParameter == PICAM_TimeStampResolution) {
-        parameter = PicamParameter_TimeStampResolution;
-    }
-    else if (driverParameter == PICAM_TimeStamps) {
-        parameter = PicamParameter_TimeStamps;
-    }
-    else if (driverParameter == PICAM_TrackFrames) {
-        parameter = PicamParameter_TrackFrames;
-    }
-    else if (driverParameter ==PICAM_ReadoutControlMode) {
-        parameter = PicamParameter_ReadoutControlMode;
-    }
-    else if (driverParameter == PICAM_ShutterTimingMode) {
-        parameter = PicamParameter_ShutterTimingMode;
-    }
-    else if (driverParameter == PICAM_SyncMaster2Delay) {
-        parameter = PicamParameter_SyncMaster2Delay;
-    }
-    else if (driverParameter == PICAM_TriggerCoupling) {
-        parameter = PicamParameter_TriggerCoupling;
-    }
-    else if (driverParameter == PICAM_TriggerDetermination) {
-        parameter = PicamParameter_TriggerDetermination;
-    }
-    else if (driverParameter ==PICAM_TriggerFrequency) {
-        parameter = PicamParameter_TriggerFrequency;
-    }
-    else if (driverParameter ==ADTriggerMode) {
-        parameter = PicamParameter_TriggerResponse;
-    }
-    else if (driverParameter ==PICAM_TriggerSource) {
-        parameter = PicamParameter_TriggerSource;
-    }
-    else if (driverParameter ==PICAM_TriggerTermination) {
-        parameter = PicamParameter_TriggerTermination;
-    }
-    else if (driverParameter ==PICAM_TriggerThreshold) {
-        parameter = PicamParameter_TriggerThreshold;
-    }
-
-    else {
+    catch (std::out_of_range e) {
         return PicamError_ParameterDoesNotExist;
     }
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
@@ -3070,8 +2378,14 @@ asynStatus ADPICam::piHandleAcquisitionUpdated(
     acqStatusRunning = acqStatus->running;
     acqStatusErrors = acqStatus->errors;
     acqStatusReadoutRate = acqStatus->readout_rate;
-    if ( (acqStatusErrors == PicamAcquisitionErrorsMask_None) &&
-    		acqStatusRunning){
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+            "%s:%s available %d\n",
+            driverName,
+            __func__,
+            available);
+//    if ( (acqStatusErrors == PicamAcquisitionErrorsMask_None) &&
+//    		acqStatusRunning){
+    if (available && available->readout_count){
         acqAvailableInitialReadout = available->initial_readout;
         acqAvailableReadoutCount = available->readout_count;
         epicsEventSignal(piHandleNewImageEvent);
@@ -3081,6 +2395,7 @@ asynStatus ADPICam::piHandleAcquisitionUpdated(
         acqAvailableReadoutCount = 0;
     }
     dataLock.unlock();
+    epicsThreadSleep(0.000002);  // Twice the wait in piHandleNewImages
 
     return asynSuccess;
 }
@@ -3237,11 +2552,37 @@ asynStatus ADPICam::piHandleParameterFloatingPointValueChanged(
         		"value %f\n",
                 driverName, functionName, parameterString, driverParameter,
                 value);
+        PicamConstraintType paramCT;
+        error = Picam_GetParameterConstraintType(currentCameraHandle, parameter,
+                &paramCT);
+        if (error != PicamError_None) {
+            Picam_GetEnumerationString(PicamEnumeratedType_Error, error,
+                    &errorString);
+            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                    "%s:%s Trouble determining constraint type for parameter %s"
+                    "  %s",
+                    driverName,
+                    __func__,
+                    parameterString,
+                    errorString);
+            Picam_DestroyString(errorString);
+        }
         Picam_DestroyString(parameterString);
-        status |= setDoubleParam(driverParameter, value);
+        switch (paramCT) {
+        case PicamConstraintType_Collection:
+            char floatString[12];
+            sprintf(floatString, "%f",
+                    value);
+            setStringParam(driverParameter, floatString);
+            break;
+        default:
+
+            status |= setDoubleParam(driverParameter, value);
+            break;
+        }
+        } else {
         // Notify that handling a parameter is about to fall on the floor
         // unhandled
-    } else {
         Picam_GetEnumerationString(PicamEnumeratedType_Parameter, parameter,
                 &parameterString);
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
@@ -3858,401 +3199,18 @@ asynStatus ADPICam::piSetParameterExists(asynUser *pasynUser,
     static const char *functionName = "piSetParameterExists";
     const pichar* string;
 
-    switch (parameter) {
-    case PicamParameter_Accumulations:
-        driverParameter = PICAM_AccumulationsExists;
-        break;
-    case PicamParameter_ActiveBottomMargin:
-        driverParameter = PICAM_ActiveBottomMarginExists;
-        break;
-    case PicamParameter_ActiveHeight:
-        driverParameter = PICAM_ActiveHeightExists;
-        break;
-    case PicamParameter_ActiveLeftMargin:
-        driverParameter = PICAM_ActiveLeftMarginExists;
-        break;
-    case PicamParameter_ActiveRightMargin:
-        driverParameter = PICAM_ActiveRightMarginExists;
-        break;
-    case PicamParameter_ActiveTopMargin:
-        driverParameter = PICAM_ActiveTopMarginExists;
-        break;
-    case PicamParameter_ActiveWidth:
-        driverParameter = PICAM_ActiveWidthExists;
-        break;
-    case PicamParameter_AdcAnalogGain:
-        driverParameter = PICAM_AdcAnalogGainExists;
-        break;
-    case PicamParameter_AdcBitDepth:
-        driverParameter = PICAM_AdcBitDepthExists;
-        break;
-    case PicamParameter_AdcEMGain:
-        driverParameter = PICAM_AdcEMGainExists;
-        break;
-    case PicamParameter_AdcQuality:
-        driverParameter = PICAM_AdcQualityExists;
-        break;
-    case PicamParameter_AdcSpeed:
-        driverParameter = PICAM_AdcSpeedExists;
-        break;
-    case PicamParameter_AuxOutput:
-        driverParameter = PICAM_AuxOutputExists;
-        break;
-    case PicamParameter_BracketGating:
-        driverParameter = PICAM_BracketGatingExists;
-        break;
-    case PicamParameter_CcdCharacteristics:
-        driverParameter = PICAM_CcdCharacteristicsExists;
-        break;
-    case PicamParameter_CleanBeforeExposure:
-        driverParameter = PICAM_CleanBeforeExposure;
-        break;
-    case PicamParameter_CleanCycleCount:
-        driverParameter = PICAM_CleanCycleCountExists;
-        break;
-    case PicamParameter_CleanCycleHeight:
-        driverParameter = PICAM_CleanCycleHeightExists;
-        break;
-    case PicamParameter_CleanSectionFinalHeight:
-        driverParameter = PICAM_CleanSectionFinalHeightExists;
-        break;
-    case PicamParameter_CleanSectionFinalHeightCount:
-        driverParameter = PICAM_CleanSectionFinalHeightCountExists;
-        break;
-    case PicamParameter_CleanSerialRegister:
-        driverParameter = PICAM_CleanSerialRegisterExists;
-        break;
-    case PicamParameter_CleanUntilTrigger:
-        driverParameter = PICAM_CleanUntilTriggerExists;
-        break;
-    case PicamParameter_CorrectPixelBias:
-        driverParameter = PICAM_CorrectPixelBiasExists;
-        break;
-    case PicamParameter_CustomModulationSequence:
-        driverParameter = PICAM_CustomModulationSequenceExists;
-        break;
-    case PicamParameter_DifEndingGate:
-        driverParameter = PICAM_DifEndingGateExists;
-        break;
-    case PicamParameter_DifStartingGate:
-        driverParameter = PICAM_DifStartingGateExists;
-        break;
-    case PicamParameter_DisableCoolingFan:
-        driverParameter = PICAM_DisableCoolingFanExists;
-        break;
-    case PicamParameter_DisableDataFormatting:
-        driverParameter = PICAM_DisableDataFormattingExists;
-        break;
-    case PicamParameter_EMIccdGain:
-        driverParameter = PICAM_EMIccdGainExists;
-        break;
-    case PicamParameter_EMIccdGainControlMode:
-        driverParameter = PICAM_EMIccdGainControlModeExists;
-        break;
-    case PicamParameter_EnableIntensifier:
-        driverParameter = PICAM_EnableIntensifierExists;
-        break;
-    case PicamParameter_EnableModulation:
-        driverParameter = PICAM_EnableModulationExists;
-        break;
-    case PicamParameter_EnableModulationOutputSignal:
-        driverParameter = PICAM_EnableModulationOutputSignalExists;
-        break;
-    case PicamParameter_EnableNondestructiveReadout:
-        driverParameter = PICAM_EnableNondestructiveReadoutExists;
-        break;
-    case PicamParameter_EnableSensorWindowHeater:
-        driverParameter = PICAM_EnableSensorWindowHeaterExists;
-        break;
-    case PicamParameter_EnableSyncMaster:
-        driverParameter = PICAM_EnableSyncMasterExists;
-        break;
-    case PicamParameter_ExactReadoutCountMaximum:
-        driverParameter = PICAM_ExactReadoutCountMaximumExists;
-        break;
-    case PicamParameter_ExposureTime:
-        driverParameter = PICAM_ExposureTimeExists;
-        break;
-    case PicamParameter_FrameRateCalculation:
-        driverParameter = PICAM_FrameRateCalculationExists;
-        break;
-    case PicamParameter_FrameSize:
-        driverParameter = PICAM_FrameSizeExists;
-        break;
-    case PicamParameter_FramesPerReadout:
-        driverParameter = PICAM_FramesPerReadoutExists;
-        break;
-    case PicamParameter_FrameStride:
-        driverParameter = PICAM_FrameStrideExists;
-        break;
-    case PicamParameter_FrameTrackingBitDepth:
-        driverParameter = PICAM_FrameTrackingBitDepthExists;
-        break;
-    case PicamParameter_GateTracking:
-        driverParameter = PICAM_GateTrackingExists;
-        break;
-    case PicamParameter_GateTrackingBitDepth:
-        driverParameter = PICAM_GateTrackingBitDepthExists;
-        break;
-    case PicamParameter_GatingMode:
-        driverParameter = PICAM_GatingModeExists;
-        break;
-    case PicamParameter_GatingSpeed:
-        driverParameter = PICAM_GatingSpeedExists;
-        break;
-    case PicamParameter_IntensifierDiameter:
-        driverParameter = PICAM_IntensifierDiameterExists;
-        break;
-    case PicamParameter_IntensifierGain:
-        driverParameter = PICAM_IntensifierGainExists;
-        break;
-    case PicamParameter_IntensifierOptions:
-        driverParameter = PICAM_IntensifierOptionsExists;
-        break;
-    case PicamParameter_IntensifierStatus:
-        driverParameter = PICAM_IntensifierStatusExists;
-        break;
-    case PicamParameter_InvertOutputSignal:
-        driverParameter = PICAM_InvertOutputSignalExists;
-        break;
-    case PicamParameter_KineticsWindowHeight:
-        driverParameter = PICAM_KineticsWindowHeightExists;
-        break;
-    case PicamParameter_MaskedBottomMargin:
-        driverParameter = PICAM_MaskedBottomMarginExists;
-        break;
-    case PicamParameter_MaskedHeight:
-        driverParameter = PICAM_MaskedHeightExists;
-        break;
-    case PicamParameter_MaskedTopMargin:
-        driverParameter = PICAM_MaskedTopMarginExists;
-        break;
-    case PicamParameter_ModulationDuration:
-        driverParameter = PICAM_ModulationDurationExists;
-        break;
-    case PicamParameter_ModulationFrequency:
-        driverParameter = PICAM_ModulationFrequencyExists;
-        break;
-    case PicamParameter_ModulationOutputSignalAmplitude:
-        driverParameter = PICAM_EnableModulationOutputSignalAmplitudeExists;
-        break;
-    case PicamParameter_ModulationOutputSignalFrequency:
-        driverParameter = PICAM_EnableModulationOutputSignalFrequencyExists;
-        break;
-    case PicamParameter_ModulationTracking:
-        driverParameter = PICAM_ModulationTrackingExists;
-        break;
-    case PicamParameter_ModulationTrackingBitDepth:
-        driverParameter = PICAM_ModulationTrackingBitDepthExists;
-        break;
-    case PicamParameter_NondestructiveReadoutPeriod:
-        driverParameter = PICAM_NondestructiveReadoutPeriodExists;
-        break;
-    case PicamParameter_NormalizeOrientation:
-        driverParameter = PICAM_NormalizeOrientationExists;
-        break;
-    case PicamParameter_OnlineReadoutRateCalculation:
-        driverParameter = PICAM_OnlineReadoutRateCalculationExists;
-        break;
-    case PicamParameter_Orientation:
-        driverParameter = PICAM_OrientationExists;
-        break;
-    case PicamParameter_OutputSignal:
-        driverParameter = PICAM_OutputSignalExists;
-        break;
-    case PicamParameter_PhosphorDecayDelay:
-        driverParameter = PICAM_PhosphorDecayDelayExists;
-        break;
-    case PicamParameter_PhosphorDecayDelayResolution:
-        driverParameter = PICAM_PhosphorDecayDelayResolutionExists;
-        break;
-    case PicamParameter_PhosphorType:
-        driverParameter = PICAM_PhosphorTypeExists;
-        break;
-    case PicamParameter_PhotocathodeSensitivity:
-        driverParameter = PICAM_PhotocathodeSensitivityExists;
-        break;
-    case PicamParameter_PhotonDetectionMode:
-        driverParameter = PICAM_PhotonDetectionModeExists;
-        break;
-    case PicamParameter_PhotonDetectionThreshold:
-        driverParameter = PICAM_PhotonDetectionThresholdExists;
-        break;
-    case PicamParameter_PixelBitDepth:
-        driverParameter = PICAM_PixelBitDepthExists;
-        break;
-    case PicamParameter_PixelFormat:
-        driverParameter = PICAM_PixelFormatExists;
-        break;
-    case PicamParameter_PixelGapHeight:
-        driverParameter = PICAM_PixelGapHeightExists;
-        break;
-    case PicamParameter_PixelGapWidth:
-        driverParameter = PICAM_PixelGapWidthExists;
-        break;
-    case PicamParameter_PixelHeight:
-        driverParameter = PICAM_PixelHeightExists;
-        break;
-    case PicamParameter_PixelWidth:
-        driverParameter = PICAM_PixelWidthExists;
-        break;
-    case PicamParameter_ReadoutControlMode:
-        driverParameter = PICAM_ReadoutControlModeExists;
-        break;
-    case PicamParameter_ReadoutCount:
-        driverParameter = PICAM_ReadoutCountExists;
-        break;
-    case PicamParameter_ReadoutOrientation:
-        driverParameter = PICAM_ReadoutOrientationExists;
-        break;
-    case PicamParameter_ReadoutPortCount:
-        driverParameter = PICAM_ReadoutPortCountExists;
-        break;
-    case PicamParameter_ReadoutRateCalculation:
-        driverParameter = PICAM_ReadoutRateCalculationExists;
-        break;
-    case PicamParameter_ReadoutStride:
-        driverParameter = PICAM_ReadoutStrideExists;
-        break;
-    case PicamParameter_ReadoutTimeCalculation:
-        driverParameter = PICAM_ReadoutTimeCalculationExists;
-        break;
-    case PicamParameter_RepetitiveGate:
-        driverParameter = PICAM_RepetitiveGateExists;
-        break;
-    case PicamParameter_RepetitiveModulationPhase:
-        driverParameter = PICAM_RepetitiveModulationPhaseExists;
-        break;
-    case PicamParameter_Rois:
-        driverParameter = PICAM_RoisExists;
-        break;
-    case PicamParameter_SecondaryActiveHeight:
-        driverParameter = PICAM_SecondaryActiveHeightExists;
-        break;
-    case PicamParameter_SecondaryMaskedHeight:
-        driverParameter = PICAM_SecondaryMaskedHeightExists;
-        break;
-    case PicamParameter_SensorActiveBottomMargin:
-        driverParameter = PICAM_SensorActiveBottomMarginExists;
-        break;
-    case PicamParameter_SensorActiveHeight:
-        driverParameter = PICAM_SensorActiveHeightExists;
-        break;
-    case PicamParameter_SensorActiveLeftMargin:
-        driverParameter = PICAM_SensorActiveLeftMarginExists;
-        break;
-    case PicamParameter_SensorActiveRightMargin:
-        driverParameter = PICAM_SensorActiveRightMarginExists;
-        break;
-    case PicamParameter_SensorActiveTopMargin:
-        driverParameter = PICAM_SensorActiveTopMarginExists;
-        break;
-    case PicamParameter_SensorActiveWidth:
-        driverParameter = PICAM_SensorActiveWidthExists;
-        break;
-    case PicamParameter_SensorMaskedBottomMargin:
-        driverParameter = PICAM_SensorMaskedBottomMarginExists;
-        break;
-    case PicamParameter_SensorMaskedHeight:
-        driverParameter = PICAM_SensorMaskedHeightExists;
-        break;
-    case PicamParameter_SensorMaskedTopMargin:
-        driverParameter = PICAM_SensorMaskedTopMarginExists;
-        break;
-    case PicamParameter_SensorSecondaryActiveHeight:
-        driverParameter = PICAM_SensorSecondaryActiveHeightExists;
-        break;
-    case PicamParameter_SensorSecondaryMaskedHeight:
-        driverParameter = PICAM_SensorSecondaryMaskedHeightExists;
-        break;
-    case PicamParameter_SensorTemperatureReading:
-        driverParameter = PICAM_SensorTemperatureReadingExists;
-        break;
-    case PicamParameter_SensorTemperatureSetPoint:
-        driverParameter = PICAM_SensorTemperatureSetPointExists;
-        break;
-    case PicamParameter_SensorTemperatureStatus:
-        driverParameter = PICAM_SensorTemperatureStatusExists;
-        break;
-    case PicamParameter_SensorType:
-        driverParameter = PICAM_SensorTypeExists;
-        break;
-    case PicamParameter_SequentialEndingGate:
-        driverParameter = PICAM_SequentialEndingGateExists;
-        break;
-    case PicamParameter_SequentialEndingModulationPhase:
-        driverParameter = PICAM_SequentialEndingModulationPhaseExists;
-        break;
-    case PicamParameter_SequentialGateStepCount:
-        driverParameter = PICAM_SequentialGateStepCountExists;
-        break;
-    case PicamParameter_SequentialGateStepIterations:
-        driverParameter = PICAM_SequentialGateStepIterationsExists;
-        break;
-    case PicamParameter_SequentialStartingGate:
-        driverParameter = PICAM_SequentialStartingGateExists;
-        break;
-    case PicamParameter_SequentialStartingModulationPhase:
-        driverParameter = PICAM_SequentialStartingModulationPhaseExists;
-        break;
-    case PicamParameter_ShutterClosingDelay:
-        driverParameter = PICAM_ShutterClosingDelayExists;
-        break;
-    case PicamParameter_ShutterDelayResolution:
-        driverParameter = PICAM_ShutterDelayResolutionExists;
-        break;
-    case PicamParameter_ShutterOpeningDelay:
-        driverParameter = PICAM_ShutterOpeningDelayExists;
-        break;
-    case PicamParameter_ShutterTimingMode:
-        driverParameter = PICAM_ShutterTimingModeExists;
-        break;
-    case PicamParameter_SyncMaster2Delay:
-        driverParameter = PICAM_SyncMaster2DelayExists;
-        break;
-    case PicamParameter_TimeStampBitDepth:
-        driverParameter = PICAM_TimeStampBitDepthExists;
-        break;
-    case PicamParameter_TimeStampResolution:
-        driverParameter = PICAM_TimeStampResolutionExists;
-        break;
-    case PicamParameter_TimeStamps:
-        driverParameter = PICAM_TimeStampsExists;
-        break;
-    case PicamParameter_TrackFrames:
-        driverParameter = PICAM_TrackFramesExists;
-        break;
-    case PicamParameter_TriggerCoupling:
-        driverParameter = PICAM_TriggerCouplingExists;
-        break;
-    case PicamParameter_TriggerDetermination:
-        driverParameter = PICAM_TriggerDeterminationExists;
-        break;
-    case PicamParameter_TriggerFrequency:
-        driverParameter = PICAM_TriggerFrequencyExists;
-        break;
-    case PicamParameter_TriggerResponse:
-        driverParameter = PICAM_TriggerResponseExists;
-        break;
-    case PicamParameter_TriggerSource:
-        driverParameter = PICAM_TriggerSourceExists;
-        break;
-    case PicamParameter_TriggerTermination:
-        driverParameter = PICAM_TriggerTerminationExists;
-        break;
-    case PicamParameter_TriggerThreshold:
-        driverParameter = PICAM_TriggerThresholdExists;
-        break;
-    case PicamParameter_VerticalShiftRate:
-        driverParameter = PICAM_VerticalShiftRateExists;
-        break;
-    default:
+    try {
+        driverParameter = parameterExistsMap.at(parameter);
+    }
+    catch (std::out_of_range e) {
         Picam_GetEnumerationString(PicamEnumeratedType_Parameter, parameter,
                 &string);
-        asynPrint(pasynUser, ASYN_TRACE_ERROR, "---- Can't find parameter %s\n",
+        asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s:%s ---- Can't find parameter %s\n",
+                driverName,
+                __func__,
                 string);
         Picam_DestroyString(string);
-        break;
+        return asynError;
     }
     setIntegerParam(driverParameter, exists);
     return (asynStatus) status;
@@ -4268,402 +3226,20 @@ asynStatus ADPICam::piSetParameterRelevance(asynUser *pasynUser,
     static const char *functionName = "piSetSelectedCamera";
     const pichar* string;
 
-    switch (parameter) {
-    case PicamParameter_Accumulations:
-        driverParameter = PICAM_AccumulationsRelevant;
-        break;
-    case PicamParameter_ActiveBottomMargin:
-        driverParameter = PICAM_ActiveBottomMarginRelevant;
-        break;
-    case PicamParameter_ActiveHeight:
-        driverParameter = PICAM_ActiveHeightRelevant;
-        break;
-    case PicamParameter_ActiveLeftMargin:
-        driverParameter = PICAM_ActiveLeftMarginRelevant;
-        break;
-    case PicamParameter_ActiveRightMargin:
-        driverParameter = PICAM_ActiveRightMarginRelevant;
-        break;
-    case PicamParameter_ActiveTopMargin:
-        driverParameter = PICAM_ActiveTopMarginRelevant;
-        break;
-    case PicamParameter_ActiveWidth:
-        driverParameter = PICAM_ActiveWidthRelevant;
-        break;
-    case PicamParameter_AdcAnalogGain:
-        driverParameter = PICAM_AdcAnalogGainRelevant;
-        break;
-    case PicamParameter_AdcBitDepth:
-        driverParameter = PICAM_AdcBitDepthRelevant;
-        break;
-    case PicamParameter_AdcEMGain:
-        driverParameter = PICAM_AdcEMGainRelevant;
-        break;
-    case PicamParameter_AdcQuality:
-        driverParameter = PICAM_AdcQualityRelevant;
-        break;
-    case PicamParameter_AdcSpeed:
-        driverParameter = PICAM_AdcSpeedRelevant;
-        break;
-    case PicamParameter_AuxOutput:
-        driverParameter = PICAM_AuxOutputRelevant;
-        break;
-    case PicamParameter_BracketGating:
-        driverParameter = PICAM_BracketGatingRelevant;
-        break;
-    case PicamParameter_CcdCharacteristics:
-        driverParameter = PICAM_CcdCharacteristicsRelevant;
-        break;
-    case PicamParameter_CleanBeforeExposure:
-        driverParameter = PICAM_CleanBeforeExposureRelevant;
-        break;
-    case PicamParameter_CleanCycleCount:
-        driverParameter = PICAM_CleanCycleCountRelevant;
-        break;
-    case PicamParameter_CleanCycleHeight:
-        driverParameter = PICAM_CleanCycleHeightRelevant;
-        break;
-    case PicamParameter_CleanSectionFinalHeight:
-        driverParameter = PICAM_CleanSectionFinalHeightRelevant;
-        break;
-    case PicamParameter_CleanSectionFinalHeightCount:
-        driverParameter = PICAM_CleanSectionFinalHeightCountRelevant;
-        break;
-    case PicamParameter_CleanSerialRegister:
-        driverParameter = PICAM_CleanSerialRegisterRelevant;
-        break;
-    case PicamParameter_CleanUntilTrigger:
-        driverParameter = PICAM_CleanUntilTriggerRelevant;
-        break;
-    case PicamParameter_CorrectPixelBias:
-        driverParameter = PICAM_CorrectPixelBiasRelevant;
-        break;
-    case PicamParameter_CustomModulationSequence:
-        driverParameter = PICAM_CustomModulationSequenceRelevant;
-        break;
-    case PicamParameter_DifEndingGate:
-        driverParameter = PICAM_DifEndingGateRelevant;
-        break;
-    case PicamParameter_DifStartingGate:
-        driverParameter = PICAM_DifStartingGateRelevant;
-        break;
-    case PicamParameter_DisableCoolingFan:
-        driverParameter = PICAM_DisableCoolingFanRelevant;
-        break;
-    case PicamParameter_DisableDataFormatting:
-        driverParameter = PICAM_DisableDataFormattingRelevant;
-        break;
-    case PicamParameter_EMIccdGain:
-        driverParameter = PICAM_EMIccdGainRelevant;
-        break;
-    case PicamParameter_EMIccdGainControlMode:
-        driverParameter = PICAM_EMIccdGainControlModeRelevant;
-        break;
-    case PicamParameter_EnableIntensifier:
-        driverParameter = PICAM_EnableIntensifierRelevant;
-        break;
-    case PicamParameter_EnableModulation:
-        driverParameter = PICAM_EnableModulationRelevant;
-        break;
-    case PicamParameter_EnableModulationOutputSignal:
-        driverParameter = PICAM_EnableModulationOutputSignalRelevant;
-        break;
-    case PicamParameter_EnableNondestructiveReadout:
-        driverParameter = PICAM_EnableNondestructiveReadoutRelevant;
-        break;
-    case PicamParameter_EnableSensorWindowHeater:
-        driverParameter = PICAM_EnableSensorWindowHeaterRelevant;
-        break;
-    case PicamParameter_EnableSyncMaster:
-        driverParameter = PICAM_EnableSyncMasterRelevant;
-        break;
-    case PicamParameter_ExactReadoutCountMaximum:
-        driverParameter = PICAM_ExactReadoutCountMaximumRelevant;
-        break;
-    case PicamParameter_ExposureTime:
-        driverParameter = PICAM_ExposureTimeRelevant;
-        break;
-    case PicamParameter_FrameRateCalculation:
-        driverParameter = PICAM_FrameRateCalculationRelevant;
-        break;
-    case PicamParameter_FrameSize:
-        driverParameter = PICAM_FrameSizeRelevant;
-        break;
-    case PicamParameter_FramesPerReadout:
-        driverParameter = PICAM_FramesPerReadoutRelevant;
-        break;
-    case PicamParameter_FrameStride:
-        driverParameter = PICAM_FrameStrideRelevant;
-        break;
-    case PicamParameter_FrameTrackingBitDepth:
-        driverParameter = PICAM_FrameTrackingBitDepthRelevant;
-        break;
-    case PicamParameter_GateTracking:
-        driverParameter = PICAM_GateTrackingRelevant;
-        break;
-    case PicamParameter_GateTrackingBitDepth:
-        driverParameter = PICAM_GateTrackingBitDepthRelevant;
-        break;
-    case PicamParameter_GatingMode:
-        driverParameter = PICAM_GatingModeRelevant;
-        break;
-    case PicamParameter_GatingSpeed:
-        driverParameter = PICAM_GatingSpeedRelevant;
-        break;
-    case PicamParameter_IntensifierDiameter:
-        driverParameter = PICAM_IntensifierDiameterRelevant;
-        break;
-    case PicamParameter_IntensifierGain:
-        driverParameter = PICAM_IntensifierGainRelevant;
-        break;
-    case PicamParameter_IntensifierOptions:
-        driverParameter = PICAM_IntensifierOptionsRelevant;
-        break;
-    case PicamParameter_IntensifierStatus:
-        driverParameter = PICAM_IntensifierStatusRelevant;
-        break;
-    case PicamParameter_InvertOutputSignal:
-        driverParameter = PICAM_InvertOutputSignalRelevant;
-        break;
-    case PicamParameter_KineticsWindowHeight:
-        driverParameter = PICAM_KineticsWindowHeightRelevant;
-        break;
-    case PicamParameter_MaskedBottomMargin:
-        driverParameter = PICAM_MaskedBottomMarginRelevant;
-        break;
-    case PicamParameter_MaskedHeight:
-        driverParameter = PICAM_MaskedHeightRelevant;
-        break;
-    case PicamParameter_MaskedTopMargin:
-        driverParameter = PICAM_MaskedTopMarginRelevant;
-        break;
-    case PicamParameter_ModulationDuration:
-        driverParameter = PICAM_ModulationDurationRelevant;
-        break;
-    case PicamParameter_ModulationFrequency:
-        driverParameter = PICAM_ModulationFrequencyRelevant;
-        break;
-    case PicamParameter_ModulationOutputSignalAmplitude:
-        driverParameter = PICAM_EnableModulationOutputSignalAmplitudeRelevant;
-        break;
-    case PicamParameter_ModulationOutputSignalFrequency:
-        driverParameter = PICAM_EnableModulationOutputSignalFrequencyRelevant;
-        break;
-    case PicamParameter_ModulationTracking:
-        driverParameter = PICAM_ModulationTrackingRelevant;
-        break;
-    case PicamParameter_ModulationTrackingBitDepth:
-        driverParameter = PICAM_ModulationTrackingBitDepthRelevant;
-        break;
-    case PicamParameter_NondestructiveReadoutPeriod:
-        driverParameter = PICAM_NondestructiveReadoutPeriodRelevant;
-        break;
-    case PicamParameter_NormalizeOrientation:
-        driverParameter = PICAM_NormalizeOrientationRelevant;
-        break;
-    case PicamParameter_OnlineReadoutRateCalculation:
-        driverParameter = PICAM_OnlineReadoutRateCalculationRelevant;
-        break;
-    case PicamParameter_Orientation:
-        driverParameter = PICAM_OrientationRelevant;
-        break;
-    case PicamParameter_OutputSignal:
-        driverParameter = PICAM_OutputSignalRelevant;
-        break;
-    case PicamParameter_PhosphorDecayDelay:
-        driverParameter = PICAM_PhosphorDecayDelayRelevant;
-        break;
-    case PicamParameter_PhosphorDecayDelayResolution:
-        driverParameter = PICAM_PhosphorDecayDelayResolutionRelevant;
-        break;
-    case PicamParameter_PhosphorType:
-        driverParameter = PICAM_PhosphorTypeRelevant;
-        break;
-    case PicamParameter_PhotocathodeSensitivity:
-        driverParameter = PICAM_PhotocathodeSensitivityRelevant;
-        break;
-    case PicamParameter_PhotonDetectionMode:
-        driverParameter = PICAM_PhotonDetectionModeRelevant;
-        break;
-    case PicamParameter_PhotonDetectionThreshold:
-        driverParameter = PICAM_PhotonDetectionThresholdRelevant;
-        break;
-    case PicamParameter_PixelBitDepth:
-        driverParameter = PICAM_PixelBitDepthRelevant;
-        break;
-    case PicamParameter_PixelFormat:
-        driverParameter = PICAM_PixelFormatRelevant;
-        break;
-    case PicamParameter_PixelGapHeight:
-        driverParameter = PICAM_PixelGapHeightRelevant;
-        break;
-    case PicamParameter_PixelGapWidth:
-        driverParameter = PICAM_PixelGapWidthRelevant;
-        break;
-    case PicamParameter_PixelHeight:
-        driverParameter = PICAM_PixelHeightRelevant;
-        break;
-    case PicamParameter_PixelWidth:
-        driverParameter = PICAM_PixelWidthRelevant;
-        break;
-    case PicamParameter_ReadoutControlMode:
-        driverParameter = PICAM_ReadoutControlModeRelevant;
-        break;
-    case PicamParameter_ReadoutCount:
-        driverParameter = PICAM_ReadoutCountRelevant;
-        break;
-    case PicamParameter_ReadoutOrientation:
-        driverParameter = PICAM_ReadoutOrientationRelevant;
-        break;
-    case PicamParameter_ReadoutPortCount:
-        driverParameter = PICAM_ReadoutPortCountRelevant;
-        break;
-    case PicamParameter_ReadoutRateCalculation:
-        driverParameter = PICAM_ReadoutRateCalculationRelevant;
-        break;
-    case PicamParameter_ReadoutStride:
-        driverParameter = PICAM_ReadoutStrideRelevant;
-        break;
-    case PicamParameter_ReadoutTimeCalculation:
-        driverParameter = PICAM_ReadoutTimeCalculationRelevant;
-        break;
-    case PicamParameter_RepetitiveGate:
-        driverParameter = PICAM_RepetitiveGateRelevant;
-        break;
-    case PicamParameter_RepetitiveModulationPhase:
-        driverParameter = PICAM_RepetitiveModulationPhaseRelevant;
-        break;
-    case PicamParameter_Rois:
-        driverParameter = PICAM_RoisRelevant;
-        break;
-    case PicamParameter_SecondaryActiveHeight:
-        driverParameter = PICAM_SecondaryActiveHeightRelevant;
-        break;
-    case PicamParameter_SecondaryMaskedHeight:
-        driverParameter = PICAM_SecondaryMaskedHeightRelevant;
-        break;
-    case PicamParameter_SensorActiveBottomMargin:
-        driverParameter = PICAM_SensorActiveBottomMarginRelevant;
-        break;
-    case PicamParameter_SensorActiveHeight:
-        driverParameter = PICAM_SensorActiveHeightRelevant;
-        break;
-    case PicamParameter_SensorActiveLeftMargin:
-        driverParameter = PICAM_SensorActiveLeftMarginRelevant;
-        break;
-    case PicamParameter_SensorActiveRightMargin:
-        driverParameter = PICAM_SensorActiveRightMarginRelevant;
-        break;
-    case PicamParameter_SensorActiveTopMargin:
-        driverParameter = PICAM_SensorActiveTopMarginRelevant;
-        break;
-    case PicamParameter_SensorActiveWidth:
-        driverParameter = PICAM_SensorActiveWidthRelevant;
-        break;
-    case PicamParameter_SensorMaskedBottomMargin:
-        driverParameter = PICAM_SensorMaskedBottomMarginRelevant;
-        break;
-    case PicamParameter_SensorMaskedHeight:
-        driverParameter = PICAM_SensorMaskedHeightRelevant;
-        break;
-    case PicamParameter_SensorMaskedTopMargin:
-        driverParameter = PICAM_SensorMaskedTopMarginRelevant;
-        break;
-    case PicamParameter_SensorSecondaryActiveHeight:
-        driverParameter = PICAM_SensorSecondaryActiveHeightRelevant;
-        break;
-    case PicamParameter_SensorSecondaryMaskedHeight:
-        driverParameter = PICAM_SensorSecondaryMaskedHeightRelevant;
-        break;
-    case PicamParameter_SensorTemperatureReading:
-        driverParameter = PICAM_SensorTemperatureReadingRelevant;
-        break;
-    case PicamParameter_SensorTemperatureSetPoint:
-        driverParameter = PICAM_SensorTemperatureSetPointRelevant;
-        break;
-    case PicamParameter_SensorTemperatureStatus:
-        driverParameter = PICAM_SensorTemperatureStatusRelevant;
-        break;
-    case PicamParameter_SensorType:
-        driverParameter = PICAM_SensorTypeRelevant;
-        break;
-    case PicamParameter_SequentialEndingGate:
-        driverParameter = PICAM_SequentialEndingGateRelevant;
-        break;
-    case PicamParameter_SequentialEndingModulationPhase:
-        driverParameter = PICAM_SequentialEndingModulationPhaseRelevant;
-        break;
-    case PicamParameter_SequentialGateStepCount:
-        driverParameter = PICAM_SequentialGateStepCountRelevant;
-        break;
-    case PicamParameter_SequentialGateStepIterations:
-        driverParameter = PICAM_SequentialGateStepIterationsRelevant;
-        break;
-    case PicamParameter_SequentialStartingGate:
-        driverParameter = PICAM_SequentialStartingGateRelevant;
-        break;
-    case PicamParameter_SequentialStartingModulationPhase:
-        driverParameter = PICAM_SequentialStartingModulationPhaseRelevant;
-        break;
-    case PicamParameter_ShutterClosingDelay:
-        driverParameter = PICAM_ShutterClosingDelayRelevant;
-        break;
-    case PicamParameter_ShutterDelayResolution:
-        driverParameter = PICAM_ShutterDelayResolutionRelevant;
-        break;
-    case PicamParameter_ShutterOpeningDelay:
-        driverParameter = PICAM_ShutterOpeningDelayRelevant;
-        break;
-    case PicamParameter_ShutterTimingMode:
-        driverParameter = PICAM_ShutterTimingModeRelevant;
-        break;
-    case PicamParameter_SyncMaster2Delay:
-        driverParameter = PICAM_SyncMaster2DelayRelevant;
-        break;
-    case PicamParameter_TimeStampBitDepth:
-        driverParameter = PICAM_TimeStampBitDepthRelevant;
-        break;
-    case PicamParameter_TimeStampResolution:
-        driverParameter = PICAM_TimeStampResolutionRelevant;
-        break;
-    case PicamParameter_TimeStamps:
-        driverParameter = PICAM_TimeStampsRelevant;
-        break;
-    case PicamParameter_TrackFrames:
-        driverParameter = PICAM_TrackFramesRelevant;
-        break;
-    case PicamParameter_TriggerCoupling:
-        driverParameter = PICAM_TriggerCouplingRelevant;
-        break;
-    case PicamParameter_TriggerDetermination:
-        driverParameter = PICAM_TriggerDeterminationRelevant;
-        break;
-    case PicamParameter_TriggerFrequency:
-        driverParameter = PICAM_TriggerFrequencyRelevant;
-        break;
-    case PicamParameter_TriggerResponse:
-        driverParameter = PICAM_TriggerResponseRelevant;
-        break;
-    case PicamParameter_TriggerSource:
-        driverParameter = PICAM_TriggerSourceRelevant;
-        break;
-    case PicamParameter_TriggerTermination:
-        driverParameter = PICAM_TriggerTerminationRelevant;
-        break;
-    case PicamParameter_TriggerThreshold:
-        driverParameter = PICAM_TriggerThresholdRelevant;
-        break;
-    case PicamParameter_VerticalShiftRate:
-        driverParameter = PICAM_VerticalShiftRateRelevant;
-        break;
-    default:
+    try {
+        driverParameter = parameterRelevantMap.at(parameter);
+    }
+    catch (std::out_of_range e) {
         Picam_GetEnumerationString(PicamEnumeratedType_Parameter, parameter,
                 &string);
-        asynPrint(pasynUser, ASYN_TRACE_ERROR, "---- Can't find parameter %s\n",
+        asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s:%s ---- Can't find parameter %s\n",
+                driverName,
+                __func__,
                 string);
         Picam_DestroyString(string);
-        break;
+        return asynError;
     }
+
     setIntegerParam(driverParameter, relevence);
     return (asynStatus) status;
 }
@@ -4683,7 +3259,7 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
     int driverParam = -1;
     PicamValueType paramType;
 
-    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s Enter\n", driverName,
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s Enter\n", driverName,
             functionName);
 
     Picam_GetParameters(currentCameraHandle, &parameterList, &parameterCount);
@@ -4753,7 +3329,55 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
 						Picam_DestroyString(errorString);
 						return asynError;
 					}
+                    PicamConstraintType paramCT;
+                    error = Picam_GetParameterConstraintType(
+                            currentCameraHandle,
+                            parameterList[ii],
+                            &paramCT);
+                    if (error != PicamError_None) {
+                        Picam_GetEnumerationString(PicamEnumeratedType_Error, error,
+                                &errorString);
+                        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                                "%s:%s Trouble determining constraint type "
+                                "for parameter %s.  %s",
+                                driverName,
+                                __func__,
+                                paramString,
+                                errorString);
+                        Picam_DestroyString(errorString);
+                    }
+                    switch (paramCT) {
+                    case PicamConstraintType_Collection:
+                        const PicamCollectionConstraint *constraint;
+                        error = Picam_GetParameterCollectionConstraint(
+                                currentCameraHandle,
+                                parameterList[ii],
+                                PicamConstraintCategory_Capable,
+                                &constraint);
+                        if (error != PicamError_None) {
+                            Picam_GetEnumerationString(PicamEnumeratedType_Error,
+                                    error,
+                                    &errorString);
+                            asynPrint (pasynUserSelf, ASYN_TRACE_ERROR,
+                                    "%s:%s ErrorGetting constraint for "
+                                    "parameter %s. %s\n",
+                                    driverName,
+                                    __func__,
+                                    paramString,
+                                    errorString);
+                            Picam_DestroyString(errorString);
+                        }
+                        for (int iParam = 0; iParam < constraint->values_count;
+                                iParam++) {
+                            if ((int)constraint->values_array[ii] == intVal) {
+                                setIntegerParam(driverParam, ii);
+                            }
+                        }
+
+                        break;
+                    default:
 					setIntegerParam(driverParam, intVal);
+                    }
 					break;
 				case PicamValueType_Enumeration:
 					if (constraintType != PicamConstraintType_None) {
@@ -4877,7 +3501,56 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
 							Picam_DestroyString(errorString);
 							return asynError;
 						}
-						setDoubleParam(driverParam, fltVal);
+				        PicamConstraintType paramCT;
+				        error = Picam_GetParameterConstraintType(
+				                currentCameraHandle,
+				                parameterList[ii],
+				                &paramCT);
+				        if (error != PicamError_None) {
+				            Picam_GetEnumerationString(PicamEnumeratedType_Error, error,
+				                    &errorString);
+				            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+				                    "%s:%s Trouble determining constraint type "
+				                    "for parameter %s.  %s",
+				                    driverName,
+				                    __func__,
+				                    paramString,
+				                    errorString);
+				            Picam_DestroyString(errorString);
+				        }
+				        switch (paramCT) {
+				        case PicamConstraintType_Collection:
+				            const PicamCollectionConstraint *constraint;
+				            error = Picam_GetParameterCollectionConstraint(
+				                    currentCameraHandle,
+				                    parameterList[ii],
+				                    PicamConstraintCategory_Capable,
+				                    &constraint);
+                            if (error != PicamError_None) {
+                                Picam_GetEnumerationString(PicamEnumeratedType_Error,
+                                        error,
+                                        &errorString);
+                                asynPrint (pasynUserSelf, ASYN_TRACE_ERROR,
+                                        "%s:%s ErrorGetting constraint for "
+                                        "parameter %s. %s\n",
+                                        driverName,
+                                        __func__,
+                                        paramString,
+                                        errorString);
+                                Picam_DestroyString(errorString);
+                            }
+                            for (int iParam = 0; iParam < constraint->values_count;
+                                    iParam++) {
+                                if (constraint->values_array[ii] == fltVal) {
+                                    setIntegerParam(driverParam, ii);
+                                }
+                            }
+                            break;
+				        default:
+
+				            status |= setDoubleParam(driverParam, fltVal);
+				            break;
+				        }
 					}
 					break;
 				}
@@ -4947,7 +3620,7 @@ asynStatus ADPICam::piSetParameterValuesFromSelectedCamera() {
     Picam_DestroyParameters(parameterList);
     callParamCallbacks();
 
-    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s Exit\n", driverName,
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s Exit\n", driverName,
             functionName);
 
     return (asynStatus) status;
@@ -5454,7 +4127,9 @@ asynStatus ADPICam::piUnregisterValueChangeWatch(PicamHandle cameraHandle) {
 			error = Picam_GetParameterValueType(cameraHandle, parameterList[ii],
 					&valueType);
 			if (error != PicamError_None) {
-				asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s \n", driverName,
+				asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+				        "%s:%s \n",
+				        driverName,
 						functionName);
 				return asynError;
 			}
@@ -5528,7 +4203,9 @@ asynStatus ADPICam::piUpdateParameterExists() {
     const PicamParameter *parameterList;
     const pichar* string;
     Picam_GetParameters(currentCameraHandle, &parameterList, &parameterCount);
-    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%d parameters found\n",
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s %d parameters found\n",
+            driverName,
+            __func__,
             parameterCount);
 
     for (int ii = 0; ii < parameterCount; ii++) {
@@ -5552,7 +4229,9 @@ asynStatus ADPICam::piUpdateParameterRelevance() {
     const PicamParameter *parameterList;
     const pichar* string;
     Picam_GetParameters(currentCameraHandle, &parameterList, &parameterCount);
-    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "%d parameters found\n",
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s %d parameters found\n",
+            driverName,
+            __func__,
             parameterCount);
 
     pibln isRelevant;
@@ -6168,12 +4847,12 @@ asynStatus ADPICam::piWriteInt32CollectionType(asynUser *pasynUser,
     				&paramString);
         	asynPrint(pasynUser, ASYN_TRACE_ERROR,
         			"%s:%s ERROR: problem setting Parameter value for"
-        			" parameter %s trying to set value to %s. %s\n",
+        			" parameter %s trying to set value to %d. %s\n",
     				driverName,
     				__func__,
     				paramString,
-    				errorString,
-					value);
+					value,
+    				errorString);
         	Picam_DestroyString(paramString);
         	Picam_DestroyString(errorString);
             return asynError;
@@ -6191,12 +4870,12 @@ asynStatus ADPICam::piWriteInt32CollectionType(asynUser *pasynUser,
     				&paramString);
         	asynPrint(pasynUser, ASYN_TRACE_ERROR,
         			"%s:%s ERROR: problem setting Parameter value for"
-        			" parameter %s trying to set value to %s. %s\n",
+        			" parameter %s trying to set value to %d. %s\n",
     				driverName,
     				__func__,
     				paramString,
-    				errorString,
-					value);
+    				value,
+    				errorString);
         	Picam_DestroyString(paramString);
         	Picam_DestroyString(errorString);
             return asynError;
@@ -6219,8 +4898,8 @@ asynStatus ADPICam::piWriteInt32CollectionType(asynUser *pasynUser,
     				driverName,
     				__func__,
     				paramString,
-    				errorString,
-					largeVal);
+                    largeVal,
+    				errorString);
         	Picam_DestroyString(paramString);
         	Picam_DestroyString(errorString);
             return asynError;
@@ -6298,10 +4977,11 @@ void ADPICam::piHandleNewImageTask(void)
     int frameSize;
     int numTimeStamps;
     epicsEventWaitStatus newImageTimeoutStatus = epicsEventWaitTimeout;
-    double imageTimeout = 0.0001;
+    double imageTimeout = 0.000001;
 
   while (true) {
     unlock();
+    dataLock.unlock();
 	while ( newImageTimeoutStatus ) {
 		newImageTimeoutStatus = epicsEventWaitWithTimeout(piHandleNewImageEvent,
 			imageTimeout);
@@ -6314,6 +4994,7 @@ void ADPICam::piHandleNewImageTask(void)
 		}
 	}
 	newImageTimeoutStatus = epicsEventWaitTimeout;
+    dataLock.lock();
 	lock();
 	getIntegerParam(PICAM_TimeStamps, &useDriverTimestamps);
 	getIntegerParam(PICAM_TrackFrames, &useFrameTracking);
@@ -6325,14 +5006,11 @@ void ADPICam::piHandleNewImageTask(void)
                 getIntegerParam(ADNumImagesCounter, &imagesCounter);
                 imagesCounter++;
                 setIntegerParam(ADNumImagesCounter, imagesCounter);
-                if ((imageMode == ADImageMultiple)
-                        && (imagesCounter >= numImages)) {
-                    piAcquireStop();
-                }
                 asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
                         "Acquire, Running %s, errors %d, rate %f, "
                 		"availableDataCount %d\n",
-                        acqStatusRunning ? "True" : "false", acqStatusErrors,
+                        acqStatusRunning ? "True" : "False",
+                        acqStatusErrors,
                         acqStatusReadoutRate, acqAvailableReadoutCount);
                 /* Update the image */
                 /* First release the copy that we held onto last time */
@@ -6370,10 +5048,10 @@ void ADPICam::piHandleNewImageTask(void)
 						pImage = this->pArrays[0];
 						pImage->getInfo(&arrayInfo);
 						// Copy data from the input to the output
-						dataLock.lock();
+//						dataLock.lock();
 						memcpy(pImage->pData, acqAvailableInitialReadout,
 								arrayInfo.totalBytes);
-						dataLock.unlock();
+//						dataLock.unlock();
 						getIntegerParam(NDArrayCounter, &arrayCounter);
 						arrayCounter++;
 						setIntegerParam(NDArrayCounter, arrayCounter);
@@ -6392,11 +5070,9 @@ void ADPICam::piHandleNewImageTask(void)
 							updateTimeStamp(&pImage->epicsTS);
 						}
 						else {
-							dataLock.lock();
 							pTimeStampValue =
 									(pi64s*) ((pibyte *)acqAvailableInitialReadout
 											+ frameSize);
-							dataLock.unlock();
 							timeStampValue = *pTimeStampValue;
 							asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
 									"%s%s TimeStamp %d  Res %d frame size %d "
@@ -6441,15 +5117,13 @@ void ADPICam::piHandleNewImageTask(void)
 									&frameTrackingBitDepth);
 							switch (frameTrackingBitDepth){
 							case 64:
-								dataLock.lock();
 								pFrameValue =
 										(pi64s*) ((pibyte *)acqAvailableInitialReadout
 										+ frameSize
 										+ (numTimeStamps * timeStampBitDepth/8));
-								dataLock.unlock();
 								asynPrint (pasynUserSelf, ASYN_TRACE_FLOW,
-										"%s%s Frame tracking bit depth %d"
-										" timeStampBitDepth %d frameValue %d "
+										"%s:%s Frame tracking bit depth %d"
+										" timeStampBitDepth %d, frameValue %d "
 										" readout count %d\n",
 										driverName,
 										functionName,
@@ -6466,7 +5140,8 @@ void ADPICam::piHandleNewImageTask(void)
 						getAttributes(pImage->pAttributeList);
 
 						asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-								"%s:%s: calling imageDataCallback\n", driverName,
+								"%s:%s: calling imageDataCallback\n",
+								driverName,
 								functionName);
 
 						doCallbacksGenericPointer(pImage, NDArrayData, 0);
@@ -6490,11 +5165,12 @@ void ADPICam::piHandleNewImageTask(void)
                         acqStatusErrors,
 						&errorMaskString);
                 asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                        "Acquire, Running %s, errors %d, rate %f\n",
+                        "Acquire1, Running %s, errors %d, rate %f, array "
+                        "counter %d\n",
                         acqStatusRunning ? "True":"false",
                                 errorMaskString,
-                                acqStatusReadoutRate
-                                );
+                                acqStatusReadoutRate,
+                                arrayCounter);
                 Picam_DestroyString(errorMaskString);
                 piAcquireStop();
             }
@@ -6504,15 +5180,25 @@ void ADPICam::piHandleNewImageTask(void)
         Picam_GetEnumerationString(PicamEnumeratedType_AcquisitionErrorsMask,
                 acqStatusErrors, &errorMaskString);
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "Acquire, Running %s, errors %d, rate %f\n",
+                "Acquire2, Running %s, errors %d, rate %f\n",
                 acqStatusRunning ? "True":"false",
                         errorMaskString,
-                        acqStatusReadoutRate
-                        );
+                        acqStatusReadoutRate);
         Picam_DestroyString(errorMaskString);
         piAcquireStop();
     }
     callParamCallbacks();
+    if (((imageMode == ADImageMultiple)
+            && (imagesCounter >= numImages)) ||
+            ((imageMode == ADImageSingle) &&
+                    (imagesCounter == 1))) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                "%s:%s Calling piAcquireStop()\n",
+                driverName, __func__);
+        lock();
+        piAcquireStop();
+        unlock();
+    }
   }
 
 }
