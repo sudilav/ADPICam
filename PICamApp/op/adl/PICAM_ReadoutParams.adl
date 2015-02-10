@@ -89,21 +89,21 @@ display {
 }
 text {
 	object {
-		x=79
-		y=63
+		x=159
+		y=64
 		width=110
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="Enable NonDestructive Readout"
+	textix="Enable NonDestruct Readout"
 	align="horiz. right"
 }
 text {
 	object {
-		x=79
-		y=35
+		x=159
+		y=36
 		width=110
 		height=20
 	}
@@ -115,34 +115,34 @@ text {
 }
 text {
 	object {
-		x=79
-		y=91
+		x=159
+		y=92
 		width=110
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="Kinetics Windoe Height"
+	textix="Kinetics Window Height"
 	align="horiz. right"
 }
 text {
 	object {
-		x=79
-		y=118
+		x=159
+		y=119
 		width=110
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="Nondestructive Readout Period"
+	textix="Nondestruct Readout Period"
 	align="horiz. right"
 }
 text {
 	object {
-		x=79
-		y=146
+		x=159
+		y=147
 		width=110
 		height=20
 	}
@@ -154,8 +154,8 @@ text {
 }
 text {
 	object {
-		x=79
-		y=172
+		x=159
+		y=173
 		width=110
 		height=20
 	}
@@ -167,8 +167,8 @@ text {
 }
 text {
 	object {
-		x=79
-		y=199
+		x=159
+		y=200
 		width=110
 		height=20
 	}
@@ -180,8 +180,8 @@ text {
 }
 text {
 	object {
-		x=79
-		y=225
+		x=159
+		y=226
 		width=110
 		height=20
 	}
@@ -193,8 +193,8 @@ text {
 }
 text {
 	object {
-		x=79
-		y=249
+		x=159
+		y=250
 		width=110
 		height=20
 	}
@@ -241,8 +241,8 @@ text {
 }
 composite {
 	object {
-		x=203
-		y=35
+		x=283
+		y=36
 		width=226
 		height=20
 	}
@@ -250,8 +250,8 @@ composite {
 	children {
 		"text entry" {
 			object {
-				x=203
-				y=35
+				x=283
+				y=36
 				width=100
 				height=20
 			}
@@ -265,8 +265,8 @@ composite {
 		}
 		"text update" {
 			object {
-				x=322
-				y=36
+				x=402
+				y=37
 				width=107
 				height=18
 			}
@@ -288,8 +288,8 @@ composite {
 }
 composite {
 	object {
-		x=203
-		y=63
+		x=283
+		y=64
 		width=219
 		height=20
 	}
@@ -297,8 +297,8 @@ composite {
 	children {
 		menu {
 			object {
-				x=203
-				y=63
+				x=283
+				y=64
 				width=99
 				height=20
 			}
@@ -310,8 +310,8 @@ composite {
 		}
 		"text update" {
 			object {
-				x=322
-				y=64
+				x=402
+				y=65
 				width=100
 				height=18
 			}
@@ -333,8 +333,8 @@ composite {
 }
 composite {
 	object {
-		x=203
-		y=91
+		x=283
+		y=92
 		width=226
 		height=20
 	}
@@ -342,8 +342,8 @@ composite {
 	children {
 		"text entry" {
 			object {
-				x=203
-				y=91
+				x=283
+				y=92
 				width=100
 				height=20
 			}
@@ -357,8 +357,8 @@ composite {
 		}
 		"text update" {
 			object {
-				x=322
-				y=92
+				x=402
+				y=93
 				width=107
 				height=18
 			}
@@ -380,8 +380,8 @@ composite {
 }
 composite {
 	object {
-		x=203
-		y=118
+		x=283
+		y=119
 		width=226
 		height=20
 	}
@@ -389,8 +389,8 @@ composite {
 	children {
 		"text entry" {
 			object {
-				x=203
-				y=118
+				x=283
+				y=119
 				width=100
 				height=20
 			}
@@ -404,8 +404,8 @@ composite {
 		}
 		"text update" {
 			object {
-				x=322
-				y=119
+				x=402
+				y=120
 				width=107
 				height=18
 			}
@@ -427,8 +427,8 @@ composite {
 }
 composite {
 	object {
-		x=204
-		y=146
+		x=284
+		y=147
 		width=218
 		height=20
 	}
@@ -436,8 +436,8 @@ composite {
 	children {
 		menu {
 			object {
-				x=204
-				y=146
+				x=284
+				y=147
 				width=99
 				height=20
 			}
@@ -449,8 +449,8 @@ composite {
 		}
 		"text update" {
 			object {
-				x=322
-				y=147
+				x=402
+				y=148
 				width=100
 				height=18
 			}
@@ -472,8 +472,8 @@ composite {
 }
 composite {
 	object {
-		x=322
-		y=173
+		x=402
+		y=174
 		width=100
 		height=18
 	}
@@ -481,8 +481,8 @@ composite {
 	children {
 		"text update" {
 			object {
-				x=322
-				y=173
+				x=402
+				y=174
 				width=100
 				height=18
 			}
@@ -504,55 +504,8 @@ composite {
 }
 composite {
 	object {
-		x=203
-		y=199
-		width=226
-		height=20
-	}
-	"composite name"=""
-	children {
-		"text entry" {
-			object {
-				x=203
-				y=199
-				width=100
-				height=20
-			}
-			control {
-				chan="$(P)$(R)ReadoutPortCount"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=322
-				y=200
-				width=107
-				height=18
-			}
-			monitor {
-				chan="$(P)$(R)ReadoutPortCount_RBV"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		calc="A"
-		chan="$(P)$(R)ReadoutPortCount_PR"
-	}
-}
-composite {
-	object {
-		x=322
-		y=226
+		x=402
+		y=227
 		width=100
 		height=18
 	}
@@ -560,8 +513,8 @@ composite {
 	children {
 		"text update" {
 			object {
-				x=322
-				y=226
+				x=402
+				y=227
 				width=100
 				height=18
 			}
@@ -583,8 +536,8 @@ composite {
 }
 composite {
 	object {
-		x=203
-		y=249
+		x=283
+		y=250
 		width=226
 		height=20
 	}
@@ -592,8 +545,8 @@ composite {
 	children {
 		"text entry" {
 			object {
-				x=203
-				y=249
+				x=283
+				y=250
 				width=100
 				height=20
 			}
@@ -607,8 +560,8 @@ composite {
 		}
 		"text update" {
 			object {
-				x=322
-				y=250
+				x=402
+				y=251
 				width=107
 				height=18
 			}
@@ -626,5 +579,50 @@ composite {
 		vis="if not zero"
 		calc="A"
 		chan="$(P)$(R)VerticalShiftRate_PR"
+	}
+}
+composite {
+	object {
+		x=284
+		y=200
+		width=225
+		height=20
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=402
+				y=201
+				width=107
+				height=18
+			}
+			monitor {
+				chan="$(P)$(R)ReadoutPortCount_RBV"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		menu {
+			object {
+				x=284
+				y=200
+				width=98
+				height=20
+			}
+			control {
+				chan="$(P)$(R)ReadoutPortCount"
+				clr=14
+				bclr=51
+			}
+		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)ReadoutPortCount_PR"
 	}
 }
