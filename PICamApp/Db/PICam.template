@@ -121,7 +121,7 @@ record(bi, "$(P)$(R)ShutterDelayResolution_EX")
 
 record(bi, "$(P)$(R)ShutterOpenDelay_EX")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SHUTTER_OPEN_DELAY_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SHUTTER_OPENING_DELAY_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -149,14 +149,14 @@ record(bi, "$(P)$(R)CustomModSeq_EX")
 
 record(bi, "$(P)$(R)DifEndGate_EX")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_DIF_END_GATE_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_DIF_ENDING_GATE_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
 
 record(bi, "$(P)$(R)DifStartGate_EX")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_DIF_START_GATE_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_DIF_STARTING_GATE_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -170,7 +170,7 @@ record(bi, "$(P)$(R)EMIccdGain_EX")
 
 record(bi, "$(P)$(R)EMIccdGainMode_EX")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_EMI_CCD_GAIN_CTL_MODE_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_EMI_CCD_GAIN_CONTROL_MODE_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -205,7 +205,7 @@ record(bi, "$(P)$(R)GatingSpeed_EX")
 
 record(bi, "$(P)$(R)IntensifierDiameter_EX")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_INTENSIFIER_DIAM_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_INTENSIFIER_DIAMETER_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -247,21 +247,21 @@ record(bi, "$(P)$(R)ModulationFrequency_EX")
 
 record(bi, "$(P)$(R)PhosphorDecayDelay_EX")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOSFOR_DECAY_DELAY_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOSPHOR_DECAY_DELAY_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
 
 record(bi, "$(P)$(R)PhosphorDecayDelayResolution_EX")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOSFOR_DELAY_DECAY_RES_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOSPHOR_DECAY_DELAY_RESOLUTION_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
 
 record(bi, "$(P)$(R)PhosphorType_EX")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOSFOR_TYPE_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOSPHOR_TYPE_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -292,7 +292,7 @@ record(bi, "$(P)$(R)RepetitiveModulation_EX")
 record(bi, "$(P)$(R)SeqStartModPhase_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQ_STARTING_MODULATION_PHASE_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQUENTIAL_STARTING_MODULATION_PHASE_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -300,7 +300,7 @@ record(bi, "$(P)$(R)SeqStartModPhase_EX")
 record(bi, "$(P)$(R)SeqEndModPhase_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQ_END_MODULATION_PHASE_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQUENTIAL_ENDING_MODULATION_PHASE_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -308,7 +308,7 @@ record(bi, "$(P)$(R)SeqEndModPhase_EX")
 record(bi, "$(P)$(R)SeqEndGate_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQ_END_GATE_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQUENTIAL_ENDING_GATE_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -316,7 +316,7 @@ record(bi, "$(P)$(R)SeqEndGate_EX")
 record(bi, "$(P)$(R)SeqGateStepCount_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQ_GATE_STEP_COUNT_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQUENTIAL_GATE_STEP_COUNT_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -324,7 +324,7 @@ record(bi, "$(P)$(R)SeqGateStepCount_EX")
 record(bi, "$(P)$(R)SeqGateStepIters_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQ_GATE_STEP_ITERATIONS_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQUENTIAL_GATE_STEP_ITERATIONS_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -332,7 +332,7 @@ record(bi, "$(P)$(R)SeqGateStepIters_EX")
 record(bi, "$(P)$(R)SeqStartGate_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQ_START_GATE_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQUENTIAL_STARTING_GATE_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -396,7 +396,7 @@ record(bi, "$(P)$(R)AuxOutput_EX")
 record(bi, "$(P)$(R)EnableModulationOutSig_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_MODULATION_OUT_SIGNAL_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_MODULATION_OUTPUT_SIGNAL_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -404,7 +404,7 @@ record(bi, "$(P)$(R)EnableModulationOutSig_EX")
 record(bi, "$(P)$(R)ModulationOutSigFreq_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MODULATION_OUT_SIGNAL_FREQ_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MODULATION_OUTPUT_SIGNAL_FREQUENCY_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -412,7 +412,7 @@ record(bi, "$(P)$(R)ModulationOutSigFreq_EX")
 record(bi, "$(P)$(R)ModulationOutSigAmpl_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MODULATION_OUT_SIGNAL_AMPL_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MODULATION_OUTPUT_SIGNAL_AMPLITUDE_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -420,7 +420,7 @@ record(bi, "$(P)$(R)ModulationOutSigAmpl_EX")
 record(bi, "$(P)$(R)EnableSyncMaster_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SYNC_MASTER_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_SYNC_MASTER_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -516,7 +516,7 @@ record(bi, "$(P)$(R)Accumulations_EX")
 record(bi, "$(P)$(R)EnableNDReadout_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_NONDESTRUCT_READOUT_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_NONDESTRUCTIVE_READOUT_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -532,7 +532,7 @@ record(bi, "$(P)$(R)KineticsWindowHeight_EX")
 record(bi, "$(P)$(R)NDReadoutPeriod_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_NONDESTRUCT_READOUT_PERIOD_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_NONDESTRUCTIVE_READOUT_PERIOD_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -548,7 +548,7 @@ record(bi, "$(P)$(R)ReadoutCtlMode_EX")
 record(bi, "$(P)$(R)ReadoutOrientation_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_READOUNT_ORIENTATION_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_READOUT_ORIENTATION_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -628,7 +628,7 @@ record(bi, "$(P)$(R)FrameStride_EX")
 record(bi, "$(P)$(R)FrameTrkBitDepth_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_FRAME_TRK_BIT_DEPTH_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_FRAME_TRACkING_BIT_DEPTH_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -700,7 +700,7 @@ record(bi, "$(P)$(R)PhotonDetectionMode_EX")
 record(bi, "$(P)$(R)PhotonDetectionThreshold_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOTON_DETECT_THRESHOLD_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOTON_DETECTION_THRESHOLD_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -876,7 +876,7 @@ record(bi, "$(P)$(R)SensActWidth_EX")
 record(bi, "$(P)$(R)SensMaskBottomMargin_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_MASK_BOTTOM_MARGIN_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_MASKED_BOTTOM_MARGIN_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -884,7 +884,7 @@ record(bi, "$(P)$(R)SensMaskBottomMargin_EX")
 record(bi, "$(P)$(R)SensMaskHeight_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_MASK_HEIGHT_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_MASKED_HEIGHT_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -892,7 +892,7 @@ record(bi, "$(P)$(R)SensMaskHeight_EX")
 record(bi, "$(P)$(R)SensMaskTopMargin_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_MASK_TOP_MARGIN_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_MASKED_TOP_MARGIN_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -908,7 +908,7 @@ record(bi, "$(P)$(R)SensorActiveHeight2_EX")
 record(bi, "$(P)$(R)SensorMaskHeight2_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_SECONDARY_MASK_HEIGHT_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_SECONDARY_MASKED_HEIGHT_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -972,7 +972,7 @@ record(bi, "$(P)$(R)ActiveWidth_EX")
 record(bi, "$(P)$(R)MaskBottomMargin_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MASK_BOTTOM_MARGIN_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MASKED_BOTTOM_MARGIN_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -980,7 +980,7 @@ record(bi, "$(P)$(R)MaskBottomMargin_EX")
 record(bi, "$(P)$(R)MaskHeight_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MASK_HEIGHT_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MASKED_HEIGHT_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -988,7 +988,7 @@ record(bi, "$(P)$(R)MaskHeight_EX")
 record(bi, "$(P)$(R)MaskTopMargin_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MASK_TOP_MARGIN_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MASKED_TOP_MARGIN_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1004,7 +1004,7 @@ record(bi, "$(P)$(R)ActiveHeight2_EX")
 record(bi, "$(P)$(R)MaskedHeight2_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SECONDARY_MASK_HEIGHT_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SECONDARY_MASKED_HEIGHT_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1044,7 +1044,7 @@ record(bi, "$(P)$(R)CleanSectionFinalHeight_EX")
 record(bi, "$(P)$(R)CleanSectionFinalHeightCount_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_CLEAN_SECTION_FINAL_COUNT_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_CLEAN_SECTION_FINAL_HEIGHT_COUNT_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1060,7 +1060,7 @@ record(bi, "$(P)$(R)CleanSerialRegister_EX")
 record(bi, "$(P)$(R)CleanUntilTrigger_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_CLEAN_UNTIL_TRIG_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_CLEAN_UNTIL_TRIGGER_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1076,7 +1076,7 @@ record(bi, "$(P)$(R)DisableCoolingFan_EX")
 record(bi, "$(P)$(R)EnableWindowHtr_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_WINDOW_SENSOR_HEATER_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_SENSOR_WINDOW_HEATER_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1092,7 +1092,7 @@ record(bi, "$(P)$(R)SensTempReading_EX")
 record(bi, "$(P)$(R)SensTempSetpt_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_TEMPERATURE_SETPOINT_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_TEMPERATURE_SET_POINT_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1129,7 +1129,7 @@ record(bi, "$(P)$(R)ShutterDelayResolution_PR")
 
 record(bi, "$(P)$(R)ShutterOpenDelay_PR")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SHUTTER_OPEN_DELAY_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SHUTTER_OPENING_DELAY_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1157,14 +1157,14 @@ record(bi, "$(P)$(R)CustomModSeq_PR")
 
 record(bi, "$(P)$(R)DifEndGate_PR")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_DIF_END_GATE_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_DIF_ENDING_GATE_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
 
 record(bi, "$(P)$(R)DifStartGate_PR")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_DIF_START_GATE_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_DIF_STARTING_GATE_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1178,7 +1178,7 @@ record(bi, "$(P)$(R)EMIccdGain_PR")
 
 record(bi, "$(P)$(R)EMIccdGainMode_PR")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_EMI_CCD_GAIN_CTL_MODE_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_EMI_CCD_GAIN_CONTROL_MODE_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1213,7 +1213,7 @@ record(bi, "$(P)$(R)GatingSpeed_PR")
 
 record(bi, "$(P)$(R)IntensifierDiameter_PR")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_INTENSIFIER_DIAM_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_INTENSIFIER_DIAMETER_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1255,21 +1255,21 @@ record(bi, "$(P)$(R)ModulationFrequency_PR")
 
 record(bi, "$(P)$(R)PhosphorDecayDelay_PR")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOSFOR_DECAY_DELAY_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOSPHOR_DECAY_DELAY_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
 
 record(bi, "$(P)$(R)PhosphorDecayDelayResolution_PR")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOSFOR_DELAY_DECAY_RES_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOSPHOR_DECAY_DELAY_RESOLUTION_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
 
 record(bi, "$(P)$(R)PhosphorType_PR")
 {
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOSFOR_TYPE_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOSPHOR_TYPE_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1300,7 +1300,7 @@ record(bi, "$(P)$(R)RepetitiveModulation_PR")
 record(bi, "$(P)$(R)SeqStartModPhase_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQ_STARTING_MODULATION_PHASE_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQUENTIAL_STARTING_MODULATION_PHASE_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1308,7 +1308,7 @@ record(bi, "$(P)$(R)SeqStartModPhase_PR")
 record(bi, "$(P)$(R)SeqEndModPhase_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQ_END_MODULATION_PHASE_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQUENTIAL_ENDING_MODULATION_PHASE_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1316,7 +1316,7 @@ record(bi, "$(P)$(R)SeqEndModPhase_PR")
 record(bi, "$(P)$(R)SeqEndGate_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQ_END_GATE_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQUENTIAL_ENDING_GATE_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1324,7 +1324,7 @@ record(bi, "$(P)$(R)SeqEndGate_PR")
 record(bi, "$(P)$(R)SeqGateStepCount_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQ_GATE_STEP_COUNT_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQUENTIAL_GATE_STEP_COUNT_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1332,7 +1332,7 @@ record(bi, "$(P)$(R)SeqGateStepCount_PR")
 record(bi, "$(P)$(R)SeqGateStepIters_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQ_GATE_STEP_ITERATIONS_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQUENTIAL_GATE_STEP_ITERATIONS_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1340,7 +1340,7 @@ record(bi, "$(P)$(R)SeqGateStepIters_PR")
 record(bi, "$(P)$(R)SeqStartGate_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQ_START_GATE_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SEQUENTIAL_STARTING_GATE_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1404,7 +1404,7 @@ record(bi, "$(P)$(R)AuxOutput_PR")
 record(bi, "$(P)$(R)EnableModulationOutSig_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_MODULATION_OUT_SIGNAL_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_MODULATION_OUTPUT_SIGNAL_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1412,7 +1412,7 @@ record(bi, "$(P)$(R)EnableModulationOutSig_PR")
 record(bi, "$(P)$(R)ModulationOutSigFreq_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MODULATION_OUT_SIGNAL_FREQ_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MODULATION_OUTPUT_SIGNAL_FREQUENCY_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1420,7 +1420,7 @@ record(bi, "$(P)$(R)ModulationOutSigFreq_PR")
 record(bi, "$(P)$(R)ModulationOutSigAmpl_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MODULATION_OUT_SIGNAL_AMPL_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MODULATION_OUTPUT_SIGNAL_AMPLITUDE_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1428,7 +1428,7 @@ record(bi, "$(P)$(R)ModulationOutSigAmpl_PR")
 record(bi, "$(P)$(R)EnableSyncMaster_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SYNC_MASTER_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_SYNC_MASTER_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1524,7 +1524,7 @@ record(bi, "$(P)$(R)Accumulations_PR")
 record(bi, "$(P)$(R)EnableNDReadout_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_NONDESTRUCT_READOUT_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_NONDESTRUCTIVE_READOUT_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1540,7 +1540,7 @@ record(bi, "$(P)$(R)KineticsWindowHeight_PR")
 record(bi, "$(P)$(R)NDReadoutPeriod_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_NONDESTRUCT_READOUT_PERIOD_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_NONDESTRUCTIVE_READOUT_PERIOD_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1556,7 +1556,7 @@ record(bi, "$(P)$(R)ReadoutCtlMode_PR")
 record(bi, "$(P)$(R)ReadoutOrientation_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_READOUNT_ORIENTATION_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_READOUT_ORIENTATION_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1636,7 +1636,7 @@ record(bi, "$(P)$(R)FrameStride_PR")
 record(bi, "$(P)$(R)FrameTrkBitDepth_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_FRAME_TRK_BIT_DEPTH_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_FRAME_TRACKING_BIT_DEPTH_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1708,7 +1708,7 @@ record(bi, "$(P)$(R)PhotonDetectionMode_PR")
 record(bi, "$(P)$(R)PhotonDetectionThreshold_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOTON_DETECT_THRESHOLD_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_PHOTON_DETECTION_THRESHOLD_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1884,7 +1884,7 @@ record(bi, "$(P)$(R)SensActWidth_PR")
 record(bi, "$(P)$(R)SensMaskBottomMargin_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_MASK_BOTTOM_MARGIN_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_MASKED_BOTTOM_MARGIN_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1892,7 +1892,7 @@ record(bi, "$(P)$(R)SensMaskBottomMargin_PR")
 record(bi, "$(P)$(R)SensMaskHeight_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_MASK_HEIGHT_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_MASKED_HEIGHT_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1900,7 +1900,7 @@ record(bi, "$(P)$(R)SensMaskHeight_PR")
 record(bi, "$(P)$(R)SensMaskTopMargin_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_MASK_TOP_MARGIN_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_MASKED_TOP_MARGIN_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1916,7 +1916,7 @@ record(bi, "$(P)$(R)SensorActiveHeight2_PR")
 record(bi, "$(P)$(R)SensorMaskHeight2_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_SECONDARY_MASK_HEIGHT_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_SECONDARY_MASKED_HEIGHT_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1980,7 +1980,7 @@ record(bi, "$(P)$(R)ActiveWidth_PR")
 record(bi, "$(P)$(R)MaskBottomMargin_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MASK_BOTTOM_MARGIN_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MASKED_BOTTOM_MARGIN_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1988,7 +1988,7 @@ record(bi, "$(P)$(R)MaskBottomMargin_PR")
 record(bi, "$(P)$(R)MaskHeight_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MASK_HEIGHT_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MASKED_HEIGHT_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1996,7 +1996,7 @@ record(bi, "$(P)$(R)MaskHeight_PR")
 record(bi, "$(P)$(R)MaskTopMargin_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MASK_TOP_MARGIN_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MASKED_TOP_MARGIN_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -2012,7 +2012,7 @@ record(bi, "$(P)$(R)ActiveHeight2_PR")
 record(bi, "$(P)$(R)MaskedHeight2_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SECONDARY_MASK_HEIGHT_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SECONDARY_MASKED_HEIGHT_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -2052,7 +2052,7 @@ record(bi, "$(P)$(R)CleanSectionFinalHeight_PR")
 record(bi, "$(P)$(R)CleanSectionFinalHeightCount_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_CLEAN_SECTION_FINAL_COUNT_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_CLEAN_SECTION_FINAL_HEIGHT_COUNT_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -2068,7 +2068,7 @@ record(bi, "$(P)$(R)CleanSerialRegister_PR")
 record(bi, "$(P)$(R)CleanUntilTrigger_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_CLEAN_UNTIL_TRIG_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_CLEAN_UNTIL_TRIGGER_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -2084,7 +2084,7 @@ record(bi, "$(P)$(R)DisableCoolingFan_PR")
 record(bi, "$(P)$(R)EnableWindowHtr_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_WINDOW_SENSOR_HEATER_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_ENABLE_SENSOR_WINDOW_HEATER_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -2100,7 +2100,7 @@ record(bi, "$(P)$(R)SensTempReading_PR")
 record(bi, "$(P)$(R)SensTempSetpt_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_TEMPERATURE_SETPOINT_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_SENSOR_TEMPERATURE_SET_POINT_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -2233,14 +2233,14 @@ record(mbbi, "$(P)$(R)GatingMode_RBV")
     field(SCAN, "I/O Intr")
 }
 
-#record(stringin, "$(P)$(R)GatingSpeed")
-#{
-#    field(PINI, "YES")
-#    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_GATING_SPEED")
-#    field(DTYP, "asynOctetRead")
-#    field(SCAN, "I/O Intr")
-#    field(VAL, "Unknown")
-#}
+record(stringin, "$(P)$(R)GatingSpeed")
+{
+    field(PINI, "YES")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_GATING_SPEED")
+    field(DTYP, "asynOctetRead")
+    field(SCAN, "I/O Intr")
+    field(VAL, "Unknown")
+}
 
 record(ai, "$(P)$(R)IntensifierDiameter")
 {
@@ -2274,10 +2274,11 @@ record(longin, "$(P)$(R)IntensifierGain_RBV")
 #    field(VAL, "Unknown")
 #}
 
+
 #record(stringin, "$(P)$(R)IntensifierStatus")
 #{
 #    field(PINI, "YES")
-#    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_INTENSIFIER_OPTIONS")
+#    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_INTENSIFIER_STATUS")
 #    field(DTYP, "asynOctetRead")
 #    field(SCAN, "I/O Intr")
 #    field(VAL, "Unknown")
@@ -2698,7 +2699,7 @@ record(stringin, "$(P)$(R)ReadoutOrientation")
     field(VAL, "Unknown")
 }
 
-record(longout, "$(P)$(R)ReadoutPortCount")
+record(mbbo, "$(P)$(R)ReadoutPortCount")
 {
    field(PINI, "YES")
    field(DTYP, "asynInt32")
@@ -2706,7 +2707,7 @@ record(longout, "$(P)$(R)ReadoutPortCount")
    field(VAL,  "1")
 }
 
-record(longin, "$(P)$(R)ReadoutPortCount_RBV")
+record(mbbi, "$(P)$(R)ReadoutPortCount_RBV")
 {
    field(DTYP, "asynInt32")
    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_READOUT_PORT_COUNT")
@@ -2721,19 +2722,17 @@ record(ai, "$(P)$(R)ReadoutTimeCalc")
    field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)VerticalShiftRate")
+record(mbbo, "$(P)$(R)VerticalShiftRate")
 {
    field(PINI, "YES")
-   field(DTYP, "asynFloat64")
+   field(DTYP, "asynInt32")
    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_VERTICAL_SHIFT_RATE")
-   field(PREC, "3")
 }
 
-record(ai, "$(P)$(R)VerticalShiftRate_RBV")
+record(mbbi, "$(P)$(R)VerticalShiftRate_RBV")
 {
-   field(DTYP, "asynFloat64")
+   field(DTYP, "asynInt32")
    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_VERTICAL_SHIFT_RATE")
-   field(PREC, "3")
    field(SCAN, "I/O Intr")
 }
 
