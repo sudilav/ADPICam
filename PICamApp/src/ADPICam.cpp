@@ -1,5 +1,7 @@
 /* PICam.cpp */
 #include <cstring>
+#include <cstdlib>
+
 #include <string>
 #include <cmath>
 #include <algorithm>
@@ -985,16 +987,13 @@ asynStatus ADPICam::readEnum(asynUser *pasynUser, char *strings[], int values[],
         int severities[], size_t nElements, size_t *nIn) {
     static const char *functionName = "readEnum";
     int status = asynSuccess;
-    PicamError error;
     char enumString[64];
     const char *modelString;
-    const char *errorString;
-    const char *parameterName;
     const char *NAString = "N.A. 0";
     PicamParameter picamParameter;
     int function = pasynUser->reason;
 
-    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "*******%s:%s: entry\n",
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "*******%s:%s: entry\n",
             driverName, functionName);
 
     *nIn = 0;
@@ -1050,184 +1049,9 @@ asynStatus ADPICam::readEnum(asynUser *pasynUser, char *strings[], int values[],
         }
     } else if ( piLookupPICamParameter(function, picamParameter) ==
             PicamError_None) {
-        const PicamCollectionConstraint *constraints;
-        const char *paramConstraintString;
-        if (currentCameraHandle != NULL){
-        	pibln paramExists;
-        	Picam_DoesParameterExist(currentCameraHandle,
-        			picamParameter,
-					&paramExists);
-        	if (paramExists){
-				pibln isRelevant;
-				error = Picam_IsParameterRelevant(currentCameraHandle,
-						picamParameter,
-						&isRelevant);
-				if (error != PicamError_None) {
-					Picam_GetEnumerationString(PicamEnumeratedType_Error,
-							error,
-							&errorString);
-					asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-							"%s:%s Trouble getting parameter assocoated with "
-							"driver param %d, picam param:%d: %s\n",
-							driverName,
-							functionName,
-							function,
-							picamParameter,
-							errorString);
-					Picam_DestroyString(errorString);
-					return asynError;
-				}
-				PicamConstraintType constraintType;
-				error = Picam_GetParameterConstraintType(currentCameraHandle,
-						picamParameter,
-						&constraintType);
-				if (error != PicamError_None) {
-					Picam_GetEnumerationString(PicamEnumeratedType_Error,
-							error,
-							&errorString);
-					Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
-							picamParameter,
-							&parameterName);
-					asynPrint(pasynUser, ASYN_TRACE_ERROR,
-							"%s:%s Could not determine constraint type for "
-							"parameter %s. %s",
-							driverName,
-							functionName,
-							parameterName,
-							errorString);
-					Picam_DestroyString(parameterName);
-					Picam_DestroyString(errorString);
-					return asynError;
-				}
-				if (isRelevant &&
-						(constraintType==PicamConstraintType_Collection)) {
-					error = Picam_GetParameterCollectionConstraint(
-							currentCameraHandle,
-							picamParameter,
-							PicamConstraintCategory_Capable, &constraints);
-					if (error != PicamError_None){
-						Picam_GetEnumerationString(PicamEnumeratedType_Error,
-								error,
-								&errorString);
-						asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-								"%s:%s Trouble getting parameter assocoated "
-								"with driver param %d, picam param:%d: %s\n",
-								driverName,
-								functionName,
-								function,
-								picamParameter,
-								errorString);
-						Picam_DestroyString(errorString);
-						return asynError;
-					}
-					if ( constraints->values_count == 0){
-						strings[0] = epicsStrDup(NAString);
-						values[0] = 0;
-						severities[0] = 0;
-						(*nIn) = 1;
-						return asynSuccess;
-					}
-					for (int ii = 0; ii < constraints->values_count; ii++) {
-						PicamEnumeratedType picamParameterET;
-						Picam_GetParameterEnumeratedType(currentCameraHandle,
-								picamParameter,
-								&picamParameterET);
-						PicamValueType valType;
-						Picam_GetParameterValueType(currentCameraHandle,
-								picamParameter, &valType);
-						if (strings[*nIn])
-							free(strings[*nIn]);
-						switch (valType)
-						{
-						case PicamValueType_Enumeration:
-							Picam_GetEnumerationString(
-								picamParameterET,
-								(int)constraints->values_array[ii],
-								&paramConstraintString);
-							asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-									"%s:%s ---%s\n",
-									driverName,
-									functionName,
-									paramConstraintString);
-							strings[*nIn] = epicsStrDup(paramConstraintString);
-							values[*nIn] = (int)constraints->values_array[ii];
-							Picam_DestroyString(paramConstraintString);
-							severities[*nIn] = 0;
-							(*nIn)++;
-							break;
-						case PicamValueType_FloatingPoint:
-							char floatString[12];
-							sprintf(floatString, "%f",
-									constraints->values_array[ii]);
-							strings[*nIn] = epicsStrDup(floatString);
-							values[*nIn] = ii;
-							severities[*nIn] = 0;
-							(*nIn)++;
-							break;
-						case PicamValueType_Integer:
-							char intString[12];
-							sprintf(intString, "%d",
-									(int)constraints->values_array[ii]);
-							printf("---%s\n", intString);
-							strings[*nIn] = epicsStrDup(intString);
-							values[*nIn] = (int)constraints->values_array[ii];
-							severities[*nIn] = 0;
-							(*nIn)++;
-							break;
-						case PicamValueType_LargeInteger:
-							char largeIntString[12];
-							sprintf(largeIntString, "%d",
-									(pi64s)constraints->values_array[ii]);
-							printf("---%s\n", largeIntString);
-							strings[*nIn] = epicsStrDup(largeIntString);
-							values[*nIn] = (int)constraints->values_array[ii];
-							severities[*nIn] = 0;
-							(*nIn)++;
-							break;
-						case PicamValueType_Boolean:
-							strings[*nIn] = epicsStrDup(
-									constraints->values_array[ii] ? "No":"Yes");
-							values[*nIn] = (int)constraints->values_array[ii];
-							severities[*nIn] = 0;
-							(*nIn)++;
-							break;
-						default:
-							asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-									"%s:%s Unhandled CollectionType for "
-									"driverParam %d",
-									driverName,
-									functionName,
-									function);
-							return asynError;
-						}
-					}
-				}
-				else if (!isRelevant &&
-						(constraintType==PicamConstraintType_Collection)){
-					asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-							"Found not relevant & constraintType_Collection\n");
-					strings[0] = epicsStrDup(NAString);
-					values[0] = 0;
-					severities[0] = 0;
-					(*nIn) = 1;
-				}
-			}
-        }
-        else {
-        	Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
-        			picamParameter,
-					&parameterName);
-        	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-					"%s:%s Parameter Does Not Exist for this detector %s\n",
-					driverName,
-					functionName,
-					parameterName);
-        	Picam_DestroyString(parameterName);
-			strings[0] = epicsStrDup(NAString);
-			values[0] = 0;
-			severities[0] = 0;
-			(*nIn) = 1;
-        }
+        piGenerateListValuesFromCollection(pasynUser,
+                strings, values, severities, nIn,
+                function, picamParameter);
     } else {
         return ADDriver::readEnum(pasynUser, strings, values, severities,
                 nElements, nIn);
@@ -1237,7 +1061,7 @@ asynStatus ADPICam::readEnum(asynUser *pasynUser, char *strings[], int values[],
                 "%s:%s: error calling enum functions, status=%d\n", driverName,
                 functionName, status);
     }
-    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: exit\n", driverName,
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s: exit\n", driverName,
             functionName);
     return asynSuccess;
 }
@@ -2359,6 +2183,219 @@ PicamError ADPICam::piLookupPICamParameter(int driverParameter,
             driverParameter,
             parameter);
     return PicamError_None;
+}
+
+asynStatus ADPICam::piGenerateListValuesFromCollection(
+        asynUser *pasynUser, char *strings[],
+        int values[], int severities[], size_t *nIn,
+        int driverParam, PicamParameter picamParam){
+    int status = asynSuccess;
+    const PicamCollectionConstraint *constraints;
+    const char *errorString;
+    const char *paramConstraintString;
+    const char *parameterName;
+    const char *NAString = "N.A. 0";
+    pibln paramExists;
+    pibln isRelevant;
+    PicamError error;
+
+    if (currentCameraHandle != NULL) {
+        Picam_DoesParameterExist(currentCameraHandle,
+                picamParam,
+                &paramExists);
+        if (paramExists){
+            error = Picam_IsParameterRelevant(currentCameraHandle,
+                    picamParam,
+                    &isRelevant);
+            if (error != PicamError_None){
+                Picam_GetEnumerationString(PicamEnumeratedType_Error,
+                        error,
+                        &errorString);
+                PicamCameraID camID;
+                Picam_GetCameraID(currentCameraHandle, &camID);
+                const char *cameraModel;
+                Picam_GetEnumerationString(PicamEnumeratedType_Model,
+                        camID.model,
+                        &cameraModel);
+                asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                        "%s:%s Trouble getting relevance of parameter"
+                        " associated with driver.  driverParam:%d, "
+                        "picamParam:%d for camera %s, %s\n",
+                        driverName,
+                        __func__,
+                        driverParam,
+                        picamParam,
+                        cameraModel,
+                        errorString);
+                Picam_DestroyString(cameraModel);
+                Picam_DestroyString(errorString);
+                return asynError;
+            }
+            PicamConstraintType constraintType;
+            error = Picam_GetParameterConstraintType(currentCameraHandle,
+                    picamParam,
+                    &constraintType);
+            if (error != PicamError_None) {
+                Picam_GetEnumerationString(PicamEnumeratedType_Error,
+                        error,
+                        &errorString);
+                Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
+                        picamParam,
+                        &parameterName);
+                asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                        "%s:%s Could not determine constraint type for "
+                        "parameter %s. %s",
+                        driverName,
+                        __func__,
+                        parameterName,
+                        errorString);
+                Picam_DestroyString(parameterName);
+                Picam_DestroyString(errorString);
+                return asynError;
+            }
+            if (isRelevant  &&
+                    (constraintType == PicamConstraintType_Collection)){
+                error = Picam_GetParameterCollectionConstraint(
+                        currentCameraHandle,
+                        picamParam,
+                        PicamConstraintCategory_Capable, &constraints);
+                if (error != PicamError_None){
+                    Picam_GetEnumerationString(PicamEnumeratedType_Error,
+                            error,
+                            &errorString);
+                    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                            "%s:%s Trouble getting parameter assocoated "
+                            "with driver param %d, picam param:%d: %s\n",
+                            driverName,
+                            __func__,
+                            driverParam,
+                            picamParam,
+                            errorString);
+                    Picam_DestroyString(errorString);
+                    return asynError;
+                }
+                if ( constraints->values_count == 0){
+                    strings[0] = epicsStrDup(NAString);
+                    values[0] = 0;
+                    severities[0] = 0;
+                    (*nIn) = 1;
+                    return asynSuccess;
+                }
+                for (int ii = 0; ii < constraints->values_count; ii++) {
+                    PicamEnumeratedType picamParameterET;
+                    Picam_GetParameterEnumeratedType(currentCameraHandle,
+                            picamParam,
+                            &picamParameterET);
+                    PicamValueType valType;
+                    Picam_GetParameterValueType(currentCameraHandle,
+                            picamParam, &valType);
+                    if (strings[*nIn])
+                        free(strings[*nIn]);
+                    switch (valType)
+                    {
+                    case PicamValueType_Enumeration:
+                        Picam_GetEnumerationString(
+                            picamParameterET,
+                            (int)constraints->values_array[ii],
+                            &paramConstraintString);
+                        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                                "%s:%s ---%s\n",
+                                driverName,
+                                __func__,
+                                paramConstraintString);
+                        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                                "%s:%s constraint[%d] = %s\n",
+                                driverName,
+                                __func__,
+                                ii,
+                                paramConstraintString);
+
+                        strings[*nIn] = epicsStrDup(paramConstraintString);
+                        values[*nIn] = (int)constraints->values_array[ii];
+                        severities[*nIn] = 0;
+                        (*nIn)++;
+                        Picam_DestroyString(paramConstraintString);
+                        break;
+                    case PicamValueType_FloatingPoint:
+                        char floatString[12];
+                        sprintf(floatString, "%f",
+                                constraints->values_array[ii]);
+                        strings[*nIn] = epicsStrDup(floatString);
+                        values[*nIn] = ii;
+                        severities[*nIn] = 0;
+                        (*nIn)++;
+                        break;
+                    case PicamValueType_Integer:
+                        char intString[12];
+                        sprintf(intString, "%d",
+                                (int)constraints->values_array[ii]);
+                        strings[*nIn] = epicsStrDup(intString);
+                        values[*nIn] = (int)constraints->values_array[ii];
+                        severities[*nIn] = 0;
+                        (*nIn)++;
+                        break;
+                    case PicamValueType_LargeInteger:
+                        char largeIntString[12];
+                        sprintf(largeIntString, "%d",
+                                (pi64s)constraints->values_array[ii]);
+                        strings[*nIn] = epicsStrDup(largeIntString);
+                        values[*nIn] = (int)constraints->values_array[ii];
+                        severities[*nIn] = 0;
+                        (*nIn)++;
+                        break;
+                    case PicamValueType_Boolean:
+                        strings[*nIn] = epicsStrDup(
+                                constraints->values_array[ii] ? "No":"Yes");
+                        values[*nIn] = (int)constraints->values_array[ii];
+                        severities[*nIn] = 0;
+                        (*nIn)++;
+                        break;
+                    default:
+                        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                                "%s:%s Unhandled CollectionType for "
+                                "driverParam %d, picamParam:%d\n",
+                                driverName,
+                                __func__,
+                                driverParam,
+                                picamParam);
+                        return asynError;
+                    }
+                }
+            }
+            else {
+                Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
+                        picamParam,
+                        &parameterName);
+                asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                        "%s:%s Found not relevant & constraintType_Collection"
+                        " for this detector %s\n",
+                        driverName,
+                        __func__,
+                        parameterName);
+                Picam_DestroyString(parameterName);
+                strings[0] = epicsStrDup(NAString);
+                values[0] = 0;
+                severities[0] = 0;
+                (*nIn) = 1;
+            }
+        }
+    }
+    else {
+        Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
+                picamParam,
+                &parameterName);
+        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                "%s:%s Parameter Does Not Exist for this detector %s\n",
+                driverName,
+                __func__,
+                parameterName);
+        Picam_DestroyString(parameterName);
+        strings[0] = epicsStrDup(NAString);
+        values[0] = 0;
+        severities[0] = 0;
+        (*nIn) = 1;
+    }
+    return (asynStatus)status;
 }
 
 /**
@@ -4267,6 +4304,7 @@ asynStatus ADPICam::piUpdateAvailableCamerasList() {
     //size_t nElements;
     size_t nIn;
 
+
     nIn = 0;
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s:%s availableCamerasCount %d\n", driverName, functionName,
@@ -4304,185 +4342,29 @@ asynStatus ADPICam::piUpdateParameterListValues(
         PicamParameter picamParameter, int driverParameter){
     const char *functionName = "piUpdateParameterListValues";
     int status = asynSuccess;
-    PicamError error;
-    const char *errorString;
     char *strings[MAX_ENUM_STATES];
     int values[MAX_ENUM_STATES];
     int severities[MAX_ENUM_STATES];
     size_t nIn;
 
-    const PicamCollectionConstraint *constraints;
-    const char *paramConstraintString;
-
-    nIn = 0;
-
-    if (currentCameraHandle != NULL){
-    	pibln paramExists;
-    	Picam_DoesParameterExist(currentCameraHandle,
-    			picamParameter,
-				&paramExists);
-    	if (paramExists) {
-			pibln isRelevant;
-			error = Picam_IsParameterRelevant(currentCameraHandle,
-					picamParameter,
-					&isRelevant);
-			if (error == PicamError_ParameterDoesNotExist) {
-				// Parameter is not Relevant
-				Picam_GetEnumerationString(PicamEnumeratedType_Parameter,
-						picamParameter,
-						&errorString);
-				asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-						"%s:%s Setting is not Relevant manually function = %d, "
-						"picamParam = %d\n",
-						driverName,
-						functionName,
-						driverParameter,
-						picamParameter,
-						errorString);
-				Picam_DestroyString(errorString);
-				isRelevant = false;
-			}
-			else if (error != PicamError_None) {
-				Picam_GetEnumerationString(PicamEnumeratedType_Error,
-						error,
-						&errorString);
-				PicamCameraID camID;
-				Picam_GetCameraID(currentCameraHandle, &camID);
-				const char * cameraModel;
-				Picam_GetEnumerationString(PicamEnumeratedType_Model,
-						camID.model,
-						&cameraModel);
-				asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-						"%s:%s Trouble getting parameter assocoated with driver"
-						" param %d, picam param:%d for camera %s: %s\n",
-						driverName,
-						functionName,
-						driverParameter,
-						cameraModel,
-						errorString);
-				Picam_DestroyString(errorString);
-				Picam_DestroyString(cameraModel);
-				return asynError;
-			}
-			if (isRelevant) {
-				error = Picam_GetParameterCollectionConstraint(
-						currentCameraHandle,
-						picamParameter,
-						PicamConstraintCategory_Capable, &constraints);
-				if (error != PicamError_None){
-					Picam_GetEnumerationString(PicamEnumeratedType_Error,
-							error,
-							&errorString);
-					asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-							"%s:%s Trouble getting parameter assocoated with "
-							"driver param %d, picam param:%d: %s\n",
-							driverName,
-							functionName,
-							driverParameter,
-							picamParameter,
-							errorString);
-					Picam_DestroyString(errorString);
-					return (asynStatus)asynError;
-				}
-
-				if ( constraints->values_count == 0){
-					strings[0] = epicsStrDup("N.A. Up1");
-					values[0] = 0;
-					severities[0] = 0;
-					(nIn) = 1;
-					return asynSuccess;
-				}
-				for (int ii = 0; ii < constraints->values_count; ii++) {
-					PicamEnumeratedType picamParameterET;
-					Picam_GetParameterEnumeratedType(currentCameraHandle,
-							picamParameter,
-							&picamParameterET);
-					PicamValueType valType;
-					Picam_GetParameterValueType(currentCameraHandle,
-							picamParameter, &valType);
-					switch (valType)
-					{
-					case PicamValueType_Enumeration:
-						Picam_GetEnumerationString(
-							picamParameterET,
-							(int)constraints->values_array[ii],
-							&paramConstraintString);
-						asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-								"%s:%s  -- %s,  driver Parameter: %d\n",
-								driverName,
-								functionName,
-								paramConstraintString,
-								driverParameter);
-						strings[nIn] = epicsStrDup(paramConstraintString);
-						values[nIn] = (int)constraints->values_array[ii];
-						Picam_DestroyString(paramConstraintString);
-						severities[nIn] = 0;
-						(nIn)++;
-						break;
-					case PicamValueType_FloatingPoint:
-						char floatString[12];
-						sprintf(floatString, "%f",
-								constraints->values_array[ii]);
-						strings[nIn] = epicsStrDup(floatString);
-						values[nIn] = ii;
-						severities[nIn] = 0;
-						(nIn)++;
-						break;
-					case PicamValueType_Integer:
-						char intString[12];
-						sprintf(intString, "%d",
-								(int)constraints->values_array[ii]);
-						strings[nIn] = epicsStrDup(intString);
-						values[nIn] = (int)constraints->values_array[ii];
-						severities[nIn] = 0;
-						(nIn)++;
-						break;
-					case PicamValueType_LargeInteger:
-						char largeIntString[12];
-						sprintf(largeIntString, "%d",
-								(int)constraints->values_array[ii]);
-						strings[nIn] = epicsStrDup(largeIntString);
-						values[nIn] = (int)constraints->values_array[ii];
-						severities[nIn] = 0;
-						(nIn)++;
-						break;
-					case PicamValueType_Boolean:
-						strings[nIn] = epicsStrDup(
-								constraints->values_array[ii] ? "No":"Yes");
-						values[nIn] = (int)constraints->values_array[ii];
-						severities[nIn] = 0;
-						(nIn)++;
-						break;
-					default:
-						asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-								"%s:%s Fall to defaultType %d %d\n",
-								driverName,
-								functionName,
-								driverParameter,
-								picamParameter);
-						break;
-					}
-				}
-			}
-			else {
-				//param Not Relevant
-				strings[0] = epicsStrDup("N.A. Up2");
-				values[0] = 0;
-				severities[0] = 0;
-				(nIn) = 1;
-			}
-    	}
-    	else {
-    		// param doesn't exist for this detector
-			strings[0] = epicsStrDup("N.A. Up2");
-			values[0] = 0;
-			severities[0] = 0;
-			(nIn) = 1;
-    	}
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s:%s Enter",
+            driverName,
+            __func__);
+    for (int ii=0; ii<MAX_ENUM_STATES; ii++) {
+        strings[ii] = 0;
     }
+    nIn = 0;
+    piGenerateListValuesFromCollection(pasynUserSelf, strings,
+            values, severities, &nIn,
+            driverParameter, picamParameter);
 
     doCallbacksEnum(strings, values, severities, nIn, driverParameter,
             0);
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s:%s Exit",
+            driverName,
+            __func__);
 
     return (asynStatus)status;
 }

@@ -7,6 +7,7 @@
 #ifndef ADPICAM_H
 #define ADPICAM_H
 
+#include <cstddef>
 #include <vector>
 #include <unordered_map>
 #include <stdlib.h>
@@ -573,6 +574,10 @@ private:
     asynStatus piCreateAndIndexPIRoisParam(const char * name,
             int &existsIndex, int &relevantIndex,
             PicamParameter picamParameter);
+    asynStatus piGenerateListValuesFromCollection(
+            asynUser *pasynUser, char *strings[],
+            int values[], int severities[], size_t *nIn,
+            int driverParam, PicamParameter picamParam);
     asynStatus piLoadUnavailableCameraIDs();
     int piLookupDriverParameter(PicamParameter picamParameter);
     PicamError piLookupPICamParameter(int driverParameter,
