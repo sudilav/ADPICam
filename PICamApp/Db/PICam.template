@@ -1,3 +1,7 @@
+#
+# Copyright (c) 2015, UChicago Argonne, LLC
+# See LICENSE file.
+#
 # Database file for PICam Driver
 record(stringin, "$(P)$(R)VersionNumber")
 {
@@ -644,7 +648,7 @@ record(bi, "$(P)$(R)GateTracking_EX")
 record(bi, "$(P)$(R)GateTrkBitDepth_EX")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_FRAME_TRACKING_BIT_DEPTH_EX")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_GATE_TRACKING_BIT_DEPTH_EX")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -1652,7 +1656,7 @@ record(bi, "$(P)$(R)GateTracking_PR")
 record(bi, "$(P)$(R)GateTrkBitDepth_PR")
 {
     field(DESC, "")
-    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_FRAME_TRACKING_BIT_DEPTH_PR")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_GATE_TRACKING_BIT_DEPTH_PR")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 }
@@ -2572,7 +2576,6 @@ record(mbbo, "$(P)$(R)TriggerSource")
 {
     field(PINI, "YES")
     field(DTYP, "asynInt32")
-    field(PREC, "3")
     field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_TRIGGER_SOURCE")
 }
 
@@ -2816,6 +2819,8 @@ record(mbbo, "$(P)$(R)GateTrackingBitDepth")
     field(PINI, "YES")
     field(DTYP, "asynInt32")
     field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_GATE_TRACKING_BIT_DEPTH")
+    field(ZRST, "N/A")
+    field(ZRVL, "0")
 }
 
 record(mbbi, "$(P)$(R)GateTrackingBitDepth_RBV")
@@ -2823,6 +2828,8 @@ record(mbbi, "$(P)$(R)GateTrackingBitDepth_RBV")
     field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_GATE_TRACKING_BIT_DEPTH")
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
+    field(ZRST, "N/A")
+    field(ZRVL, "0")
 }
 
 record(mbbo, "$(P)$(R)ModulationTracking")
@@ -2844,6 +2851,8 @@ record(mbbo, "$(P)$(R)ModulationTrackingBitDepth")
     field(PINI, "YES")
     field(DTYP, "asynInt32")
     field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))PICAM_MODULATION_TRACKING_BIT_DEPTH")
+    field(ZRST, "N/A")
+    field(ZRVL, "0")
 }
 
 record(mbbi, "$(P)$(R)ModulationTrackingBitDepth_RBV")
