@@ -1,3 +1,7 @@
+/**
+ Copyright (c) 2015, UChicago Argonne, LLC
+ See LICENSE file.
+*/
 /* PICam.h
  *
  * This is an areaDetector driver for cameras that communicate
@@ -10,7 +14,7 @@
 #include <cstddef>
 #include <vector>
 #include <unordered_map>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include <iocsh.h>
 
