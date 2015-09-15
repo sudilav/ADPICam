@@ -17,7 +17,7 @@ $(PROD_NAME)_SRCS += $(PROD_NAME)_registerRecordDeviceDriver.cpp $(PROD_NAME)Mai
 $(PROD_NAME)_LIBS += ADPICam
 $(PROD_NAME)_LIBS += Picam
 
-include $(ADEXAMPLE)/exampleApp/commonDriverMakefile
+include $(ADCORE)/ADApp/commonDriverMakefile
 
 #=============================
 
