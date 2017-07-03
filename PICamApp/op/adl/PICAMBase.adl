@@ -1,14 +1,14 @@
 
 file {
-	name="C:\jhSrc\synApps_5_7\support\areaDetector_2_git\ADPICam\PICamApp\op\adl\PICAMBase.adl"
+	name="/home/epics/devel/areaDetector-3-1/ADPICam/PICamApp/op/adl/PICAMBase.adl"
 	version=030109
 }
 display {
 	object {
-		x=531
-		y=224
+		x=409
+		y=105
 		width=1070
-		height=920
+		height=790
 	}
 	clr=14
 	bclr=4
@@ -140,18 +140,18 @@ text {
 }
 composite {
 	object {
-		x=0
+		x=5
 		y=53
 		width=350
-		height=215
+		height=340
 	}
 	"composite name"=""
 	"composite file"="ADSetup.adl"
 }
 composite {
 	object {
-		x=0
-		y=273
+		x=5
+		y=398
 		width=350
 		height=80
 	}
@@ -161,27 +161,432 @@ composite {
 composite {
 	object {
 		x=360
-		y=54
+		y=53
 		width=350
 		height=250
 	}
 	"composite name"=""
 	"composite file"="PICAM_ShutterParams.adl"
 }
-composite {
+rectangle {
 	object {
-		x=714
-		y=55
-		width=337
+		x=745
+		y=53
+		width=290
+		height=21
+	}
+	"basic attribute" {
+		clr=2
+	}
+}
+text {
+	object {
+		x=750
+		y=54
+		width=280
+		height=20
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Analog to Digital Conversion"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=764
+		y=90
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Analog Gain"
+	align="horiz. right"
+}
+text {
+	object {
+		x=765
+		y=114
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Bit Depth"
+	align="horiz. right"
+}
+text {
+	object {
+		x=766
+		y=138
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Speed"
+	align="horiz. right"
+}
+rectangle {
+	object {
+		x=715
+		y=53
+		width=351
 		height=205
 	}
-	"composite name"=""
-	"composite file"="PICAM_ADCParams.adl"
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+}
+text {
+	object {
+		x=766
+		y=161
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Quality"
+	align="horiz. right"
+}
+text {
+	object {
+		x=765
+		y=184
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="EM Gain"
+	align="horiz. right"
+}
+text {
+	object {
+		x=769
+		y=207
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Correct"
+	align="horiz. right"
 }
 composite {
 	object {
-		x=361
-		y=315
+		x=851
+		y=91
+		width=198
+		height=20
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=851
+				y=91
+				width=84
+				height=20
+			}
+			control {
+				chan="$(P)$(R)AdcAnalogGain"
+				clr=14
+				bclr=51
+			}
+		}
+		"text update" {
+			object {
+				x=954
+				y=93
+				width=95
+				height=18
+			}
+			monitor {
+				chan="$(P)$(R)AdcAnalogGain_RBV"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)AdcAnalogGain_PR"
+	}
+}
+composite {
+	object {
+		x=851
+		y=112
+		width=198
+		height=23
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=851
+				y=115
+				width=84
+				height=20
+			}
+			control {
+				chan="$(P)$(R)AdcBitDepth"
+				clr=14
+				bclr=51
+			}
+		}
+		"text update" {
+			object {
+				x=954
+				y=112
+				width=95
+				height=18
+			}
+			monitor {
+				chan="$(P)$(R)AdcBitDepth_RBV"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)AdcBitDepth_PR"
+	}
+}
+composite {
+	object {
+		x=851
+		y=134
+		width=198
+		height=23
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=851
+				y=137
+				width=84
+				height=20
+			}
+			control {
+				chan="$(P)$(R)AdcSpeed"
+				clr=14
+				bclr=51
+			}
+		}
+		"text update" {
+			object {
+				x=954
+				y=134
+				width=95
+				height=18
+			}
+			monitor {
+				chan="$(P)$(R)AdcSpeed_RBV"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)AdcSpeed_PR"
+	}
+}
+composite {
+	object {
+		x=850
+		y=157
+		width=197
+		height=23
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=850
+				y=160
+				width=84
+				height=20
+			}
+			control {
+				chan="$(P)$(R)AdcQuality"
+				clr=14
+				bclr=51
+			}
+		}
+		"text update" {
+			object {
+				x=952
+				y=157
+				width=95
+				height=18
+			}
+			monitor {
+				chan="$(P)$(R)AdcQuality_RBV"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)AdcQuality_PR"
+	}
+}
+composite {
+	object {
+		x=852
+		y=184
+		width=199
+		height=20
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=951
+				y=184
+				width=100
+				height=18
+			}
+			monitor {
+				chan="$(P)$(R)EMGain_RBV"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		composite {
+			object {
+				x=852
+				y=184
+				width=80
+				height=20
+			}
+			"composite name"=""
+			children {
+				"text entry" {
+					object {
+						x=852
+						y=184
+						width=80
+						height=20
+					}
+					control {
+						chan="$(P)$(R)SizeX"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				calc="A"
+				chan="$(P)$(R)EMGain"
+			}
+		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)AdcEMGain_PR"
+	}
+}
+composite {
+	object {
+		x=853
+		y=216
+		width=197
+		height=20
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=853
+				y=216
+				width=84
+				height=20
+			}
+			control {
+				chan="$(P)$(R)CorrectPixelBias"
+				clr=14
+				bclr=51
+			}
+		}
+		"text update" {
+			object {
+				x=955
+				y=216
+				width=95
+				height=18
+			}
+			monitor {
+				chan="$(P)$(R)CorrectPixelBias_RBV"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		calc="A"
+		chan="$(P)$(R)CorrectPixelBias_PR"
+	}
+}
+text {
+	object {
+		x=767
+		y=228
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Pixel Bias"
+	align="horiz. right"
+}
+composite {
+	object {
+		x=360
+		y=308
 		width=350
 		height=405
 	}
@@ -190,38 +595,28 @@ composite {
 }
 composite {
 	object {
-		x=719
-		y=291
-		width=337
-		height=60
+		x=715
+		y=264
+		width=350
+		height=110
 	}
 	"composite name"=""
 	"composite file"="ADAttrFile.adl"
 }
 composite {
 	object {
-		x=719
-		y=362
-		width=337
+		x=715
+		y=379
+		width=350
 		height=135
 	}
 	"composite name"=""
 	"composite file"="ADBuffers.adl"
 }
-composite {
-	object {
-		x=3
-		y=726
-		width=420
-		height=187
-	}
-	"composite name"=""
-	"composite file"="PICAM_SensorTemperature.adl"
-}
 "related display" {
 	object {
 		x=744
-		y=523
+		y=519
 		width=300
 		height=27
 	}
@@ -286,8 +681,8 @@ composite {
 }
 composite {
 	object {
-		x=4
-		y=360
+		x=5
+		y=483
 		width=350
 		height=300
 	}
