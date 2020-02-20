@@ -2,7 +2,7 @@ ADPICam
 =============
 An 
 [EPICS](http://www.aps.anl.gov/epics/) 
-[areaDetector](https://cars.uchicago.edu/software/epics/areaDetector.html) 
+[areaDetector](https://github.com/areaDetector/areaDetector/blob/master/README.md) 
 driver for Cameras from Princeton Instruments that support the PICAM library.  
 [PICam](ftp://ftp.princetoninstruments.com/public/Manuals/Princeton%20Instruments/PICam%20User%20Manual.pdf)
 This driver is based on the PICAM Virtual Camera Library.  
