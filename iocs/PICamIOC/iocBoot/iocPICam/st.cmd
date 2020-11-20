@@ -21,7 +21,7 @@ epicsEnvSet("EPICS_DB_INCLUDE_PATH", "$(ADCORE)/db")
 # PICamConfig(const char *portName, IDType, IDValue, maxBuffers, size_t maxMemory, int priority, int stackSize)
 
 # This will select a live camera.
-PICamConfig("$(PORT)", 0, 0, 0, 0)
+PICamConfig("$(PORT)", 0, 0, 0, 0, 0)
 
 # These will select a simulated demo camera.
 #PICamAddDemoCamera("PIXIS: 100F")

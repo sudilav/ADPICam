@@ -43,8 +43,8 @@ extern "C" {
  *            ASYN_CANBLOCK is set in asynFlags.
  */
     int PICamConfig(const char *portName, int maxBuffers,
-            size_t maxMemory, int priority, int stackSize) {
-        new ADPICam(portName, maxBuffers, maxMemory, priority, stackSize);
+            size_t maxMemory, int priority, int stackSize, int selectedCamera) {
+        new ADPICam(portName, maxBuffers, maxMemory, priority, stackSize, selectedCamera);
         return (asynSuccess);
     }
 
@@ -88,7 +88,7 @@ const char *ADPICam::driverName = "PICam";
  *
  */
 ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
-        int priority, int stackSize) :
+        int priority, int stackSize, int selectedCamera) :
         ADDriver(portName, 1, int(NUM_PICAM_PARAMS), maxBuffers, maxMemory,
         asynEnumMask, asynEnumMask, ASYN_CANBLOCK, 1, priority, stackSize),
         PICAM_CCDMultiTrack(this) {
@@ -169,7 +169,8 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
 
     //Open First available camera.  If no camera is available,
     // then open a demo camera
-    error = Picam_OpenFirstCamera(&currentCameraHandle);
+    if (selectedCamera == 0)
+        error = Picam_OpenFirstCamera(&currentCameraHandle);
 
     if (error != PicamError_None) {
         if (error == PicamError_NoCamerasAvailable) {
@@ -889,10 +890,14 @@ ADPICam::ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
     status |= setIntegerParam(PICAM_EnableROIMinYInput, enableDisplay);
     status |= setIntegerParam(PICAM_EnableROISizeYInput, enableDisplay);
 
+    status |= piLoadAvailableCameraIDs();
+
+    if (selectedCamera != 0)
+        status |= piSetSelectedCamera(pasynUserSelf, selectedCamera);
+
     if (currentCameraHandle != NULL)
         status |= piSetParameterValuesFromSelectedCamera();
 
-    status |= piLoadAvailableCameraIDs();
     status |= setIntegerParam(PICAM_AvailableCameras, 0);
     status |= callParamCallbacks();
 
@@ -1020,7 +1025,7 @@ asynStatus ADPICam::readEnum(asynUser *pasynUser, char *strings[], int values[],
                     (piint) availableCameraIDs[ii].model, &modelString);
             pibln camConnected = false;
             Picam_IsCameraIDConnected(availableCameraIDs, &camConnected);
-            sprintf(enumString, "%s", modelString);
+            epicsSnprintf(enumString, sizeof(enumString)-1, "#%s %s", availableCameraIDs[ii].serial_number, modelString);
             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
                     "\n%s:%s: \nCamera[%d]\n---%s\n---%d\n---%s\n---%s\n",
                     driverName, functionName, ii, modelString,
@@ -3971,11 +3976,6 @@ asynStatus ADPICam::piSetSelectedCamera(asynUser *pasynUser,
             return (asynStatus)asynError;
         }
     }
-    if (selectedCameraIndex >= 0) {
-        error = Picam_CloseCamera(currentCameraHandle);
-        asynPrint(pasynUser, ASYN_TRACE_FLOW, "Picam_CloseCameraError %d\n",
-                error);
-    }
     asynPrint(pasynUser, ASYN_TRACE_FLOW,
             "%s:%s: Number of available cameras=%d\n", driverName, functionName,
             availableCamerasCount);
@@ -3988,8 +3988,16 @@ asynStatus ADPICam::piSetSelectedCamera(asynUser *pasynUser,
                 modelString, availableCameraIDs[ii].computer_interface,
                 availableCameraIDs[ii].sensor_name,
                 availableCameraIDs[ii].serial_number);
+        if ((selectedIndex >= availableCamerasCount) && (selectedIndex == atoi(availableCameraIDs[ii].serial_number)))
+            // Assumption: the number of cameras is less than any possible serial number.
+            selectedIndex = ii;
         Picam_DestroyString(modelString);
         //PicamAdvanced_SetUserState(availableCameraIDs[ii].model, this);
+    }
+    if (selectedCameraIndex >= 0) {
+        error = Picam_CloseCamera(currentCameraHandle);
+        asynPrint(pasynUser, ASYN_TRACE_FLOW, "Picam_CloseCameraError %d\n",
+            error);
     }
     if (selectedIndex < availableCamerasCount) {
 
@@ -4040,6 +4048,7 @@ asynStatus ADPICam::piSetSelectedCamera(asynUser *pasynUser,
         asynPrint(pasynUser, ASYN_TRACE_FLOW,
                 "%s:%s: Selected camera value=%d, %s\n", driverName,
                 functionName, selectedIndex, modelString);
+        status |= setStringParam(ADModel, modelString);
         Picam_DestroyString(modelString);
 
         Picam_GetEnumerationString(PicamEnumeratedType_ComputerInterface,
@@ -5215,10 +5224,11 @@ static const iocshArg PICamConfigArg1 = { "maxBuffers", iocshArgInt };
 static const iocshArg PICamConfigArg2 = { "maxMemory", iocshArgInt };
 static const iocshArg PICamConfigArg3 = { "priority", iocshArgInt };
 static const iocshArg PICamConfigArg4 = { "stackSize", iocshArgInt };
+static const iocshArg PICamConfigArg5 = { "selectedCamera", iocshArgInt };
 static const iocshArg * const PICamConfigArgs[] = { &PICamConfigArg0,
-        &PICamConfigArg1, &PICamConfigArg2, &PICamConfigArg3, &PICamConfigArg4 };
+        &PICamConfigArg1, &PICamConfigArg2, &PICamConfigArg3, &PICamConfigArg4, &PICamConfigArg5 };
 
-static const iocshFuncDef configPICam = { "PICamConfig", 5, PICamConfigArgs };
+static const iocshFuncDef configPICam = { "PICamConfig", 6, PICamConfigArgs };
 
 static const iocshArg PICamAddDemoCamArg0 =
         { "Demo Camera name", iocshArgString };
@@ -5229,7 +5239,7 @@ static const iocshFuncDef addDemoCamPICam = { "PICamAddDemoCamera", 1,
 
 static void configPICamCallFunc(const iocshArgBuf *args) {
     PICamConfig(args[0].sval, args[1].ival, args[2].ival, args[3].ival,
-            args[4].ival);
+        args[4].ival, args[5].ival);
 }
 
 static void addDemoCamPICamCallFunc(const iocshArgBuf *args) {

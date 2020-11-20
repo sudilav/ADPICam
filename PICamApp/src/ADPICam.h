@@ -32,7 +32,7 @@ public:
     static const char *driverName;
 
     ADPICam(const char *portName, int maxBuffers, size_t maxMemory,
-            int priority, int stackSize);
+            int priority, int stackSize, int selectedCamera);
     ~ADPICam();
     /* These are the methods that we override from ADDriver */
     virtual asynStatus readEnum(asynUser *pasynUser, char *strings[],
