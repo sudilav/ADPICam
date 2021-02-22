@@ -12,6 +12,10 @@ INC += pil_platform.h
 
 ifeq (windows-x64, $(findstring windows-x64, $(T_A)))
 LIB_INSTALLS_WIN32    += ../os/windows-x64/Picam.lib
+
+else ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
+LIB_INSTALLS_WIN32    += ../os/windows-x86/Picam32.lib
+
 endif
 
 #=============================
