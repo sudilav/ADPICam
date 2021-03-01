@@ -9,6 +9,7 @@
 #include <cmath>
 #include <cstring>
 #include <algorithm>
+#include <stdexcept>
 
 #include <epicsTime.h>
 #include <epicsExit.h>
