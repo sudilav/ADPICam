@@ -2634,7 +2634,7 @@ record(longin, "$(P)$(R)Accumulations_RBV")
    field(SCAN, "I/O Intr")
 }
 
-record(bo, "$(P)$(R)EnableNonDestructiveReadout")
+record(bo, "$(P)$(R)EnableNondestructiveReadout")
 {
     field(PINI, "YES")
     field(DTYP, "asynInt32")
