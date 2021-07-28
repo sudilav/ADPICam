@@ -9,6 +9,7 @@
 #include <cmath>
 #include <cstring>
 #include <algorithm>
+#include <stdexcept>
 
 #include <epicsTime.h>
 #include <epicsExit.h>
@@ -3911,9 +3912,9 @@ asynStatus ADPICam::piSetMultiRoi(asynUser *pasynUser, int minX, int sizeX, int 
        */
         int BeginY = PICAM_CCDMultiTrack.TrackStart(TrackNo);
         int BinY = PICAM_CCDMultiTrack.TrackBin(TrackNo);
-        int EndY = PICAM_CCDMultiTrack.TrackEnd(TrackNo);
+        int height = PICAM_CCDMultiTrack.TrackHeight(TrackNo);
         PicamRoi Rgn = { minX, sizeX, binX,
-                        BeginY, EndY - BeginY + 1, BinY };
+                        BeginY, height, BinY };
         Regions.push_back(Rgn);
     }
     PicamRois Rois = { &(Regions[0]), piint(Regions.size()) };

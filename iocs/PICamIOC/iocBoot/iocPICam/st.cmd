@@ -1,6 +1,6 @@
 errlogInit(20000)
 
-< envPaths
+< envPaths.windows
 #epicsThreadSleep(20)
 dbLoadDatabase("$(TOP)/dbd/PICamApp.dbd")
 PICamApp_registerRecordDeviceDriver(pdbbase) 
